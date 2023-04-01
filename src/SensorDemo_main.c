@@ -1,125 +1,125 @@
-/******************** (C) COPYRIGHT 2018 STMicroelectronics ********************
-* File Name          : SensorDemo_main.c
-* Author             : AMS - RF Application team
-* Version            : V1.2.0
-* Date               : 03-December-2018
-* Description        : BlueNRG-1-2 Sensor Demo main file
-********************************************************************************
-* THE PRESENT FIRMWARE WHICH IS FOR GUIDANCE ONLY AIMS AT PROVIDING CUSTOMERS
-* WITH CODING INFORMATION REGARDING THEIR PRODUCTS IN ORDER FOR THEM TO SAVE TIME.
-* AS A RESULT, STMICROELECTRONICS SHALL NOT BE HELD LIABLE FOR ANY DIRECT,
-* INDIRECT OR CONSEQUENTIAL DAMAGES WITH RESPECT TO ANY CLAIMS ARISING FROM THE
-* CONTENT OF SUCH FIRMWARE AND/OR THE USE MADE BY CUSTOMERS OF THE CODING
-* INFORMATION CONTAINED HEREIN IN CONNECTION WITH THEIR PRODUCTS.
-*******************************************************************************/
-/** @addtogroup BlueNRG1_demonstrations_applications
- * BlueNRG-1,2 SensorDemo \see SensorDemo_main.c for documentation.
- *
- *@{
- */
-
-/** @} */
-/** \cond DOXYGEN_SHOULD_SKIP_THIS
- */
-/* Includes ------------------------------------------------------------------*/
-#include <stdio.h>
-#include <stdlib.h>
-#include "BlueNRG1_it.h"
-#include "BlueNRG1_conf.h"
-#include "ble_const.h"
-#include "bluenrg1_stack.h"
-#include "SDK_EVAL_Config.h"
-#include "sleep.h"
-#include "sensor.h"
-#include "SensorDemo_config.h"
-#include "OTA_btl.h"
-#include "gatt_db.h"
-#include "BlueNRG1_gpio.h"
-#include "GPIO.h"
-#include "SEGGER_RTT.h"
-#include "SEGGER_RTT_conf.h"
-
-
-#include "I2C.h"
-#include "GPIO.h"
-#include "SEGGER_RTT.h"
-
-#include "bluenrg_x_device.h"
-#include <stdio.h>
-#include "BlueNRG1_conf.h"
-#include "SDK_EVAL_Config.h"
-
-/* Private typedef -----------------------------------------------------------*/
-/* Private define ------------------------------------------------------------*/
-#define LED_PIN GPIO_Pin_0
-
-#define PRINT_INT(x)    ((int)(x))
-#define PRINT_FLOAT(x)  (x>0)? ((int) (((x) - PRINT_INT(x)) * 1000)) : (-1*(((int) (((x) - PRINT_INT(x)) * 1000))))
-//#define BLE_SENSOR_VERSION_STRING "1.0.0"
-
-/* Private macro -------------------------------------------------------------*/
-/* Private variables ---------------------------------------------------------*/
-
-/* Set the Application Service Max number of attributes records with init parameters coming from application *.config.h file */
-uint8_t Services_Max_Attribute_Records[NUMBER_OF_APPLICATION_SERVICES] = {MAX_NUMBER_ATTRIBUTES_RECORDS_SERVICE_1, MAX_NUMBER_ATTRIBUTES_RECORDS_SERVICE_2};
-
-/* Private function prototypes -----------------------------------------------*/
-/* Private functions ---------------------------------------------------------*/
-
-int main(void)
-{
-  uint8_t ret;
-  /*SEGGER Init*/
-SEGGER_RTT_Init();
-SEGGER_RTT_ConfigUpBuffer(0,NULL,NULL,0,SEGGER_RTT_MODE_BLOCK_IF_FIFO_FULL);
-
-  /*STM Initialization*/
-  	/* System Init */
-  	SystemInit();
-  	/* Identify BlueNRG1 platform */
-  	SdkEvalIdentification();
-  	SysCtrl_PeripheralClockCmd(CLOCK_PERIPH_GPIO, ENABLE);
-  	/* Configure I/O communication channel */
-  	SdkEvalComUartInit(UART_BAUDRATE);
-
-  	/*SysTick Initialization 1ms*/
-  	Clock_Init();
-	SysTick_Config(SYST_CLOCK/1000 - 1);
-	SEGGER_RTT_printf(0,"hello\n");
-
-	GPIO_InitType GPIO_InitStructure;
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0;
-	GPIO_InitStructure.GPIO_Mode = GPIO_Output;
-	GPIO_InitStructure.GPIO_Pull = ENABLE;
-	GPIO_InitStructure.GPIO_HighPwr = ENABLE;
-	GPIO_Init(&GPIO_InitStructure);
-
-	//InitGPIO_Output(LED_PIN);
-	//LED_Configuration();
-	//ToggleLED();
-	GPIO_WriteBit(GPIO_Pin_0, LED_ON);
-	SEGGER_RTT_printf(0,"GPIO Test: OK \n");
-
-//  		 /* Configure I2C as master mode */
-//  		  	  I2C_ConfigurationMaster();
+///******************** (C) COPYRIGHT 2018 STMicroelectronics ********************
+//* File Name          : SensorDemo_main.c
+//* Author             : AMS - RF Application team
+//* Version            : V1.2.0
+//* Date               : 03-December-2018
+//* Description        : BlueNRG-1-2 Sensor Demo main file
+//********************************************************************************
+//* THE PRESENT FIRMWARE WHICH IS FOR GUIDANCE ONLY AIMS AT PROVIDING CUSTOMERS
+//* WITH CODING INFORMATION REGARDING THEIR PRODUCTS IN ORDER FOR THEM TO SAVE TIME.
+//* AS A RESULT, STMICROELECTRONICS SHALL NOT BE HELD LIABLE FOR ANY DIRECT,
+//* INDIRECT OR CONSEQUENTIAL DAMAGES WITH RESPECT TO ANY CLAIMS ARISING FROM THE
+//* CONTENT OF SUCH FIRMWARE AND/OR THE USE MADE BY CUSTOMERS OF THE CODING
+//* INFORMATION CONTAINED HEREIN IN CONNECTION WITH THEIR PRODUCTS.
+//*******************************************************************************/
+///** @addtogroup BlueNRG1_demonstrations_applications
+// * BlueNRG-1,2 SensorDemo \see SensorDemo_main.c for documentation.
+// *
+// *@{
+// */
 //
-//  			  I2C_test();
-  /* System Init */
-//  SystemInit();
+///** @} */
+///** \cond DOXYGEN_SHOULD_SKIP_THIS
+// */
+///* Includes ------------------------------------------------------------------*/
+//#include <stdio.h>
+//#include <stdlib.h>
+//#include "BlueNRG1_it.h"
+//#include "BlueNRG1_conf.h"
+//#include "ble_const.h"
+//#include "bluenrg1_stack.h"
+//#include "SDK_EVAL_Config.h"
+//#include "sleep.h"
+//#include "sensor.h"
+//#include "SensorDemo_config.h"
+//#include "OTA_btl.h"
+//#include "gatt_db.h"
+//#include "BlueNRG1_gpio.h"
+//#include "GPIO.h"
+//#include "SEGGER_RTT.h"
+//#include "SEGGER_RTT_conf.h"
 //
-//  /* Identify BlueNRG1 platform */
-//  SdkEvalIdentification();
 //
-//  /* Configure I/O communication channel */
-//  SdkEvalComUartInit(UART_BAUDRATE);
+//#include "I2C.h"
+//#include "GPIO.h"
+//#include "SEGGER_RTT.h"
 //
-//  /* BlueNRG-1,2 stack init */
-//  ret = BlueNRG_Stack_Initialization(&BlueNRG_Stack_Init_params);
-//  if (ret != BLE_STATUS_SUCCESS) {
-//    PRINTF("Error in BlueNRG_Stack_Initialization() 0x%02x\r\n", ret);
-//    while(1);
-//  }
-  /* Configure the LEDs */
+//#include "bluenrg_x_device.h"
+//#include <stdio.h>
+//#include "BlueNRG1_conf.h"
+//#include "SDK_EVAL_Config.h"
+//
+///* Private typedef -----------------------------------------------------------*/
+///* Private define ------------------------------------------------------------*/
+//#define LED_PIN GPIO_Pin_0
+//
+//#define PRINT_INT(x)    ((int)(x))
+//#define PRINT_FLOAT(x)  (x>0)? ((int) (((x) - PRINT_INT(x)) * 1000)) : (-1*(((int) (((x) - PRINT_INT(x)) * 1000))))
+////#define BLE_SENSOR_VERSION_STRING "1.0.0"
+//
+///* Private macro -------------------------------------------------------------*/
+///* Private variables ---------------------------------------------------------*/
+//
+///* Set the Application Service Max number of attributes records with init parameters coming from application *.config.h file */
+//uint8_t Services_Max_Attribute_Records[NUMBER_OF_APPLICATION_SERVICES] = {MAX_NUMBER_ATTRIBUTES_RECORDS_SERVICE_1, MAX_NUMBER_ATTRIBUTES_RECORDS_SERVICE_2};
+//
+///* Private function prototypes -----------------------------------------------*/
+///* Private functions ---------------------------------------------------------*/
+//
+//int main(void)
+//{
+//  uint8_t ret;
+//  /*SEGGER Init*/
+//SEGGER_RTT_Init();
+//SEGGER_RTT_ConfigUpBuffer(0,NULL,NULL,0,SEGGER_RTT_MODE_BLOCK_IF_FIFO_FULL);
+//
+//  /*STM Initialization*/
+//  	/* System Init */
+//  	SystemInit();
+//  	/* Identify BlueNRG1 platform */
+//  	SdkEvalIdentification();
+//  	SysCtrl_PeripheralClockCmd(CLOCK_PERIPH_GPIO, ENABLE);
+//  	/* Configure I/O communication channel */
+//  	SdkEvalComUartInit(UART_BAUDRATE);
+//
+//  	/*SysTick Initialization 1ms*/
+//  	Clock_Init();
+//	SysTick_Config(SYST_CLOCK/1000 - 1);
+//	SEGGER_RTT_printf(0,"hello\n");
+//
+//	GPIO_InitType GPIO_InitStructure;
+//	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0;
+//	GPIO_InitStructure.GPIO_Mode = GPIO_Output;
+//	GPIO_InitStructure.GPIO_Pull = ENABLE;
+//	GPIO_InitStructure.GPIO_HighPwr = ENABLE;
+//	GPIO_Init(&GPIO_InitStructure);
+//
+//	//InitGPIO_Output(LED_PIN);
+//	//LED_Configuration();
+//	//ToggleLED();
+//	GPIO_WriteBit(GPIO_Pin_0, LED_ON);
+//	SEGGER_RTT_printf(0,"GPIO Test: OK \n");
+//
+////  		 /* Configure I2C as master mode */
+////  		  	  I2C_ConfigurationMaster();
+////
+////  			  I2C_test();
+//  /* System Init */
+////  SystemInit();
+////
+////  /* Identify BlueNRG1 platform */
+////  SdkEvalIdentification();
+////
+////  /* Configure I/O communication channel */
+////  SdkEvalComUartInit(UART_BAUDRATE);
+////
+////  /* BlueNRG-1,2 stack init */
+////  ret = BlueNRG_Stack_Initialization(&BlueNRG_Stack_Init_params);
+////  if (ret != BLE_STATUS_SUCCESS) {
+////    PRINTF("Error in BlueNRG_Stack_Initialization() 0x%02x\r\n", ret);
+////    while(1);
+////  }
+//  /* Configure the LEDs */
 //GPIO_InitType GPIO_InitStructure;
 //GPIO_InitStructure.GPIO_Pin = GPIO_Pin_1;
 //GPIO_InitStructure.GPIO_Mode = GPIO_Output;
@@ -171,54 +171,54 @@ SEGGER_RTT_ConfigUpBuffer(0,NULL,NULL,0,SEGGER_RTT_MODE_BLOCK_IF_FIFO_FULL);
 //    }
 //#endif /* ST_USE_OTA_SERVICE_MANAGER_APPLICATION */
 //  }/* while (1) */
-}
-
-/* Hardware Error event.
-   This event is used to notify the Host that a hardware failure has occurred in the Controller.
-   Hardware_Code Values:
-   - 0x01: Radio state error
-   - 0x02: Timer overrun error
-   - 0x03: Internal queue overflow error
-   After this event is recommended to force device reset. */
-
-void hci_hardware_error_event(uint8_t Hardware_Code)
-{
-   NVIC_SystemReset();
-}
-
-/**
-  * This event is generated to report firmware error informations.
-  * FW_Error_Type possible values:
-  * Values:
-  - 0x01: L2CAP recombination failure
-  - 0x02: GATT unexpected response
-  - 0x03: GATT unexpected request
-    After this event with error type (0x01, 0x02, 0x3) it is recommended to disconnect.
-*/
-void aci_hal_fw_error_event(uint8_t FW_Error_Type,
-                            uint8_t Data_Length,
-                            uint8_t Data[])
-{
-  if (FW_Error_Type <= 0x03)
-  {
-    uint16_t connHandle;
-
-    /* Data field is the connection handle where error has occurred */
-    connHandle = LE_TO_HOST_16(Data);
-
-    aci_gap_terminate(connHandle, BLE_ERROR_TERMINATED_REMOTE_USER);
-  }
-}
-
-/****************** BlueNRG-1,2 Sleep Management Callback ********************************/
-
-SleepModes App_SleepMode_Check(SleepModes sleepMode)
-{
-  if(request_free_fall_notify || SdkEvalComIOTxFifoNotEmpty() || SdkEvalComUARTBusy())
-    return SLEEPMODE_RUNNING;
-
-  return SLEEPMODE_NOTIMER;
-}
+//}
+//
+///* Hardware Error event.
+//   This event is used to notify the Host that a hardware failure has occurred in the Controller.
+//   Hardware_Code Values:
+//   - 0x01: Radio state error
+//   - 0x02: Timer overrun error
+//   - 0x03: Internal queue overflow error
+//   After this event is recommended to force device reset. */
+//
+//void hci_hardware_error_event(uint8_t Hardware_Code)
+//{
+//   NVIC_SystemReset();
+//}
+//
+///**
+//  * This event is generated to report firmware error informations.
+//  * FW_Error_Type possible values:
+//  * Values:
+//  - 0x01: L2CAP recombination failure
+//  - 0x02: GATT unexpected response
+//  - 0x03: GATT unexpected request
+//    After this event with error type (0x01, 0x02, 0x3) it is recommended to disconnect.
+//*/
+//void aci_hal_fw_error_event(uint8_t FW_Error_Type,
+//                            uint8_t Data_Length,
+//                            uint8_t Data[])
+//{
+//  if (FW_Error_Type <= 0x03)
+//  {
+//    uint16_t connHandle;
+//
+//    /* Data field is the connection handle where error has occurred */
+//    connHandle = LE_TO_HOST_16(Data);
+//
+//    aci_gap_terminate(connHandle, BLE_ERROR_TERMINATED_REMOTE_USER);
+//  }
+//}
+//
+///****************** BlueNRG-1,2 Sleep Management Callback ********************************/
+//
+//SleepModes App_SleepMode_Check(SleepModes sleepMode)
+//{
+//  if(request_free_fall_notify || SdkEvalComIOTxFifoNotEmpty() || SdkEvalComUARTBusy())
+//    return SLEEPMODE_RUNNING;
+//
+//  return SLEEPMODE_NOTIMER;
+//}
 
 /***************************************************************************************/
 

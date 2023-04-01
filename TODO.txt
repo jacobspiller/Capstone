@@ -1,0 +1,7 @@
+-Make sure flash is configured properly
+-Make BLE work
+-implement kinematics
+-implement control system
+-implement IMU data conversion(quaternion?)
+-figure out i2c whoami issue where register read is incorrect value
+-

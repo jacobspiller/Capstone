@@ -63,9 +63,9 @@ void processCommand(void)
     /* Store the received byte in RxBuffer */
     //command = UART_ReceiveData();
 
-	  SdkEvalI2CRead(&pRecieve, 0xA9, 0x0f, 1);
+	  SdkEvalI2CRead(&pRecieve, 0x68, 0x75, 1);
 
-	  if(pRecieve == 0x6C){
+	  if(pRecieve == 0xA9){
     	 SEGGER_RTT_printf(0,"whoAmI Register read\n");
     	 SEGGER_RTT_printf(0,"Register:%04x \n",pRecieve);
        } else {

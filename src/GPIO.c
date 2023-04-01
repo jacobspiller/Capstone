@@ -39,3 +39,18 @@ void ToggleLED(void){
 	SdkDelayMs(50);
 
 }
+
+void LED_Init(void){
+	GPIO_InitType GPIO_InitStructure;
+	GPIO_InitStructure.GPIO_Pin = POWER_LED;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Output;
+	GPIO_InitStructure.GPIO_Pull = ENABLE;
+	GPIO_InitStructure.GPIO_HighPwr = ENABLE;
+	GPIO_Init(&GPIO_InitStructure);
+
+	GPIO_InitStructure.GPIO_Pin = BLUETOOTH_LED;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Output;
+	GPIO_InitStructure.GPIO_Pull = DISABLE;
+	GPIO_InitStructure.GPIO_HighPwr = ENABLE;
+	GPIO_Init(&GPIO_InitStructure);
+}
