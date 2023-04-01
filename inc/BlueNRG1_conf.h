@@ -1,9 +1,9 @@
 /**
   ******************************************************************************
-  * @file    UART/Interrupt/BlueNRG1_conf.h
-  * @author  MEMS Application Team
+  * @file    BlueNRG1_conf.h
+  * @author  AMG - RF Application Team
   * @version V1.0.0
-  * @date    September-2014
+  * @date    02-October-2017
   * @brief   Library configuration file.
   ******************************************************************************
   * @attention
@@ -26,16 +26,19 @@
 /* Includes ------------------------------------------------------------------*/
 /* Uncomment/Comment the line below to enable/disable peripheral header file inclusion */
 
+#include "BlueNRG1_adc.h"
+#include "BlueNRG1_dma.h"
 #include "BlueNRG1_flash.h"
 #include "BlueNRG1_gpio.h"
 #include "BlueNRG1_i2c.h"
-/*#include "BlueNRG1_watchdog.h"*/
-#include "BlueNRG1_dma.h"
+#include "BlueNRG1_mft.h"
+#include "BlueNRG1_pka.h"
+#include "BlueNRG1_rng.h"
+#include "BlueNRG1_rtc.h"
 #include "BlueNRG1_spi.h"
-#include "BlueNRG1_uart.h"
-/*#include "BlueNRG1_mft.h"*/
-/*#include "BlueNRG1_rtc.h"*/
 #include "BlueNRG1_sysCtrl.h"
+#include "BlueNRG1_uart.h"
+#include "BlueNRG1_wdg.h"
 #include "misc.h" /* High level functions for NVIC and SysTick (add-on to CMSIS functions) */
 
 /* Exported types ------------------------------------------------------------*/

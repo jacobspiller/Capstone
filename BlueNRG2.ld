@@ -1,5 +1,5 @@
 /*******************************************************************************
-* BlueNRG-2 generic linker file for ATOLLIC
+* BlueNRG-2 generic linker file for WiSE Studio
 * Main linker variables to control it are:
 *
 * MEMORY_FLASH_APP_SIZE: define the size of the application in case not all the flash is needed.
@@ -270,7 +270,7 @@ SECTIONS
   }  >REGION_RAM
 
   /* RAM preamble initialized */
-  .ram_preamble 0x20000008 /*(NOLOAD)*/ : ALIGN(4)
+  .ram_preamble 0x20000008 /*(NOLOAD)*/ :
   {
     _sdata2 = .;        /* create a global symbol at data start */
     /* This is used by the startup in order to initialize the .bss section */
@@ -321,7 +321,7 @@ SECTIONS
   } >REGION_RAM
 
   /* Initialized data sections goes into RAM, load LMA copy after code */
-  .data : ALIGN(4)
+  .data :
   {
     . = ALIGN(4);
     _sdata = .;        /* create a global symbol at data start */

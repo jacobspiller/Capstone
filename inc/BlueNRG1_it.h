@@ -1,9 +1,9 @@
 /**
   ******************************************************************************
-  * @file    GPIO/IOToggle//BlueNRG1_it.h 
-  * @author  MEMS Application Team
+  * @file    BlueNRG1_it.h 
+  * @author  AMG - RF Application Team
   * @version V1.0.0
-  * @date    September-2014
+  * @date    02-October-2017
   * @brief   This file contains the headers of the interrupt handlers.
   ******************************************************************************
   * @attention

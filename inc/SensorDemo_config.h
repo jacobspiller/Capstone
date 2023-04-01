@@ -13,9 +13,9 @@
 /* Default number of link */
 #define MIN_NUM_LINK            1
 /* Default number of GAP and GATT services */
-#define DEFAULT_NUM_GATT_SERVICES   2
+#define DEFAULT_NUM_GATT_SERVICES   1
 /* Default number of GAP and GATT attributes */
-#define DEFAULT_NUM_GATT_ATTRIBUTES 9
+#define DEFAULT_NUM_GATT_ATTRIBUTES 1
 
 /* Enable/disable Data length extension Max supported ATT_MTU size based on OTA client & server Max ATT_MTU sizes capabilities */
 #if (CONTROLLER_DATA_LENGTH_EXTENSION_ENABLED == 1) && (OTA_EXTENDED_PACKET_LEN == 1) 
@@ -26,14 +26,14 @@
 
 #if defined (ST_OTA_LOWER_APPLICATION) || defined (ST_OTA_HIGHER_APPLICATION)
 /* Number of services requests from the Sensor demo */
-#define NUM_APP_GATT_SERVICES (2 + 1) /* 2 Sensor services + 1 OTA service */
+#define NUM_APP_GATT_SERVICES (1) /* 2 Sensor services + 1 OTA service */
 
 /* Number of attributes requests from the sensor demo */
 #ifdef SENSOR_EMULATION
 /* Number of attributes requests from the chat demo */
-#define NUM_APP_GATT_ATTRIBUTES (15 + 9) /* 15 attributes x BLE Sensor demo services characteristics + 9 for OTA Service characteristics */
+#define NUM_APP_GATT_ATTRIBUTES (1) /* 15 attributes x BLE Sensor demo services characteristics + 9 for OTA Service characteristics */
 #else  // No Humidity char
-#define NUM_APP_GATT_ATTRIBUTES (12 + 9)
+#define NUM_APP_GATT_ATTRIBUTES (1)
 #endif
 
 
@@ -48,15 +48,15 @@
 #else /* NO OTA Service is required */
 
 /* Number of services requests from the sensor demo */
-#define NUM_APP_GATT_SERVICES 2
+#define NUM_APP_GATT_SERVICES 1
 
 
 /* Number of attributes requests from the sensor demo */
 #ifdef SENSOR_EMULATION
 /* Number of attributes requests from the sensor  demo */
-#define NUM_APP_GATT_ATTRIBUTES (15) /* 15 attributes x BLE Sensor demo services characteristics */
+#define NUM_APP_GATT_ATTRIBUTES (1) /* 15 attributes x BLE Sensor demo services characteristics */
 #else  // No Humidity char
-#define NUM_APP_GATT_ATTRIBUTES (12)
+#define NUM_APP_GATT_ATTRIBUTES (1)
 #endif
 
 /* OTA characteristics maximum lenght */
@@ -117,9 +117,9 @@
 
 /* Set supported max value for ATT_MTU enabled by the application */
 #if (CONTROLLER_DATA_LENGTH_EXTENSION_ENABLED == 1) && (OTA_EXTENDED_PACKET_LEN == 1) 
-  #define MAX_ATT_MTU             (OTA_MAX_ATT_MTU_SIZE)
+  #define MAX_ATT_MTU             25//(OTA_MAX_ATT_MTU_SIZE)
 #else
-  #define MAX_ATT_MTU             (DEFAULT_ATT_MTU) 
+  #define MAX_ATT_MTU             25 //(DEFAULT_ATT_MTU)
 #endif 
 
 /* Set supported max value for attribute size: it is the biggest attribute size enabled by the application */
@@ -137,7 +137,7 @@
 #define PREPARE_WRITE_LIST_SIZE PREP_WRITE_X_ATT(MAX_ATT_SIZE)
 
 /* Additional number of memory blocks  to be added to the minimum  */
-#define OPT_MBLOCKS		(6) /* 6:  for reaching the max throughput: ~220kbps (same as BLE stack 1.x) */
+#define OPT_MBLOCKS		(2) /* 6:  for reaching the max throughput: ~220kbps (same as BLE stack 1.x) */
 
 /* Set the number of memory block for packet allocation */
 #define MBLOCKS_COUNT           (MBLOCKS_CALC(PREPARE_WRITE_LIST_SIZE, MAX_ATT_MTU, NUM_LINKS) + OPT_MBLOCKS)
