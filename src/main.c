@@ -21,6 +21,8 @@
 #include "BlueNRG1_conf.h"
 #include "SDK_EVAL_Config.h"
 #include "GPIO.h"
+#include "SEGGER_RTT.h"
+#include "SEGGER_RTT_conf.h"
 
 /** @addtogroup BlueNRG1_StdPeriph_Examples BlueNRG1 Standard Peripheral Examples
   * @{
@@ -63,7 +65,7 @@ int main(void)
   SdkEvalIdentification();
 
   SdkEvalComUartInit(UART_BAUDRATE);
-  LED_Init();
+//  LED_Init();
 
 
   /* GPIO configuration */
@@ -89,6 +91,7 @@ int main(void)
 
   /* Infinite loop */
   while(1);
+  SEGGER_RTT_printf (0,"1\n");
 }
 
 
