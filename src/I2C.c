@@ -23,6 +23,7 @@
 #include <stdio.h>
 #include "BlueNRG1_conf.h"
 #include "SDK_EVAL_Config.h"
+#include "BlueNRG1_i2c.h"
 
 /* Private typedef -----------------------------------------------------------*/
 typedef enum {

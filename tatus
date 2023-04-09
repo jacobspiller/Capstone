@@ -1,0 +1,2793 @@
+[1mdiff --git a/.cproject b/.cproject[m
+[1mindex 037c821..5b25d19 100644[m
+[1m--- a/.cproject[m
+[1m+++ b/.cproject[m
+[36m@@ -59,13 +59,15 @@[m
+                                     									[m
+                                     <listOptionValue builtIn="false" value="BLUENRG2_DEVICE"/>[m
+                                     									[m
+[32m+[m[32m                                    <listOptionValue builtIn="false" value="SERVER=1"/>[m
+[32m+[m[41m                                    									[m
+                                     <listOptionValue builtIn="false" value="HS_SPEED_XTAL=HS_SPEED_XTAL_32MHZ"/>[m
+                                     									[m
+                                     <listOptionValue builtIn="false" value="LS_SOURCE=LS_SOURCE_EXTERNAL_32KHZ"/>[m
+                                     									[m
+                                     <listOptionValue builtIn="false" value="SMPS_INDUCTOR=SMPS_INDUCTOR_10uH"/>[m
+                                     									[m
+[31m-                                    <listOptionValue builtIn="false" value="BLE_STACK_CONFIGURATION=BLE_STACK_FULL_CONFIGURATION"/>[m
+[32m+[m[32m                                    <listOptionValue builtIn="false" value="BLE_STACK_CONFIGURATION=BLE_STACK_BASIC_CONFIGURATION"/>[m
+                                     								[m
+                                 </option>[m
+                                 								[m
+[36m@@ -100,6 +102,10 @@[m
+                                     <listOptionValue builtIn="false" value="&quot;${ProjDirPath}\Hal\inc&quot;"/>[m
+                                     									[m
+                                     <listOptionValue builtIn="false" value="&quot;${ProjDirPath}\inc&quot;"/>[m
+[32m+[m[41m                                    									[m
+[32m+[m[32m                                    <listOptionValue builtIn="false" value="&quot;${ProjDirPath}\IMU\inc&quot;"/>[m
+[32m+[m[41m                                    									[m
+[32m+[m[32m                                    <listOptionValue builtIn="false" value="&quot;C:\Users\jspil\Downloads\eMD-SmartMotion-IAM20680-1.5.0\EMD-Core\sources&quot;"/>[m
+                                     								[m
+                                 </option>[m
+                                 								[m
+[36m@@ -421,7 +427,21 @@[m
+     	[m
+     <storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>[m
+     	[m
+[31m-    <storageModule moduleId="refreshScope"/>[m
+[32m+[m[32m    <storageModule moduleId="refreshScope" versionNumber="2">[m
+[32m+[m[41m        		[m
+[32m+[m[32m        <configuration configurationName="Debug">[m
+[32m+[m[41m            			[m
+[32m+[m[32m            <resource resourceType="PROJECT" workspacePath="/Capstone"/>[m
+[32m+[m[41m            		[m
+[32m+[m[32m        </configuration>[m
+[32m+[m[41m        		[m
+[32m+[m[32m        <configuration configurationName="Release">[m
+[32m+[m[41m            			[m
+[32m+[m[32m            <resource resourceType="PROJECT" workspacePath="/Capstone"/>[m
+[32m+[m[41m            		[m
+[32m+[m[32m        </configuration>[m
+[32m+[m[41m        	[m
+[32m+[m[32m    </storageModule>[m
+     	[m
+     <storageModule moduleId="org.eclipse.cdt.make.core.buildtargets"/>[m
+     [m
+[1mdiff --git a/SDK_Eval_BlueNRG1/src/HTS221_HAL.c b/SDK_Eval_BlueNRG1/src/HTS221_HAL.c[m
+[1mindex 7bac398..f463070 100644[m
+[1m--- a/SDK_Eval_BlueNRG1/src/HTS221_HAL.c[m
+[1m+++ b/SDK_Eval_BlueNRG1/src/HTS221_HAL.c[m
+[36m@@ -24,6 +24,8 @@[m
+ [m
+ /* Includes ------------------------------------------------------------------*/[m
+ #include "HTS221_HAL.h"[m
+[32m+[m[32m#include "BlueNRG1_spi.h"[m
+[32m+[m
+ [m
+ /* Private Functions Declaration */[m
+ HTS221_Error_et HAL_ReadRegLowLvl(uint8_t reg_addr, uint8_t num_regs, uint8_t* buffer);[m
+[1mdiff --git a/SDK_Eval_BlueNRG1/src/SDK_EVAL_I2C.c b/SDK_Eval_BlueNRG1/src/SDK_EVAL_I2C.c[m
+[1mindex 98e8fb9..638d5c6 100644[m
+[1m--- a/SDK_Eval_BlueNRG1/src/SDK_EVAL_I2C.c[m
+[1m+++ b/SDK_Eval_BlueNRG1/src/SDK_EVAL_I2C.c[m
+[36m@@ -23,7 +23,7 @@[m
+ [m
+ /* Includes ------------------------------------------------------------------*/[m
+ #include "SDK_EVAL_I2C.h"[m
+[31m-[m
+[32m+[m[32m#include "BlueNRG1_i2c.h"[m
+ [m
+ /** @addtogroup SDK_EVAL_BlueNRG1         SDK EVAL BlueNRG1[m
+  * @{[m
+[1mdiff --git a/SDK_Eval_BlueNRG1/src/SDK_EVAL_SPI.c b/SDK_Eval_BlueNRG1/src/SDK_EVAL_SPI.c[m
+[1mindex 8cb91ec..52c05af 100644[m
+[1m--- a/SDK_Eval_BlueNRG1/src/SDK_EVAL_SPI.c[m
+[1m+++ b/SDK_Eval_BlueNRG1/src/SDK_EVAL_SPI.c[m
+[36m@@ -23,7 +23,7 @@[m
+ [m
+ /* Includes ------------------------------------------------------------------*/[m
+ #include "SDK_EVAL_SPI.h"[m
+[31m-[m
+[32m+[m[32m#include "BlueNRG1_spi.h"[m
+ [m
+ /** @addtogroup SDK_EVAL_BlueNRG1         SDK EVAL BlueNRG1[m
+  * @{[m
+[1mdiff --git a/Stack/Bluetooth_LE/inc/bluenrg1_stack.h b/Stack/Bluetooth_LE/inc/bluenrg1_stack.h[m
+[1mindex f1c4f1f..30bea5e 100644[m
+[1m--- a/Stack/Bluetooth_LE/inc/bluenrg1_stack.h[m
+[1m+++ b/Stack/Bluetooth_LE/inc/bluenrg1_stack.h[m
+[36m@@ -112,7 +112,7 @@[m
+  * - v.2.1a: 6456 Bytes[m
+  * - v.2.1b: 6480 Bytes (added 24 Bytes)[m
+ */[m
+[31m-#define FIXED_BUFFER_SIZE_BYTES                6480// (6536)[m
+[32m+[m[32m#define FIXED_BUFFER_SIZE_BYTES                (6536)[m
+ [m
+ [m
+ /**[m
+[36m@@ -121,7 +121,7 @@[m
+  * - v.2.1b: 336 Bytes (added 4 Bytes for new remDev structure type)[m
+  * - v.2.1e: 344 Bytes (added 8 Bytes peer_id for bug fix #6817)[m
+ */[m
+[31m-#define VARIABLE_BUFFER_SIZE_PER_LINK_BYTES     336//(344)[m
+[32m+[m[32m#define VARIABLE_BUFFER_SIZE_PER_LINK_BYTES     (344)[m
+ [m
+ [m
+ /**[m
+[1mdiff --git a/inc/BlueNRG1_conf.h b/inc/BlueNRG1_conf.h[m
+[1mindex 060f253..0e7584d 100644[m
+[1m--- a/inc/BlueNRG1_conf.h[m
+[1m+++ b/inc/BlueNRG1_conf.h[m
+[36m@@ -1,9 +1,9 @@[m
+ /**[m
+   ******************************************************************************[m
+[31m-  * @file    BlueNRG1_conf.h[m
+[31m-  * @author  AMG - RF Application Team[m
+[32m+[m[32m  * @file    UART/Interrupt/BlueNRG1_conf.h[m
+[32m+[m[32m  * @author  MEMS Application Team[m
+   * @version V1.0.0[m
+[31m-  * @date    02-October-2017[m
+[32m+[m[32m  * @date    September-2014[m
+   * @brief   Library configuration file.[m
+   ******************************************************************************[m
+   * @attention[m
+[36m@@ -26,19 +26,17 @@[m
+ /* Includes ------------------------------------------------------------------*/[m
+ /* Uncomment/Comment the line below to enable/disable peripheral header file inclusion */[m
+ [m
+[31m-#include "BlueNRG1_adc.h"[m
+[31m-#include "BlueNRG1_dma.h"[m
+ #include "BlueNRG1_flash.h"[m
+ #include "BlueNRG1_gpio.h"[m
+[31m-#include "BlueNRG1_i2c.h"[m
+[31m-#include "BlueNRG1_mft.h"[m
+[31m-#include "BlueNRG1_pka.h"[m
+[31m-#include "BlueNRG1_rng.h"[m
+[31m-#include "BlueNRG1_rtc.h"[m
+[31m-#include "BlueNRG1_spi.h"[m
+[31m-#include "BlueNRG1_sysCtrl.h"[m
+[32m+[m[32m#include "BlueNRG1_dma.h"[m
+[32m+[m[32m/*#include "BlueNRG1_i2c.h"*/[m
+[32m+[m[32m/*#include "BlueNRG1_watchdog.h"*/[m
+[32m+[m[32m/*#include "BlueNRG1_spi.h"*/[m
+ #include "BlueNRG1_uart.h"[m
+[31m-#include "BlueNRG1_wdg.h"[m
+[32m+[m[32m/*#include "BlueNRG1_mft.h"*/[m
+[32m+[m[32m/*#include "BlueNRG1_rtc.h"*/[m
+[32m+[m[32m/*#include "BlueNRG1_cpm.h"*/[m
+[32m+[m[32m#include "BlueNRG1_sysCtrl.h"[m
+ #include "misc.h" /* High level functions for NVIC and SysTick (add-on to CMSIS functions) */[m
+ [m
+ /* Exported types ------------------------------------------------------------*/[m
+[1mdiff --git a/inc/BlueNRG1_it.h b/inc/BlueNRG1_it.h[m
+[1mindex 5bea8a2..82bb1ec 100644[m
+[1m--- a/inc/BlueNRG1_it.h[m
+[1m+++ b/inc/BlueNRG1_it.h[m
+[36m@@ -1,9 +1,9 @@[m
+ /**[m
+   ******************************************************************************[m
+[31m-  * @file    BlueNRG1_it.h [m
+[31m-  * @author  AMG - RF Application Team[m
+[32m+[m[32m  * @file    GPIO/IOToggle//BlueNRG1_it.h[m[41m [m
+[32m+[m[32m  * @author  MEMS Application Team[m
+   * @version V1.0.0[m
+[31m-  * @date    02-October-2017[m
+[32m+[m[32m  * @date    September-2014[m
+   * @brief   This file contains the headers of the interrupt handlers.[m
+   ******************************************************************************[m
+   * @attention[m
+[1mdiff --git a/inc/gatt_db.h b/inc/gatt_db.h[m
+[1mindex a1aa692..c5e62cb 100644[m
+[1m--- a/inc/gatt_db.h[m
+[1m+++ b/inc/gatt_db.h[m
+[36m@@ -1,43 +1,11 @@[m
+ [m
+[32m+[m
+ #ifndef _GATT_DB_H_[m
+ #define _GATT_DB_H_[m
+ [m
+[31m-#include "lsm6ds3.h"[m
+[31m-[m
+[31m-#define X_OFFSET 200[m
+[31m-#define Y_OFFSET 50[m
+[31m-#define Z_OFFSET 1000[m
+[31m-[m
+[31m-/** [m
+[31m- * @brief Number of application services[m
+[31m- */[m
+[31m-#define NUMBER_OF_APPLICATION_SERVICES (2)[m
+[31m-   [m
+[31m-/** [m
+[31m- * @brief Structure containing acceleration value of each axis.[m
+[31m- */[m
+[31m-typedef struct {[m
+[31m-  int32_t AXIS_X;[m
+[31m-  int32_t AXIS_Y;[m
+[31m-  int32_t AXIS_Z;[m
+[31m-} AxesRaw_t;[m
+[31m-[m
+[31m-enum {[m
+[31m-  ACCELERATION_SERVICE_INDEX = 0,  [m
+[31m-  ENVIRONMENTAL_SERVICE_INDEX = 1   [m
+[31m-};[m
+[31m-[m
+[31m-IMU_6AXES_StatusTypeDef GetAccAxesRaw (AxesRaw_t * acceleration_data);[m
+[31m-void GetFreeFallStatus(void);[m
+[31m-[m
+[31m-tBleStatus Add_Acc_Service(void);[m
+[31m-void Read_Request_CB(uint16_t handle);[m
+[31m-tBleStatus Free_Fall_Notify(void);[m
+[31m-tBleStatus Acc_Update(AxesRaw_t *data);[m
+[31m-[m
+[31m-tBleStatus Add_Environmental_Sensor_Service(void);[m
+[32m+[m[32mtBleStatus Add_SerialPort_Service(void);[m
+[32m+[m[32mvoid Attribute_Modified_CB(uint16_t handle, uint16_t data_length, uint8_t *att_data);[m
+ [m
+[31m-extern volatile uint8_t request_free_fall_notify;[m
+[32m+[m[32mextern uint16_t SerialPortServHandle, TXCharHandle, RXCharHandle;[m
+ [m
+[31m-extern uint8_t Services_Max_Attribute_Records[];[m
+ #endif /* _GATT_DB_H_ */[m
+[1mdiff --git a/src/BlueNRG1_it.c b/src/BlueNRG1_it.c[m
+[1mindex 6c1fcd3..6957af3 100644[m
+[1m--- a/src/BlueNRG1_it.c[m
+[1m+++ b/src/BlueNRG1_it.c[m
+[36m@@ -1,35 +1,67 @@[m
+[31m-[m
+[31m-/* Includes----------------------------------------------------------------------*/[m
+[32m+[m[32m/**[m
+[32m+[m[32m  ******************************************************************************[m
+[32m+[m[32m  * @file    BlueNRG1_it.c[m[41m [m
+[32m+[m[32m  * @author  VMA RF Application Team[m
+[32m+[m[32m  * @version V1.0.0[m
+[32m+[m[32m  * @date    September-2015[m
+[32m+[m[32m  * @brief   Main Interrupt Service Routines.[m
+[32m+[m[32m  *          This file provides template for all exceptions handler and[m
+[32m+[m[32m  *          peripherals interrupt service routine.[m
+[32m+[m[32m  ******************************************************************************[m
+[32m+[m[32m  * @attention[m
+[32m+[m[32m  *[m
+[32m+[m[32m  * THE PRESENT FIRMWARE WHICH IS FOR GUIDANCE ONLY AIMS AT PROVIDING CUSTOMERS[m
+[32m+[m[32m  * WITH CODING INFORMATION REGARDING THEIR PRODUCTS IN ORDER FOR THEM TO SAVE[m
+[32m+[m[32m  * TIME. AS A RESULT, STMICROELECTRONICS SHALL NOT BE HELD LIABLE FOR ANY[m
+[32m+[m[32m  * DIRECT, INDIRECT OR CONSEQUENTIAL DAMAGES WITH RESPECT TO ANY CLAIMS ARISING[m
+[32m+[m[32m  * FROM THE CONTENT OF SUCH FIRMWARE AND/OR THE USE MADE BY CUSTOMERS OF THE[m
+[32m+[m[32m  * CODING INFORMATION CONTAINED HEREIN IN CONNECTION WITH THEIR PRODUCTS.[m
+[32m+[m[32m  *[m
+[32m+[m[32m  * <h2><center>&copy; COPYRIGHT 2015 STMicroelectronics</center></h2>[m
+[32m+[m[32m  ******************************************************************************[m
+[32m+[m[32m  */[m
+[32m+[m
+[32m+[m[32m/* Includes ------------------------------------------------------------------*/[m
+ #include "BlueNRG1_it.h"[m
+ #include "BlueNRG1_conf.h"[m
+[31m-#include "ble_const.h"[m
+[32m+[m[32m#include "ble_const.h"[m[41m [m
+ #include "bluenrg1_stack.h"[m
+ #include "SDK_EVAL_Com.h"[m
+ #include "clock.h"[m
+[32m+[m
+[32m+[m[32m/** @addtogroup BlueNRG1_StdPeriph_Examples[m
+[32m+[m[32m  * @{[m
+[32m+[m[32m  */[m
+[32m+[m
+[32m+[m[32m/** @addtogroup GPIO_Examples[m
+[32m+[m[32m  * @{[m
+[32m+[m[32m  */[m[41m [m
+[32m+[m
+[32m+[m[32m/** @addtogroup GPIO_IOToggle[m
+[32m+[m[32m  * @{[m
+[32m+[m[32m  */[m[41m [m
+[32m+[m
+[32m+[m[32m/* Private typedef -----------------------------------------------------------*/[m
+[32m+[m[32m/* Private define ------------------------------------------------------------*/[m
+[32m+[m[32m/* Private macro -------------------------------------------------------------*/[m
+[32m+[m[32m/* Private variables ---------------------------------------------------------*/[m
+[32m+[m[32m/* Private function prototypes -----------------------------------------------*/[m
+[32m+[m[32m/* Private functions ---------------------------------------------------------*/[m
+[32m+[m
+ /******************************************************************************/[m
+[31m-/********************Cortex-M0 Processor Exceptions Handlers********************/[m
+[32m+[m[32m/*            Cortex-M0 Processor Exceptions Handlers                         */[m
+ /******************************************************************************/[m
+ [m
+[31m-[m
+[31m-/******************************************************************************[m
+[31m- * Function Name  : nmi_handler.[m
+[31m- * Description    : This function handles NMI exception.[m
+[31m- * Input          : None.[m
+[31m- * Output         : None.[m
+[31m- * Return         : None.[m
+[31m-******************************************************************************/[m
+[32m+[m[32m/**[m
+[32m+[m[32m  * @brief  This function handles NMI exception.[m
+[32m+[m[32m  */[m
+ void NMI_Handler(void)[m
+ {[m
+ }[m
+ [m
+[31m-[m
+[31m-/******************************************************************************[m
+[31m- * Function Name  : hardfault_handler.[m
+[31m- * Description    : This function handles Hard Fault exception.[m
+[31m- * Input          : None.[m
+[31m- * Output         : None.[m
+[31m- * Return         : None.[m
+[31m-******************************************************************************/[m
+[32m+[m[32m/**[m
+[32m+[m[32m  * @brief  This function handles Hard Fault exception.[m
+[32m+[m[32m  */[m
+ void HardFault_Handler(void)[m
+ {[m
+   /* Go to infinite loop when Hard Fault exception occurs */[m
+[36m@@ -37,83 +69,63 @@[m [mvoid HardFault_Handler(void)[m
+   {}[m
+ }[m
+ [m
+[31m-[m
+[31m-/******************************************************************************[m
+[31m- * Function Name  : svc_handler.[m
+[31m- * Description    : This function handles SVCall exception.[m
+[31m- * Input          : None.[m
+[31m- * Output         : None.[m
+[31m- * Return         : None.[m
+[31m-******************************************************************************/[m
+[32m+[m[32m/**[m
+[32m+[m[32m  * @brief  This function handles SVCall exception.[m
+[32m+[m[32m  */[m
+ void SVC_Handler(void)[m
+ {[m
+ }[m
+ [m
+[32m+[m[32m/**[m
+[32m+[m[32m  * @brief  This function handles PendSV_Handler exception.[m
+[32m+[m[32m  */[m
+[32m+[m[32m//void PendSV_Handler(void)[m
+[32m+[m[32m//{[m
+[32m+[m[32m//}[m
+ [m
+[31m-/******************************************************************************[m
+[31m- * Function Name  : pendsv_handler.[m
+[31m- * Description    : This function handles PendSV_Handler exception.[m
+[31m- * Input          : None.[m
+[31m- * Output         : None.[m
+[31m- * Return         : None.[m
+[31m-******************************************************************************/[m
+[31m-void PendSV_Handler(void)[m
+[31m-{[m
+[31m-}[m
+[31m-[m
+[31m-[m
+[31m-/******************************************************************************[m
+[31m- * Function Name  : systick_handler.[m
+[31m- * Description    : This function handles SysTick Handler.[m
+[31m- * Input          : None.[m
+[31m- * Output         : None.[m
+[31m- * Return         : None.[m
+[31m-******************************************************************************/[m
+[32m+[m[32m/**[m
+[32m+[m[32m  * @brief  This function handles SysTick Handler.[m
+[32m+[m[32m  */[m
+ void SysTick_Handler(void)[m
+ {[m
+   SysCount_Handler();[m
+ }[m
+ [m
+[31m-[m
+[31m-/******************************************************************************[m
+[31m- * Function Name  : gpio_handler.[m
+[31m- * Description    : This function handles GPIO Handler.[m
+[31m- * Input          : None.[m
+[31m- * Output         : None.[m
+[31m- * Return         : None.[m
+[31m-******************************************************************************/[m
+ void GPIO_Handler(void)[m
+ {[m
+ }[m
+[31m-/******************************************************************************[m
+[31m-*                 BlueNRG1LP Peripherals Interrupt Handlers                   *[m
+[31m-*  Add here the Interrupt Handler for the used peripheral(s) (PPP), for the   *[m
+[31m-*  available peripheral interrupt handler/'s name please refer to the startup *[m
+[31m-* file (startup_BlueNRG1lp.s).[m
+[31m-******************************************************************************/[m
+[31m-[m
+[31m-[m
+[31m-/******************************************************************************[m
+[31m- * Function Name  : uart_handler.[m
+[31m- * Description    : This function handles UART interrupt request.[m
+[31m- * Input          : None.[m
+[31m- * Output         : None.[m
+[31m- * Return         : None.[m
+[31m-******************************************************************************/[m
+[32m+[m[32m/******************************************************************************/[m
+[32m+[m[32m/*                 BlueNRG-1 Peripherals Interrupt Handlers                   */[m
+[32m+[m[32m/*  Add here the Interrupt Handler for the used peripheral(s) (PPP), for the  */[m
+[32m+[m[32m/*  available peripheral interrupt handler's name please refer to the startup */[m
+[32m+[m[32m/*  file (system_BlueNRG1.c).                                               */[m
+[32m+[m[32m/******************************************************************************/[m
+[32m+[m[32m/**[m
+[32m+[m[32m* @brief  This function handles UART interrupt request.[m
+[32m+[m[32m* @param  None[m
+[32m+[m[32m* @retval None[m
+[32m+[m[32m*/[m
+ void UART_Handler(void)[m
+[31m-{[m
+[32m+[m[32m{[m[41m  [m
+[32m+[m[32m  SdkEvalComIOUartIrqHandler();[m
+ }[m
+ [m
+[31m-[m
+[31m-/******************************************************************************[m
+[31m- * Function Name  : blue_handler.[m
+[31m- * Description    : This function handles Blue Handlers.[m
+[31m- * Input          : None.[m
+[31m- * Output         : None.[m
+[31m- * Return         : None.[m
+[31m-******************************************************************************/[m
+ void Blue_Handler(void)[m
+ {[m
+[31m-//  Call RAL_Isr[m
+[32m+[m[32m   //Call RAL_Isr[m
+    RAL_Isr();[m
+ }[m
+[32m+[m
+[32m+[m[32m/**[m
+[32m+[m[32m  * @}[m
+[32m+[m[32m  */[m[41m [m
+[32m+[m
+[32m+[m[32m/**[m
+[32m+[m[32m  * @}[m
+[32m+[m[32m  */[m[41m [m
+[32m+[m
+[32m+[m[32m/**[m
+[32m+[m[32m  * @}[m
+[32m+[m[32m  */[m[41m [m
+[32m+[m
+[32m+[m[32m/******************* (C) COPYRIGHT 2015 STMicroelectronics *****END OF FILE****/[m
+[1mdiff --git a/src/I2C.c b/src/I2C.c[m
+[1mindex 6085181..7f971a4 100644[m
+[1m--- a/src/I2C.c[m
+[1m+++ b/src/I2C.c[m
+[36m@@ -23,6 +23,7 @@[m
+ #include <stdio.h>[m
+ #include "BlueNRG1_conf.h"[m
+ #include "SDK_EVAL_Config.h"[m
+[32m+[m[32m#include "BlueNRG1_i2c.h"[m
+ [m
+ /* Private typedef -----------------------------------------------------------*/[m
+ typedef enum {[m
+[1mdiff --git a/src/gatt_db.c b/src/gatt_db.c[m
+[1mindex 74fb187..ec31730 100644[m
+[1m--- a/src/gatt_db.c[m
+[1m+++ b/src/gatt_db.c[m
+[36m@@ -1,447 +1,82 @@[m
+[31m-/******************** (C) COPYRIGHT 2015 STMicroelectronics ********************[m
+[31m-* File Name          : gatt_db.c[m
+[31m-* Author             : BlueNRG-1 main file for Chat demo[m
+[31m-* Version            : V1.0.0[m
+[31m-* Date               : 16-September-2015[m
+[31m-* Description        : Functions to build GATT DB and handle GATT events.[m
+[31m-********************************************************************************[m
+[31m-* THE PRESENT FIRMWARE WHICH IS FOR GUIDANCE ONLY AIMS AT PROVIDING CUSTOMERS[m
+[31m-* WITH CODING INFORMATION REGARDING THEIR PRODUCTS IN ORDER FOR THEM TO SAVE TIME.[m
+[31m-* AS A RESULT, STMICROELECTRONICS SHALL NOT BE HELD LIABLE FOR ANY DIRECT,[m
+[31m-* INDIRECT OR CONSEQUENTIAL DAMAGES WITH RESPECT TO ANY CLAIMS ARISING FROM THE[m
+[31m-* CONTENT OF SUCH FIRMWARE AND/OR THE USE MADE BY CUSTOMERS OF THE CODING[m
+[31m-* INFORMATION CONTAINED HEREIN IN CONNECTION WITH THEIR PRODUCTS.[m
+[31m-*******************************************************************************/[m
+[31m-[m
+ [m
+ #include <stdio.h>[m
+[32m+[m[32m#include <stdint.h>[m
+ #include <string.h>[m
+[31m-#include <stdlib.h>[m
+[31m-#include "BlueNRG1_it.h"[m
+[31m-#include "BlueNRG1_conf.h"[m
+ #include "ble_const.h" [m
+ #include "bluenrg1_stack.h"[m
+[31m-#include "clock.h"[m
+[31m-#include "gp_timer.h"[m
+[31m-#include "gatt_db.h"[m
+ #include "osal.h"[m
+[32m+[m[32m#include "app_state.h"[m
+ #include "SDK_EVAL_Config.h"[m
+[32m+[m[32m#include "serial_port.h"[m
+ [m
+[31m-#include "LPS25HB.h"[m
+[31m-#include "lsm6ds3.h"[m
+[31m-[m
+[31m-#ifndef DEBUG[m
+[31m-#define DEBUG 0[m
+[31m-#endif[m
+[31m-[m
+[31m-#if DEBUG[m
+[31m-#include <stdio.h>[m
+[31m-#define PRINTF(...) printf(__VA_ARGS__)[m
+[31m-#else[m
+[31m-#define PRINTF(...)[m
+[31m-#endif[m
+[31m-[m
+[31m-[m
+[31m-#define COPY_UUID_128(uuid_struct, uuid_15, uuid_14, uuid_13, uuid_12, uuid_11, uuid_10, uuid_9, uuid_8, uuid_7, uuid_6, uuid_5, uuid_4, uuid_3, uuid_2, uuid_1, uuid_0) \[m
+[31m-do {\[m
+[31m-    uuid_struct[0] = uuid_0; uuid_struct[1] = uuid_1; uuid_struct[2] = uuid_2; uuid_struct[3] = uuid_3; \[m
+[31m-        uuid_struct[4] = uuid_4; uuid_struct[5] = uuid_5; uuid_struct[6] = uuid_6; uuid_struct[7] = uuid_7; \[m
+[31m-            uuid_struct[8] = uuid_8; uuid_struct[9] = uuid_9; uuid_struct[10] = uuid_10; uuid_struct[11] = uuid_11; \[m
+[31m-                uuid_struct[12] = uuid_12; uuid_struct[13] = uuid_13; uuid_struct[14] = uuid_14; uuid_struct[15] = uuid_15; \[m
+[31m-}while(0)[m
+[31m-[m
+[31m-[m
+[31m-#define COPY_ACC_SERVICE_UUID(uuid_struct)  COPY_UUID_128(uuid_struct,0x02,0x36,0x6e,0x80, 0xcf,0x3a, 0x11,0xe1, 0x9a,0xb4, 0x00,0x02,0xa5,0xd5,0xc5,0x1b)[m
+[31m-#define COPY_FREE_FALL_UUID(uuid_struct)    COPY_UUID_128(uuid_struct,0xe2,0x3e,0x78,0xa0, 0xcf,0x4a, 0x11,0xe1, 0x8f,0xfc, 0x00,0x02,0xa5,0xd5,0xc5,0x1b)[m
+[31m-#define COPY_ACC_UUID(uuid_struct)          COPY_UUID_128(uuid_struct,0x34,0x0a,0x1b,0x80, 0xcf,0x4b, 0x11,0xe1, 0xac,0x36, 0x00,0x02,0xa5,0xd5,0xc5,0x1b)[m
+[31m-[m
+[31m-#define COPY_ENV_SENS_SERVICE_UUID(uuid_struct)  COPY_UUID_128(uuid_struct,0x42,0x82,0x1a,0x40, 0xe4,0x77, 0x11,0xe2, 0x82,0xd0, 0x00,0x02,0xa5,0xd5,0xc5,0x1b)[m
+[31m-#define COPY_TEMP_CHAR_UUID(uuid_struct)         COPY_UUID_128(uuid_struct,0xa3,0x2e,0x55,0x20, 0xe4,0x77, 0x11,0xe2, 0xa9,0xe3, 0x00,0x02,0xa5,0xd5,0xc5,0x1b)[m
+[31m-#define COPY_PRESS_CHAR_UUID(uuid_struct)        COPY_UUID_128(uuid_struct,0xcd,0x20,0xc4,0x80, 0xe4,0x8b, 0x11,0xe2, 0x84,0x0b, 0x00,0x02,0xa5,0xd5,0xc5,0x1b)[m
+[31m-[m
+[31m-#ifdef SENSOR_EMULATION //Humidity sensor is not available on BlueNRG-1 Development board: only on emulated version humidity is used[m
+[31m-#define COPY_HUMIDITY_CHAR_UUID(uuid_struct)     COPY_UUID_128(uuid_struct,0x01,0xc5,0x0b,0x60, 0xe4,0x8c, 0x11,0xe2, 0xa0,0x73, 0x00,0x02,0xa5,0xd5,0xc5,0x1b)[m
+[31m-#endif [m
+[31m-[m
+[31m-uint16_t accServHandle, freeFallCharHandle, accCharHandle;[m
+[31m-uint16_t envSensServHandle, tempCharHandle, pressCharHandle, humidityCharHandle;[m
+[32m+[m[32muint16_t SerialPortServHandle, TXCharHandle, RXCharHandle;[m
+ [m
+[31m-/* UUIDS */[m
+[32m+[m[32m/* UUIDs */[m
+ Service_UUID_t service_uuid;[m
+ Char_UUID_t char_uuid;[m
+[31m-Char_Desc_Uuid_t char_desc_uuid;[m
+ [m
+[31m-extern uint16_t connection_handle;[m
+[31m-extern BOOL sensor_board;[m
+[31m-#ifndef SENSOR_EMULATION[m
+[31m-extern PRESSURE_DrvTypeDef* xLPS25HBDrv;  [m
+[31m-extern IMU_6AXES_DrvTypeDef *Imu6AxesDrv;[m
+[31m-extern LSM6DS3_DrvExtTypeDef *Imu6AxesDrvExt;[m
+[31m-#endif[m
+[31m-[m
+[31m-IMU_6AXES_StatusTypeDef GetAccAxesRaw(AxesRaw_t * acceleration_data)[m
+[31m-{[m
+[31m-  IMU_6AXES_StatusTypeDef status = IMU_6AXES_OK;[m
+[31m-  [m
+[31m-#ifdef SENSOR_EMULATION[m
+[31m-  acceleration_data->AXIS_X = ((uint64_t)rand()) % X_OFFSET;[m
+[31m-  acceleration_data->AXIS_Y = ((uint64_t)rand()) % Y_OFFSET; [m
+[31m-  acceleration_data->AXIS_Z = ((uint64_t)rand()) % Z_OFFSET;[m
+[31m-#else[m
+[31m-  status = Imu6AxesDrv->Get_X_Axes((int32_t *)acceleration_data);[m
+[31m-#endif [m
+[31m-  return status;[m
+[31m-}[m
+[31m-[m
+[31m-void GetFreeFallStatus(void)[m
+[31m-{[m
+[31m-#ifndef SENSOR_EMULATION[m
+[31m-  uint8_t free_fall_status;[m
+[31m-  [m
+[31m-  /* Set the IRQ flag */[m
+[31m-  Imu6AxesDrvExt->Get_Status_Free_Fall_Detection(&free_fall_status);[m
+[31m-  if (free_fall_status == 1)[m
+[31m-  {[m
+[31m-    request_free_fall_notify = TRUE;[m
+[31m-  }  [m
+[31m-#endif[m
+[31m-}[m
+[31m-  [m
+ /*******************************************************************************[m
+[31m-* Function Name  : Add_Chat_Service[m
+[31m-* Description    : Add the 'Accelerometer' service.[m
+[32m+[m[32m* Function Name  : Add_SerialPort_Service[m
+[32m+[m[32m* Description    : Add the Serial Port service.[m
+ * Input          : None[m
+ * Return         : Status.[m
+ *******************************************************************************/[m
+[31m-tBleStatus Add_Acc_Service(void)[m
+[32m+[m[32muint8_t Add_SerialPort_Service(void)[m
+ {[m
+[31m-  tBleStatus ret;[m
+[31m-  uint8_t uuid[16];[m
+[31m-[m
+[31m-  COPY_ACC_SERVICE_UUID(uuid);[m
+[31m-    [m
+[31m-  Osal_MemCpy(&service_uuid.Service_UUID_128, uuid, 16);[m
+[31m-  ret = aci_gatt_add_service(UUID_TYPE_128,  &service_uuid, PRIMARY_SERVICE, Services_Max_Attribute_Records[ACCELERATION_SERVICE_INDEX], &accServHandle); [m
+[31m-  if (ret != BLE_STATUS_SUCCESS) goto fail;    [m
+[32m+[m[32m  uint8_t ret;[m
+ [m
+[31m-  COPY_FREE_FALL_UUID(uuid);[m
+[31m-  Osal_MemCpy(&char_uuid.Char_UUID_128, uuid, 16);[m
+[31m-  [m
+[31m-  ret =  aci_gatt_add_char(accServHandle, UUID_TYPE_128, &char_uuid, 1, CHAR_PROP_NOTIFY, ATTR_PERMISSION_NONE, 0,[m
+[31m-                           16, 0, &freeFallCharHandle);[m
+[31m-  if (ret != BLE_STATUS_SUCCESS) goto fail;[m
+[32m+[m[32m  /*[m
+[32m+[m[32m  UUIDs:[m
+[32m+[m[32m  D973F2E0-B19E-11E2-9E96-0800200C9A66[m
+[32m+[m[32m  D973F2E1-B19E-11E2-9E96-0800200C9A66[m
+[32m+[m[32m  D973F2E2-B19E-11E2-9E96-0800200C9A66[m
+[32m+[m[32m  */[m
+ [m
+[31m-  COPY_ACC_UUID(uuid);  [m
+[31m-  Osal_MemCpy(&char_uuid.Char_UUID_128, uuid, 16);[m
+[31m-  ret =  aci_gatt_add_char(accServHandle, UUID_TYPE_128, &char_uuid, 6, CHAR_PROP_NOTIFY|CHAR_PROP_READ, ATTR_PERMISSION_NONE, GATT_NOTIFY_READ_REQ_AND_WAIT_FOR_APPL_RESP,[m
+[31m-                           16, 0, &accCharHandle);[m
+[31m-  if (ret != BLE_STATUS_SUCCESS) goto fail;[m
+[32m+[m[32m  const uint8_t uuid[16] = {0x66,0x9a,0x0c,0x20,0x00,0x08,0x96,0x9e,0xe2,0x11,0x9e,0xb1,0xe0,0xf2,0x73,0xd9};[m
+[32m+[m[32m  const uint8_t charUuidTX[16] = {0x66,0x9a,0x0c,0x20,0x00,0x08,0x96,0x9e,0xe2,0x11,0x9e,0xb1,0xe1,0xf2,0x73,0xd9};[m
+[32m+[m[32m  const uint8_t charUuidRX[16] = {0x66,0x9a,0x0c,0x20,0x00,0x08,0x96,0x9e,0xe2,0x11,0x9e,0xb1,0xe2,0xf2,0x73,0xd9};[m
+ [m
+[31m-  PRINTF("Service ACC added. Handle 0x%04X, Free fall Charac handle: 0x%04X, Acc Charac handle: 0x%04X\n",accServHandle, freeFallCharHandle, accCharHandle);	[m
+[31m-  return BLE_STATUS_SUCCESS; [m
+[31m-[m
+[31m- fail:[m
+[31m-  PRINTF("Error while adding ACC service.\n");[m
+[31m-  return BLE_STATUS_ERROR ;[m
+[31m-    [m
+[31m-}[m
+[31m-[m
+[31m-/*******************************************************************************[m
+[31m-* Function Name  : Free_Fall_Notify[m
+[31m-* Description    : Send a notification for a Free Fall detection.[m
+[31m-* Input          : None[m
+[31m-* Return         : Status.[m
+[31m-*******************************************************************************/[m
+[31m-tBleStatus Free_Fall_Notify(void)[m
+[31m-{  [m
+[31m-  uint8_t val;[m
+[31m-  tBleStatus ret;[m
+[31m-[m
+[31m-  val = 0x01;	[m
+[31m-  ret = aci_gatt_update_char_value_ext(connection_handle, accServHandle, freeFallCharHandle, 1,1, 0, 1, &val);[m
+[31m-  if (ret != BLE_STATUS_SUCCESS){[m
+[31m-    PRINTF("Error while updating Free Fall characteristic: 0x%02X\n",ret) ;[m
+[31m-    return BLE_STATUS_ERROR ;[m
+[31m-  }[m
+[31m-  return BLE_STATUS_SUCCESS;[m
+[31m-	[m
+[31m-}[m
+[31m-[m
+[31m-/*******************************************************************************[m
+[31m-* Function Name  : Acc_Update[m
+[31m-* Description    : Update acceleration characteristic value[m
+[31m-* Input          : AxesRaw_t structure containing acceleration value in mg.[m
+[31m-* Return         : Status.[m
+[31m-*******************************************************************************/[m
+[31m-tBleStatus Acc_Update(AxesRaw_t *data)[m
+[31m-{  [m
+[31m-  uint8_t buff[6];[m
+[31m-  tBleStatus ret;[m
+[31m-[m
+[31m-  HOST_TO_LE_16(buff,-data->AXIS_Y);[m
+[31m-  HOST_TO_LE_16(buff+2,data->AXIS_X);[m
+[31m-  HOST_TO_LE_16(buff+4,-data->AXIS_Z);[m
+[31m-  [m
+[31m-  ret = aci_gatt_update_char_value_ext(connection_handle, accServHandle, accCharHandle, 1,6,0, 6, buff);[m
+[31m-  if (ret != BLE_STATUS_SUCCESS){[m
+[31m-    PRINTF("Error while updating Acceleration characteristic: 0x%02X\n",ret) ;[m
+[31m-    return BLE_STATUS_ERROR ;[m
+[31m-  }[m
+[31m-[m
+[31m-  return BLE_STATUS_SUCCESS;[m
+[31m-    [m
+[31m-}[m
+[31m-[m
+[31m-/*******************************************************************************[m
+[31m-* Function Name  : Add_Environmental_Sensor_Service[m
+[31m-* Description    : Add the Environmental Sensor service.[m
+[31m-* Input          : None[m
+[31m-* Return         : Status.[m
+[31m-*******************************************************************************/[m
+[31m-tBleStatus Add_Environmental_Sensor_Service(void)[m
+[31m-{[m
+[31m-  tBleStatus ret;[m
+[31m-  uint8_t uuid[16];[m
+[31m-  uint16_t uuid16;[m
+[31m-  charactFormat charFormat;[m
+[31m-  uint16_t descHandle;[m
+[31m-[m
+[31m-  COPY_ENV_SENS_SERVICE_UUID(uuid);[m
+[31m-  [m
+   Osal_MemCpy(&service_uuid.Service_UUID_128, uuid, 16);[m
+[31m-  ret = aci_gatt_add_service(UUID_TYPE_128,  &service_uuid, PRIMARY_SERVICE, Services_Max_Attribute_Records[ENVIRONMENTAL_SERVICE_INDEX], &envSensServHandle); [m
+[31m-  if (ret != BLE_STATUS_SUCCESS) goto fail;[m
+[31m-   [m
+[31m-  /* Temperature Characteristic */[m
+[32m+[m[32m  ret = aci_gatt_add_service(UUID_TYPE_128, &service_uuid, PRIMARY_SERVICE, 6, &SerialPortServHandle);[m[41m [m
+[32m+[m[32m  if (ret != BLE_STATUS_SUCCESS) goto fail;[m[41m    [m
+ [m
+[31m-  COPY_TEMP_CHAR_UUID(uuid);  [m
+[31m-  Osal_MemCpy(&char_uuid.Char_UUID_128, uuid, 16);[m
+[31m-  ret =  aci_gatt_add_char(envSensServHandle, UUID_TYPE_128, &char_uuid, 2, CHAR_PROP_READ, ATTR_PERMISSION_NONE, GATT_NOTIFY_READ_REQ_AND_WAIT_FOR_APPL_RESP,[m
+[31m-                     16, 0, &tempCharHandle);[m
+[32m+[m[32m  Osal_MemCpy(&char_uuid.Char_UUID_128, charUuidTX, 16);[m
+[32m+[m[32m  ret =  aci_gatt_add_char(SerialPortServHandle, UUID_TYPE_128, &char_uuid, 20, CHAR_PROP_NOTIFY, ATTR_PERMISSION_NONE, 0,[m
+[32m+[m[32m                16, 1, &TXCharHandle);[m
+   if (ret != BLE_STATUS_SUCCESS) goto fail;[m
+ [m
+[31m-  charFormat.format = FORMAT_SINT16;[m
+[31m-  charFormat.exp = -1;[m
+[31m-  charFormat.unit = UNIT_TEMP_CELSIUS;[m
+[31m-  charFormat.name_space = 0;[m
+[31m-  charFormat.desc = 0;[m
+[31m-[m
+[31m-  uuid16 = CHAR_FORMAT_DESC_UUID;[m
+[31m-[m
+[31m-  Osal_MemCpy(&char_desc_uuid.Char_UUID_16, &uuid16, 2);[m
+[31m-[m
+[31m-  ret = aci_gatt_add_char_desc(envSensServHandle,[m
+[31m-                         tempCharHandle,[m
+[31m-                         UUID_TYPE_16,[m
+[31m-                         &char_desc_uuid, [m
+[31m-                         7,[m
+[31m-                         7,[m
+[31m-                         (void *)&charFormat, [m
+[31m-                         ATTR_PERMISSION_NONE,[m
+[31m-                         ATTR_ACCESS_READ_ONLY,[m
+[31m-                         0,[m
+[31m-                         16,[m
+[31m-                         FALSE,[m
+[31m-                         &descHandle);[m
+[32m+[m[32m  Osal_MemCpy(&char_uuid.Char_UUID_128, charUuidRX, 16);[m
+[32m+[m[32m  ret =  aci_gatt_add_char(SerialPortServHandle, UUID_TYPE_128, &char_uuid, 20, CHAR_PROP_WRITE|CHAR_PROP_WRITE_WITHOUT_RESP, ATTR_PERMISSION_NONE, GATT_NOTIFY_ATTRIBUTE_WRITE,[m
+[32m+[m[32m                16, 1, &RXCharHandle);[m
+   if (ret != BLE_STATUS_SUCCESS) goto fail;[m
+[31m-  [m
+[31m-  /* Pressure Characteristic */[m
+[31m-  COPY_PRESS_CHAR_UUID(uuid);  [m
+[31m-  Osal_MemCpy(&char_uuid.Char_UUID_128, uuid, 16);[m
+[31m-  ret =  aci_gatt_add_char(envSensServHandle, UUID_TYPE_128, &char_uuid, 3, CHAR_PROP_READ, ATTR_PERMISSION_NONE, GATT_NOTIFY_READ_REQ_AND_WAIT_FOR_APPL_RESP,[m
+[31m-                         16, 0, &pressCharHandle);[m
+[31m-  if (ret != BLE_STATUS_SUCCESS) goto fail;[m
+[31m-[m
+[31m-  charFormat.format = FORMAT_SINT24;[m
+[31m-  charFormat.exp = -5;[m
+[31m-  charFormat.unit = UNIT_PRESSURE_BAR;[m
+[31m-  charFormat.name_space = 0;[m
+[31m-  charFormat.desc = 0;[m
+[31m-[m
+[31m-  uuid16 = CHAR_FORMAT_DESC_UUID;[m
+ [m
+[31m-  Osal_MemCpy(&char_desc_uuid.Char_UUID_16, &uuid16, 2);[m
+[31m-  ret = aci_gatt_add_char_desc(envSensServHandle,[m
+[31m-                             pressCharHandle,[m
+[31m-                             UUID_TYPE_16,[m
+[31m-                             &char_desc_uuid, [m
+[31m-                             7,[m
+[31m-                             7,[m
+[31m-                             (void *)&charFormat, [m
+[31m-                             ATTR_PERMISSION_NONE,[m
+[31m-                             ATTR_ACCESS_READ_ONLY,[m
+[31m-                             0,[m
+[31m-                             16,[m
+[31m-                             FALSE,[m
+[31m-                             &descHandle);[m
+[31m-  if (ret != BLE_STATUS_SUCCESS) goto fail;[m
+[31m-  [m
+[31m-#ifndef SENSOR_EMULATION //Humidity sensor is not available on BlueNRG-1 Development board [m
+[31m-  PRINTF("Service ENV_SENS added. Handle 0x%04X, TEMP Charac handle: 0x%04X, PRESS Charac handle: 0x%04X\n",envSensServHandle, tempCharHandle, pressCharHandle);	[m
+[32m+[m[32m  printf("Serial Port Service added.\nTX Char Handle %04X, RX Char Handle %04X\n", TXCharHandle, RXCharHandle);[m
+   return BLE_STATUS_SUCCESS; [m
+[31m-  [m
+[31m-#else[m
+[31m-  /* Humidity Characteristic */ [m
+[31m-  COPY_HUMIDITY_CHAR_UUID(uuid);  [m
+[31m-  Osal_MemCpy(&char_uuid.Char_UUID_128, uuid, 16);[m
+[31m-  ret =  aci_gatt_add_char(envSensServHandle, UUID_TYPE_128, &char_uuid, 2, CHAR_PROP_READ, ATTR_PERMISSION_NONE, GATT_NOTIFY_READ_REQ_AND_WAIT_FOR_APPL_RESP,[m
+[31m-                         16, 0, &humidityCharHandle);[m
+[31m-  if (ret != BLE_STATUS_SUCCESS) goto fail;[m
+[31m-[m
+[31m-  charFormat.format = FORMAT_UINT16;[m
+[31m-  charFormat.exp = -1;[m
+[31m-  charFormat.unit = UNIT_UNITLESS;[m
+[31m-  charFormat.name_space = 0;[m
+[31m-  charFormat.desc = 0;[m
+ [m
+[31m-  uuid16 = CHAR_FORMAT_DESC_UUID;[m
+[31m-[m
+[31m-  Osal_MemCpy(&char_desc_uuid.Char_UUID_16, &uuid16, 2);[m
+[31m-  ret = aci_gatt_add_char_desc(envSensServHandle,[m
+[31m-                             humidityCharHandle,[m
+[31m-                             UUID_TYPE_16,[m
+[31m-                             &char_desc_uuid, [m
+[31m-                             7,[m
+[31m-                             7,[m
+[31m-                             (void *)&charFormat, [m
+[31m-                             ATTR_PERMISSION_NONE,[m
+[31m-                             ATTR_ACCESS_READ_ONLY,[m
+[31m-                             0,[m
+[31m-                             16,[m
+[31m-                             FALSE,[m
+[31m-                             &descHandle);[m
+[31m-  if (ret != BLE_STATUS_SUCCESS) goto fail;[m
+[31m-  [m
+[31m-  PRINTF("Service ENV_SENS added. Handle 0x%04X, TEMP Charac handle: 0x%04X, PRESS Charac handle: 0x%04X, HUMID Charac handle: 0x%04X\n",envSensServHandle, tempCharHandle, pressCharHandle, humidityCharHandle);	[m
+[31m-  return BLE_STATUS_SUCCESS; [m
+[31m-#endif /* SENSOR_EMULATION */[m
+[31m-  [m
+ fail:[m
+[31m-  PRINTF("Error while adding ENV_SENS service.\n");[m
+[32m+[m[32m  printf("Error while adding Serial Port  service.\n");[m
+   return BLE_STATUS_ERROR ;[m
+[31m-[m
+[31m-}[m
+[31m-[m
+[31m-/*******************************************************************************[m
+[31m-* Function Name  : Temp_Update[m
+[31m-* Description    : Update temperature characteristic value[m
+[31m-* Input          : temperature in tenths of degree[m
+[31m-* Return         : Status.[m
+[31m-*******************************************************************************/[m
+[31m-tBleStatus Temp_Update(int16_t temp)[m
+[31m-{  [m
+[31m-  tBleStatus ret;[m
+[31m-  ret = aci_gatt_update_char_value_ext(connection_handle, envSensServHandle, tempCharHandle, 1,2, 0, 2, (uint8_t*)&temp);[m
+[31m-  if (ret != BLE_STATUS_SUCCESS){[m
+[31m-          PRINTF("Error while updating TEMP characteristic: 0x%04X\n",ret) ;[m
+[31m-          return BLE_STATUS_ERROR ;[m
+[31m-  }[m
+[31m-  [m
+[31m-  return BLE_STATUS_SUCCESS;[m
+[31m-	[m
+[31m-}[m
+[31m-[m
+[31m-/*******************************************************************************[m
+[31m-* Function Name  : Press_Update[m
+[31m-* Description    : Update pressure characteristic value[m
+[31m-* Input          : Pressure in mbar[m
+[31m-* Return         : Status.[m
+[31m-*******************************************************************************/[m
+[31m-tBleStatus Press_Update(int32_t press)[m
+[31m-{  [m
+[31m-  tBleStatus ret;[m
+[31m-  [m
+[31m-  ret = aci_gatt_update_char_value_ext(connection_handle, envSensServHandle, pressCharHandle, 1, 3, 0, 3, (uint8_t*)&press);[m
+[31m-  if (ret != BLE_STATUS_SUCCESS){[m
+[31m-          PRINTF("Error while updating Pressure characteristic: 0x%04X\n",ret) ;[m
+[31m-          return BLE_STATUS_ERROR ;[m
+[31m-  }[m
+[31m-  [m
+[31m-  return BLE_STATUS_SUCCESS;[m
+[31m-	[m
+ }[m
+ [m
+[31m-#ifdef SENSOR_EMULATION //Humidity sensor is not available on BlueNRG-1 Development board*/[m
+ /*******************************************************************************[m
+[31m-* Function Name  : Humidity_Update[m
+[31m-* Description    : Update humidity characteristic value[m
+[31m-* Input          : RH (Relative Humidity) in thenths of %.[m
+[31m-* Return         : Status.[m
+[31m-*******************************************************************************/[m
+[31m-tBleStatus Humidity_Update(uint16_t humidity)[m
+[31m-{  [m
+[31m-  tBleStatus ret;[m
+[31m-[m
+[31m-  ret = aci_gatt_update_char_value_ext(connection_handle, envSensServHandle, humidityCharHandle, 1, 2, 0, 2, (uint8_t*)&humidity);[m
+[31m-  if (ret != BLE_STATUS_SUCCESS){[m
+[31m-          PRINTF("Error while updating Humidity characteristic: 0x%04X\n",ret) ;[m
+[31m-          return BLE_STATUS_ERROR ;[m
+[31m-  }[m
+[31m-  return BLE_STATUS_SUCCESS;[m
+[31m-[m
+[31m-}[m
+[31m-#endif [m
+[31m-[m
+[31m-/*******************************************************************************[m
+[31m-* Function Name  : Read_Request_CB.[m
+[31m-* Description    : Update the sensor valuse.[m
+[31m-* Input          : Handle of the characteristic to update.[m
+[32m+[m[32m* Function Name  : Attribute_Modified_CB[m
+[32m+[m[32m* Description    : Callback when RX/TX attribute handle is modified.[m
+[32m+[m[32m* Input          : Handle of the characteristic modified. Handle of the attribute[m
+[32m+[m[32m*                  modified and data written[m
+ * Return         : None.[m
+ *******************************************************************************/[m
+[31m-void Read_Request_CB(uint16_t handle)[m
+[32m+[m[32mvoid Attribute_Modified_CB(uint16_t handle, uint16_t data_length, uint8_t *att_data)[m
+ {[m
+[31m-  tBleStatus ret;[m
+[31m-  AxesRaw_t acc_data;[m
+[31m- [m
+[31m-  if(handle == accCharHandle + 1)[m
+[32m+[m[32m  if(handle == RXCharHandle + 1)[m
+   {[m
+[31m-    if (GetAccAxesRaw(&acc_data) == IMU_6AXES_OK)[m
+[31m-    {[m
+[31m-      Acc_Update(&acc_data);[m
+[31m-    }[m
+[32m+[m[32m    for(int i = 0; i < data_length; i++)[m
+[32m+[m[32m      printf("%c", att_data[i]);[m
+   }[m
+[31m-  else if(handle == tempCharHandle + 1)[m
+[31m-  {[m
+[31m-    float data;[m
+[31m-#ifdef SENSOR_EMULATION[m
+[31m-    data = 27 + ((uint64_t)rand()*15)/RAND_MAX;[m
+[31m-    Temp_Update((int16_t)(data * 10)); [m
+[31m-#else[m
+[31m-    if (xLPS25HBDrv->GetTemperature(&data) == 0)[m
+[31m-    {[m
+[31m-      Temp_Update((int16_t)(data * 10)); [m
+[31m-    }[m
+[31m-#endif[m
+[31m-  }[m
+[31m-  else if(handle == pressCharHandle + 1)[m
+[31m-  {[m
+[31m-    float data;[m
+[31m-    [m
+[31m-#ifdef SENSOR_EMULATION[m
+[31m-    data = 1000 + ((uint64_t)rand()*1000)/RAND_MAX;[m
+[31m-    Press_Update((int32_t)(data *100)); [m
+[31m-#else [m
+[31m-    if (xLPS25HBDrv->GetPressure(&data) == 0)[m
+[31m-    {[m
+[31m-      Press_Update((int32_t)(data *100)); [m
+[31m-    }[m
+[31m-#endif [m
+[31m-  }[m
+[31m-#ifdef SENSOR_EMULATION [m
+[31m-  else if(handle == humidityCharHandle + 1)[m
+[31m-  {[m
+[31m-    uint16_t data;[m
+[31m-    data = 450 + ((uint64_t)rand()*100)/RAND_MAX; [m
+[31m-    Humidity_Update(data);[m
+[31m-  }  [m
+[31m-#endif [m
+[31m-  if(connection_handle !=0)[m
+[31m-  {[m
+[31m-    ret = aci_gatt_allow_read(connection_handle);[m
+[31m-    if (ret != BLE_STATUS_SUCCESS)[m
+[31m-    {[m
+[31m-      SdkEvalLedOn(LED3); [m
+[31m-    }[m
+[32m+[m[32m  else if(handle == TXCharHandle + 2)[m
+[32m+[m[32m  {[m[41m        [m
+[32m+[m[32m    if(att_data[0] == 0x01)[m
+[32m+[m[32m      APP_FLAG_SET(NOTIFICATIONS_ENABLED);[m
+   }[m
+ }[m
+ [m
+[41m+[m
+[1mdiff --git a/src/main.c b/src/main.c[m
+[1mindex 807d319..7072f25 100644[m
+[1m--- a/src/main.c[m
+[1m+++ b/src/main.c[m
+[36m@@ -17,38 +17,26 @@[m
+ [m
+ [m
+ /* Includes ------------------------------------------------------------------*/[m
+[31m-#include "bluenrg_x_device.h"[m
+[32m+[m[32m#include <stdio.h>[m
+[32m+[m[32m#include <string.h>[m
+[32m+[m[32m#include "BlueNRG1_it.h"[m
+ #include "BlueNRG1_conf.h"[m
+[32m+[m[32m#include "ble_const.h"[m
+[32m+[m[32m#include "bluenrg1_stack.h"[m
+[32m+[m[32m#include "gp_timer.h"[m
+[32m+[m[32m#include "app_state.h"[m
+[32m+[m[32m#include "serial_port.h"[m
+ #include "SDK_EVAL_Config.h"[m
+[32m+[m[32m#include "SerialPort_config.h"[m
+[32m+[m[32m#include "OTA_btl.h"[m
+ #include "GPIO.h"[m
+ #include "SEGGER_RTT.h"[m
+ #include "SEGGER_RTT_conf.h"[m
+ [m
+[31m-/** @addtogroup BlueNRG1_StdPeriph_Examples BlueNRG1 Standard Peripheral Examples[m
+[31m-  * @{[m
+[31m-  */[m
+[31m-[m
+[31m-[m
+[31m-/** @addtogroup MTFX_Examples MTFX Examples[m
+[31m-  * @{[m
+[31m-  */[m
+[31m-[m
+[31m-/** @addtogroup MTFX_Mode1 MTFX Mode 1 Example[m
+[31m-  * @{[m
+[31m-  */[m
+[31m-[m
+ /* Private typedef -----------------------------------------------------------*/[m
+ /* Private define ------------------------------------------------------------*/[m
+[31m-#define PWM0_PIN			GPIO_Pin_2[m
+[31m-#define PWM1_PIN			GPIO_Pin_3[m
+[31m-[m
+[31m-/* Private macro -------------------------------------------------------------*/[m
+[31m-/* Private variables ---------------------------------------------------------*/[m
+[31m-/* Private function prototypes -----------------------------------------------*/[m
+[31m-void GPIO_Configuration(void);[m
+[31m-void MFT_Configuration(void);[m
+[31m-[m
+[31m-/* Private functions ---------------------------------------------------------*/[m
+[32m+[m[32m#define BLE_NEW_SERIALPORT_VERSION_STRING "2.0.0"[m
+[32m+[m[32m#define SERVER 1[m
+ [m
+ [m
+ /**[m
+[36m@@ -58,6 +46,7 @@[m [mvoid MFT_Configuration(void);[m
+   */[m
+ int main(void)[m
+ {[m
+[32m+[m	[32mint ret;[m
+   /* System initialization function */[m
+   SystemInit();[m
+ [m
+[36m@@ -65,822 +54,31 @@[m [mint main(void)[m
+   SdkEvalIdentification();[m
+ [m
+   SdkEvalComUartInit(UART_BAUDRATE);[m
+[31m-//  LED_Init();[m
+[31m-[m
+[31m-[m
+[31m-  /* GPIO configuration */[m
+[31m-  GPIO_Configuration();[m
+[31m-[m
+[31m-  /* MFT configuration */[m
+[31m-  MFT_Configuration();[m
+[31m-[m
+[31m-  /* Connect PWM output from MFT1 to TnA pin (PWM0) */[m
+[31m-  MFT_TnXEN(MFT1, MFT_TnA, ENABLE);[m
+[31m-[m
+[31m-  /* Connect PWM output from MFT2 to TnA pin (PWM1) */[m
+[31m-  MFT_TnXEN(MFT2, MFT_TnA, ENABLE);[m
+[31m-[m
+[31m-[m
+[31m-  /** Enable the MFT interrupt */[m
+[31m-  MFT_EnableIT(MFT1, MFT_IT_TNA | MFT_IT_TNB, ENABLE);[m
+[31m-  MFT_EnableIT(MFT2, MFT_IT_TNA | MFT_IT_TNB, ENABLE);[m
+[31m-[m
+[31m-  /* Start MFT timers */[m
+[31m-  MFT_Cmd(MFT1, ENABLE);[m
+[31m-  MFT_Cmd(MFT2, ENABLE);[m
+[31m-[m
+[31m-  /* Infinite loop */[m
+[31m-  while(1);[m
+[32m+[m[32m  LED_Init();[m
+   SEGGER_RTT_printf (0,"1\n");[m
+[31m-}[m
+[31m-[m
+[31m-[m
+[31m-/**[m
+[31m-  * @brief  GPIO Configuration.[m
+[31m-  *          Configure outputs GPIO pins.[m
+[31m-  * @param  None[m
+[31m-  * @retval None[m
+[31m-  */[m
+[31m-void GPIO_Configuration(void)[m
+[31m-{[m
+[31m-  GPIO_InitType GPIO_InitStructure;[m
+[31m-[m
+[31m-  SysCtrl_PeripheralClockCmd(CLOCK_PERIPH_GPIO, ENABLE);[m
+[31m-[m
+[31m-  /* Configure PWM pins */[m
+[31m-  GPIO_InitStructure.GPIO_Pin = PWM0_PIN | PWM1_PIN;[m
+[31m-  GPIO_InitStructure.GPIO_Mode = Serial1_Mode;[m
+[31m-  GPIO_InitStructure.GPIO_Pull = DISABLE;[m
+[31m-  GPIO_InitStructure.GPIO_HighPwr = DISABLE;[m
+[31m-  GPIO_Init( &GPIO_InitStructure);[m
+[31m-[m
+[31m-}[m
+[31m-[m
+[31m-/**[m
+[31m-  * @brief  MFT_Configuration.[m
+[31m-  * @param  None[m
+[31m-  * @retval None[m
+[31m-  */[m
+[31m-void MFT_Configuration(void)[m
+[31m-{[m
+[31m-  NVIC_InitType NVIC_InitStructure;[m
+[31m-  MFT_InitType timer_init;[m
+[31m-[m
+[31m-  SysCtrl_PeripheralClockCmd(CLOCK_PERIPH_MTFX1 | CLOCK_PERIPH_MTFX2, ENABLE);[m
+ [m
+[31m-  MFT_StructInit(&timer_init);[m
+[31m-[m
+[31m-  timer_init.MFT_Mode = MFT_MODE_1;[m
+[31m-[m
+[31m-#if (HS_SPEED_XTAL == HS_SPEED_XTAL_32MHZ)[m
+[31m-	timer_init.MFT_Prescaler = 160-1;      /* 5 us clock */[m
+[31m-#elif (HS_SPEED_XTAL == HS_SPEED_XTAL_16MHZ)[m
+[31m-	timer_init.MFT_Prescaler = 80-1;       /* 5 us clock */[m
+[31m-#endif[m
+[31m-[m
+[31m-  /* MFT1 configuration */[m
+[31m-  timer_init.MFT_Clock1 = MFT_PRESCALED_CLK;[m
+[31m-  timer_init.MFT_Clock2 = MFT_NO_CLK;[m
+[31m-  timer_init.MFT_CRA = 300 - 1;       /* 1.5 ms positive duration */[m
+[31m-  timer_init.MFT_CRB = 400 - 1;       /* 2 ms negative duration */[m
+[31m-  MFT_Init(MFT1, &timer_init);[m
+[31m-[m
+[31m-  /* MFT2 configuration */[m
+[31m-  timer_init.MFT_Clock1 = MFT_PRESCALED_CLK;[m
+[31m-  timer_init.MFT_Clock2 = MFT_NO_CLK;[m
+[31m-  timer_init.MFT_CRA = 5000 - 1;        /* 25 ms positive duration */[m
+[31m-  timer_init.MFT_CRB = 1000 - 1;       /* 50 ms negative duration */[m
+[31m-  MFT_Init(MFT2, &timer_init);[m
+[31m-[m
+[31m-  /* Enable MFT2 Interrupt 1 */[m
+[31m-  NVIC_InitStructure.NVIC_IRQChannel = MFT1A_IRQn;[m
+[31m-  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = LOW_PRIORITY;[m
+[31m-  NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;[m
+[31m-  NVIC_Init(&NVIC_InitStructure);[m
+[31m-[m
+[31m-  /* Enable MFT2 Interrupt 2 */[m
+[31m-  NVIC_InitStructure.NVIC_IRQChannel = MFT2A_IRQn;[m
+[31m-  NVIC_Init(&NVIC_InitStructure);[m
+[31m-}[m
+[31m-[m
+[31m-#ifdef  USE_FULL_ASSERT[m
+[31m-[m
+[31m-/**[m
+[31m-  * @brief  Reports the name of the source file and the source line number[m
+[31m-  *         where the assert_param error has occurred.[m
+[31m-  * @param  file: pointer to the source file name[m
+[31m-  * @param  line: assert_param error line source number[m
+[31m-  */[m
+[31m-void assert_failed(uint8_t* file, uint32_t line)[m
+[31m-{[m
+[31m-  /* User can add his own implementation to report the file name and line number,[m
+[31m-     ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */[m
+[31m-[m
+[31m-  /* Infinite loop */[m
+[31m-  while (1)[m
+[31m-  {[m
+[32m+[m[32m  ret = BlueNRG_Stack_Initialization(&BlueNRG_Stack_Init_params);[m
+[32m+[m[32m  if (ret != BLE_STATUS_SUCCESS) {[m
+[32m+[m	[32m  SEGGER_RTT_printf(0,"Error in BlueNRG_Stack_Initialization() 0x%02x\r\n", ret);[m
+   }[m
+[31m-}[m
+[32m+[m[32m  SEGGER_RTT_printf (0,"%x\n",ret);[m
+ [m
+[31m-#endif[m
+[32m+[m[32m  SEGGER_RTT_printf(0,"BlueNRG-1,2 BLE Serial Port Master & Slave Application (version: %s)\r\n",BLE_NEW_SERIALPORT_VERSION_STRING);[m
+ [m
+[31m-/**[m
+[31m-  * @}[m
+[31m-  */[m
+[32m+[m[32m    /* Init Serial Port Device */[m
+[32m+[m[32m   ret = SerialPort_DeviceInit();[m
+[32m+[m[32m   if (ret != BLE_STATUS_SUCCESS) {[m
+[32m+[m[32m     SEGGER_RTT_printf(0,"SerialPort_DeviceInit()--> Failed 0x%02x\r\n", ret);[m
+[32m+[m[32m     while(1);[m
+[32m+[m[32m   }[m
+[32m+[m[32m   while(1) {[m
+ [m
+[31m-/**[m
+[31m-  * @}[m
+[31m-  */[m
+[32m+[m[32m       /* BlueNRG-1,2 stack tick */[m
+[32m+[m[32m       BTLE_StackTick();[m
+ [m
+[31m-/**[m
+[31m-  * @}[m
+[31m-  */[m
+[31m-/******************* (C) COPYRIGHT 2015 STMicroelectronics *****END OF FILE****/[m
+[32m+[m[32m       /* Application tick */[m
+[32m+[m[32m       APP_Tick();[m
+[32m+[m[32m   }[m
+ [m
+ [m
+[31m-//[m
+[31m-///******************** (C) COPYRIGHT 2021 STMicroelectronics ********************[m
+[31m-//* File Name          : BLE_Beacon_main.c[m
+[31m-//* Author             : RF Application Team[m
+[31m-//* Version            : 1.1.0[m
+[31m-//* Date               : 15-January-2016[m
+[31m-//* Description        : Code demostrating the BLE Beacon application[m
+[31m-//********************************************************************************[m
+[31m-//* THE PRESENT FIRMWARE WHICH IS FOR GUIDANCE ONLY AIMS AT PROVIDING CUSTOMERS[m
+[31m-//* WITH CODING INFORMATION REGARDING THEIR PRODUCTS IN ORDER FOR THEM TO SAVE TIME.[m
+[31m-//* AS A RESULT, STMICROELECTRONICS SHALL NOT BE HELD LIABLE FOR ANY DIRECT,[m
+[31m-//* INDIRECT OR CONSEQUENTIAL DAMAGES WITH RESPECT TO ANY CLAIMS ARISING FROM THE[m
+[31m-//* CONTENT OF SUCH FIRMWARE AND/OR THE USE MADE BY CUSTOMERS OF THE CODING[m
+[31m-//* INFORMATION CONTAINED HEREIN IN CONNECTION WITH THEIR PRODUCTS.[m
+[31m-//*******************************************************************************/[m
+[31m-//[m
+[31m-///**[m
+[31m-// * @file BLE_Beacon_main.c[m
+[31m-// * @brief This is a BLE beacon demo that shows how to configure a BlueNRG-1,2 device[m
+[31m-// * in order to advertise specific manufacturing data and allow another BLE device to[m
+[31m-// * know if it is in the range of the BlueNRG-1 beacon device.[m
+[31m-// * It also provides a reference example about how using the[m
+[31m-// * BLE Over-The-Air (OTA) Service Manager firmware upgrade capability.[m
+[31m-// *[m
+[31m-//[m
+[31m-//* \section WiSE-Studio_project WiSE-Studio project[m
+[31m-//  To use the project with WiSE-Studio , please follow the instructions below:[m
+[31m-//  -# Open the WiSE-Studio  and select File->Import.[m
+[31m-//  -# Select Existing Projects into Workspace.[m
+[31m-//  -# Go to Project Explorer section[m
+[31m-//  -# Select desired configuration to build from Project->Project->Build Project.[m
+[31m-//  -# Select Project->Rebuild All. This will recompile and link the entire application[m
+[31m-//  -# To download the binary image, please connect a SWD HW programmer in your board (if available).[m
+[31m-//  -# Download the related binary image.[m
+[31m-//  -# Alternatively, open the Flasher utility and download the built binary image.[m
+[31m-//[m
+[31m-//* \section KEIL_project KEIL project[m
+[31m-//  To use the project with KEIL uVision 5 for ARM, please follow the instructions below:[m
+[31m-//  -# Open the KEIL uVision 5 for ARM and select Project->Open Project menu.[m
+[31m-//  -# Open the KEIL project[m
+[31m-//     <tt> C:\Users\{username}\ST\BlueNRG-1_2 DK x.x.x\\Project\\BLE_Examples\\BLE_Beacon\\MDK-ARM\\BlueNRG-1\\BLE_Beacon.uvprojx </tt> or[m
+[31m-//     <tt> C:\Users\{username}\ST\BlueNRG-1_2 DK x.x.x\\Project\\BLE_Examples\\BLE_Beacon\\MDK-ARM\\BlueNRG-2\\BLE_Beacon.uvprojx </tt>[m
+[31m-//  -# Select desired configuration to build[m
+[31m-//  -# Select Project->Rebuild all target files. This will recompile and link the entire application[m
+[31m-//  -# To download the binary image, please connect a SWD HW programmer in your board (if available).[m
+[31m-//  -# Download the related binary image.[m
+[31m-//  -# Alternatively, open the Flasher utility and download the built binary image.[m
+[31m-//[m
+[31m-//* \section IAR_project IAR project[m
+[31m-//  To use the project with IAR Embedded Workbench for ARM, please follow the instructions below:[m
+[31m-//  -# Open the Embedded Workbench for ARM and select File->Open->Workspace menu.[m
+[31m-//  -# Open the IAR project[m
+[31m-//     <tt> C:\Users\{username}\ST\BlueNRG-1_2 DK x.x.x\\Project\\BLE_Examples\\BLE_Beacon\\EWARM\\BlueNRG-1\\BLE_Beacon.eww </tt> or[m
+[31m-//     <tt> C:\Users\{username}\ST\BlueNRG-1_2 DK x.x.x\\Project\\BLE_Examples\\BLE_Beacon\\EWARM\\BlueNRG-2\\BLE_Beacon.eww </tt>[m
+[31m-//  -# Select desired configuration to build[m
+[31m-//  -# Select Project->Rebuild All. This will recompile and link the entire application[m
+[31m-//  -# To download the binary image, please connect a SWD HW programmer in your board (if available).[m
+[31m-//  -# Select Project->Download and Debug to download the related binary image.[m
+[31m-//  -# Alternatively, open the Flasher utility and download the built binary image.[m
+[31m-//[m
+[31m-//* \subsection Project_configurations Project configurations[m
+[31m-//- \c Release - Release configuration[m
+[31m-//- \c Use_OTA_ServiceManager - Configuration for Application using OTA Service Manager[m
+[31m-//[m
+[31m-//[m
+[31m-//* \section Board_supported Boards supported[m
+[31m-//- \c STEVAL-IDB007V1[m
+[31m-//- \c STEVAL-IDB007V2[m
+[31m-//- \c STEVAL-IDB008V1[m
+[31m-//- \c STEVAL-IDB008V1M[m
+[31m-//- \c STEVAL-IDB008V2[m
+[31m-//- \c STEVAL-IDB009V1[m
+[31m-//[m
+[31m-//[m
+[31m-// * \section Power_settings Power configuration settings[m
+[31m-//@table[m
+[31m-//[m
+[31m-//==========================================================================================================[m
+[31m-//|                                         STEVAL-IDB00XV1                                                |[m
+[31m-//----------------------------------------------------------------------------------------------------------[m
+[31m-//| Jumper name |            |  Description                                                                |[m
+[31m-//| JP1         |   JP2      |                                                                             |[m
+[31m-//----------------------------------------------------------------------------------------------------------[m
+[31m-//| ON 1-2      | ON 2-3     | USB supply power                                                            |[m
+[31m-//| ON 2-3      | ON 1-2     | The supply voltage must be provided through battery pins.                   |[m
+[31m-//| ON 1-2      |            | USB supply power to STM32L1, JP2 pin 2 external power to BlueNRG1           |[m
+[31m-//[m
+[31m-//[m
+[31m-//@endtable[m
+[31m-//[m
+[31m-//* \section Jumper_settings Jumper settings[m
+[31m-//@table[m
+[31m-//[m
+[31m-//========================================================================================================================================================================================[m
+[31m-//|                                                                             STEVAL-IDB00XV1                                                                                          |[m
+[31m-//----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------[m
+[31m-//| Jumper name |                                                                Description                                                                                             |[m
+[31m-//----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------[m
+[31m-//| JP1         | 1-2: to provide power from USB (JP2:2-3). 2-3: to provide power from battery holder (JP2:1-2)                                                                          |[m
+[31m-//| JP2         | 1-2: to provide power from battery holder (JP1:2-3). 2-3: to provide power from USB (JP1:1-2). Pin2 to VDD  to provide external power supply to BlueNRG-1 (JP1: 1-2)   |[m
+[31m-//| JP3         | pin 1 and 2 UART RX and TX of MCU. pin 3 GND.                                                                                                                          |[m
+[31m-//| JP4         | Fitted: to provide VBLUE to BlueNRG1. It can be used also for current measurement.                                                                                     |[m
+[31m-//| JP5         | Fitted : TEST pin to VBLUE. Not fitted:  TEST pin to GND                                                                                                               |[m
+[31m-//[m
+[31m-//[m
+[31m-//@endtable[m
+[31m-//[m
+[31m-//* \section Pin_settings Pin settings[m
+[31m-//@table[m
+[31m-//|            |                                                           Release                                                           ||||||                                                                     Use_OTA_ServiceManager                                                                      ||||||[m
+[31m-//------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------[m
+[31m-//|  PIN name  |   STEVAL-IDB007V1  |   STEVAL-IDB007V2  |   STEVAL-IDB008V1  |  STEVAL-IDB008V1M  |   STEVAL-IDB008V2  |   STEVAL-IDB009V1  |      STEVAL-IDB007V1     |      STEVAL-IDB007V2     |      STEVAL-IDB008V1     |     STEVAL-IDB008V1M     |      STEVAL-IDB008V2     |      STEVAL-IDB009V1     |[m
+[31m-//------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------[m
+[31m-//|    ADC1    |      Not Used      |      Not Used      |      Not Used      |      Not Used      |      Not Used      |      Not Used      |         Not Used         |         Not Used         |         Not Used         |         Not Used         |         Not Used         |         Not Used         |[m
+[31m-//|    ADC2    |      Not Used      |      Not Used      |      Not Used      |      Not Used      |      Not Used      |      Not Used      |         Not Used         |         Not Used         |         Not Used         |         Not Used         |         Not Used         |         Not Used         |[m
+[31m-//|     GND    |        N.A.        |        N.A.        |        N.A.        |      Not Used      |        N.A.        |        N.A.        |           N.A.           |           N.A.           |           N.A.           |         Not Used         |           N.A.           |           N.A.           |[m
+[31m-//|     IO0    |      Not Used      |      Not Used      |      Not Used      |      Not Used      |      Not Used      |      Not Used      |         Not Used         |         Not Used         |         Not Used         |         Not Used         |         Not Used         |         Not Used         |[m
+[31m-//|     IO1    |      Not Used      |      Not Used      |      Not Used      |      Not Used      |      Not Used      |      Not Used      |         Not Used         |         Not Used         |         Not Used         |         Not Used         |         Not Used         |         Not Used         |[m
+[31m-//|    IO11    |      Not Used      |      Not Used      |      Not Used      |      Not Used      |      Not Used      |      Not Used      |         Not Used         |         Not Used         |         Not Used         |         Not Used         |         Not Used         |         Not Used         |[m
+[31m-//|    IO12    |      Not Used      |      Not Used      |      Not Used      |      Not Used      |      Not Used      |      Not Used      |         Not Used         |         Not Used         |         Not Used         |         Not Used         |         Not Used         |         Not Used         |[m
+[31m-//|    IO13    |      Not Used      |      Not Used      |      Not Used      |      Not Used      |      Not Used      |      Not Used      |         Not Used         |         Not Used         |         Not Used         |         Not Used         |         Not Used         |         Not Used         |[m
+[31m-//|    IO14    |      Not Used      |      Not Used      |      Not Used      |      Not Used      |      Not Used      |      Not Used      |         Not Used         |         Not Used         |         Not Used         |         Not Used         |         Not Used         |         Not Used         |[m
+[31m-//|    IO15    |        N.A.        |        N.A.        |        N.A.        |        N.A.        |        N.A.        |      Not Used      |           N.A.           |           N.A.           |           N.A.           |           N.A.           |           N.A.           |         Not Used         |[m
+[31m-//|    IO16    |        N.A.        |        N.A.        |        N.A.        |        N.A.        |        N.A.        |      Not Used      |           N.A.           |           N.A.           |           N.A.           |           N.A.           |           N.A.           |         Not Used         |[m
+[31m-//|    IO17    |        N.A.        |        N.A.        |        N.A.        |        N.A.        |        N.A.        |      Not Used      |           N.A.           |           N.A.           |           N.A.           |           N.A.           |           N.A.           |         Not Used         |[m
+[31m-//|    IO18    |        N.A.        |        N.A.        |        N.A.        |        N.A.        |        N.A.        |      Not Used      |           N.A.           |           N.A.           |           N.A.           |           N.A.           |           N.A.           |         Not Used         |[m
+[31m-//|    IO19    |        N.A.        |        N.A.        |        N.A.        |        N.A.        |        N.A.        |      Not Used      |           N.A.           |           N.A.           |           N.A.           |           N.A.           |           N.A.           |         Not Used         |[m
+[31m-//|     IO2    |      Not Used      |      Not Used      |      Not Used      |      Not Used      |      Not Used      |      Not Used      |         Not Used         |         Not Used         |         Not Used         |         Not Used         |         Not Used         |         Not Used         |[m
+[31m-//|    IO20    |        N.A.        |        N.A.        |        N.A.        |        N.A.        |        N.A.        |      Not Used      |           N.A.           |           N.A.           |           N.A.           |           N.A.           |           N.A.           |         Not Used         |[m
+[31m-//|    IO21    |        N.A.        |        N.A.        |        N.A.        |        N.A.        |        N.A.        |      Not Used      |           N.A.           |           N.A.           |           N.A.           |           N.A.           |           N.A.           |         Not Used         |[m
+[31m-//|    IO22    |        N.A.        |        N.A.        |        N.A.        |        N.A.        |        N.A.        |      Not Used      |           N.A.           |           N.A.           |           N.A.           |           N.A.           |           N.A.           |         Not Used         |[m
+[31m-//|    IO23    |        N.A.        |        N.A.        |        N.A.        |        N.A.        |        N.A.        |      Not Used      |           N.A.           |           N.A.           |           N.A.           |           N.A.           |           N.A.           |         Not Used         |[m
+[31m-//|    IO24    |        N.A.        |        N.A.        |        N.A.        |        N.A.        |        N.A.        |      Not Used      |           N.A.           |           N.A.           |           N.A.           |           N.A.           |           N.A.           |         Not Used         |[m
+[31m-//|    IO25    |        N.A.        |        N.A.        |        N.A.        |        N.A.        |        N.A.        |      Not Used      |           N.A.           |           N.A.           |           N.A.           |           N.A.           |           N.A.           |         Not Used         |[m
+[31m-//|     IO3    |      Not Used      |      Not Used      |      Not Used      |      Not Used      |      Not Used      |      Not Used      |         Not Used         |         Not Used         |         Not Used         |         Not Used         |         Not Used         |         Not Used         |[m
+[31m-//|     IO4    |      Not Used      |      Not Used      |      Not Used      |      Not Used      |      Not Used      |      Not Used      |         Not Used         |         Not Used         |         Not Used         |         Not Used         |         Not Used         |         Not Used         |[m
+[31m-//|     IO5    |      Not Used      |      Not Used      |      Not Used      |      Not Used      |      Not Used      |      Not Used      |         Not Used         |         Not Used         |         Not Used         |         Not Used         |         Not Used         |         Not Used         |[m
+[31m-//|     IO6    |      Not Used      |      Not Used      |      Not Used      |      Not Used      |      Not Used      |      Not Used      |         Not Used         |         Not Used         |         Not Used         |         Not Used         |         Not Used         |         Not Used         |[m
+[31m-//|     IO7    |      Not Used      |      Not Used      |      Not Used      |      Not Used      |      Not Used      |      Not Used      |         Not Used         |         Not Used         |         Not Used         |         Not Used         |         Not Used         |         Not Used         |[m
+[31m-//|     IO8    |      Not Used      |      Not Used      |      Not Used      |      Not Used      |      Not Used      |      Not Used      |         Not Used         |         Not Used         |         Not Used         |         Not Used         |         Not Used         |         Not Used         |[m
+[31m-//|   RESETN   |        N.A.        |        N.A.        |        N.A.        |      Not Used      |        N.A.        |        N.A.        |           N.A.           |           N.A.           |           N.A.           |         Not Used         |           N.A.           |           N.A.           |[m
+[31m-//|    TEST1   |      Not Used      |      Not Used      |      Not Used      |      Not Used      |      Not Used      |      Not Used      |         Not Used         |         Not Used         |         Not Used         |         Not Used         |         Not Used         |         Not Used         |[m
+[31m-//|    VBLUE   |        N.A.        |        N.A.        |        N.A.        |      Not Used      |        N.A.        |        N.A.        |           N.A.           |           N.A.           |           N.A.           |         Not Used         |           N.A.           |           N.A.           |[m
+[31m-//[m
+[31m-//@endtable[m
+[31m-//[m
+[31m-//* \section Serial_IO Serial I/O[m
+[31m-//@table[m
+[31m-//| Parameter name  | Value            | Unit      |[m
+[31m-//----------------------------------------------------[m
+[31m-//| Baudrate        | 115200 [default] | bit/sec   |[m
+[31m-//| Data bits       | 8                | bit       |[m
+[31m-//| Parity          | None             | bit       |[m
+[31m-//| Stop bits       | 1                | bit       |[m
+[31m-//@endtable[m
+[31m-//[m
+[31m-//* \section LEDs_description LEDs description[m
+[31m-//@table[m
+[31m-//|            |                                                           Release                                                           ||||||                                                                                                                           Use_OTA_ServiceManager                                                                                                                            ||||||[m
+[31m-//------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------[m
+[31m-//|  LED name  |   STEVAL-IDB007V1  |   STEVAL-IDB007V2  |   STEVAL-IDB008V1  |  STEVAL-IDB008V1M  |   STEVAL-IDB008V2  |   STEVAL-IDB009V1  |               STEVAL-IDB007V1              |               STEVAL-IDB007V2              |               STEVAL-IDB008V1              |              STEVAL-IDB008V1M              |               STEVAL-IDB008V2              |               STEVAL-IDB009V1              |[m
+[31m-//------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------[m
+[31m-//|     DL1    |      Not Used      |      Not Used      |      Not Used      |      Not Used      |      Not Used      |      Not Used      |                  Not Used                  |                  Not Used                  |                  Not Used                  |                  Not Used                  |                  Not Used                  |                  Not Used                  |[m
+[31m-//|     DL2    |      Not Used      |      Not Used      |      Not Used      |      Not Used      |      Not Used      |      Not Used      |                  Not Used                  |                  Not Used                  |                  Not Used                  |                  Not Used                  |                  Not Used                  |                  Not Used                  |[m
+[31m-//|     DL3    |      Not Used      |      Not Used      |      Not Used      |      Not Used      |      Not Used      |      Not Used      |   ON when OTA firmware upgrade is ongoing  |   ON when OTA firmware upgrade is ongoing  |   ON when OTA firmware upgrade is ongoing  |   ON when OTA firmware upgrade is ongoing  |   ON when OTA firmware upgrade is ongoing  |   ON when OTA firmware upgrade is ongoing  |[m
+[31m-//|     DL4    |      Not Used      |      Not Used      |      Not Used      |      Not Used      |      Not Used      |      Not Used      |                  Not Used                  |                  Not Used                  |                  Not Used                  |                  Not Used                  |                  Not Used                  |                  Not Used                  |[m
+[31m-//[m
+[31m-//@endtable[m
+[31m-//[m
+[31m-//[m
+[31m-//* \section Buttons_description Buttons description[m
+[31m-//@table[m
+[31m-//|                |                                                           Release                                                           ||||||                                                                                                                                                                                                               Use_OTA_ServiceManager                                                                                                                                                                                                                ||||||[m
+[31m-//----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------[m
+[31m-//|   BUTTON name  |   STEVAL-IDB007V1  |   STEVAL-IDB007V2  |   STEVAL-IDB008V1  |  STEVAL-IDB008V1M  |   STEVAL-IDB008V2  |   STEVAL-IDB009V1  |                             STEVAL-IDB007V1                            |                             STEVAL-IDB007V2                            |                             STEVAL-IDB008V1                            |                            STEVAL-IDB008V1M                            |                             STEVAL-IDB008V2                            |                             STEVAL-IDB009V1                            |[m
+[31m-//----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------[m
+[31m-//|      PUSH1     |      Not Used      |      Not Used      |      Not Used      |      Not Used      |      Not Used      |      Not Used      |  It allows BLE Beacon application to activate the OTA Service Manager  |  It allows BLE Beacon application to activate the OTA Service Manager  |  It allows BLE Beacon application to activate the OTA Service Manager  |  It allows BLE Beacon application to activate the OTA Service Manager  |  It allows BLE Beacon application to activate the OTA Service Manager  |  It allows BLE Beacon application to activate the OTA Service Manager  |[m
+[31m-//|      PUSH2     |      Not Used      |      Not Used      |      Not Used      |      Not Used      |      Not Used      |      Not Used      |                                Not Used                                |                                Not Used                                |                                Not Used                                |                                Not Used                                |                                Not Used                                |                                Not Used                                |[m
+[31m-//|      RESET     |   Reset BlueNRG1   |   Reset BlueNRG1   |   Reset BlueNRG2   |   Reset BlueNRG2   |   Reset BlueNRG2   |   Reset BlueNRG2   |                             Reset BlueNRG1                             |                             Reset BlueNRG1                             |                             Reset BlueNRG2                             |                             Reset BlueNRG2                             |                             Reset BlueNRG2                             |                             Reset BlueNRG2                             |[m
+[31m-//[m
+[31m-//@endtable[m
+[31m-//[m
+[31m-//* \section Usage Usage[m
+[31m-//[m
+[31m-//The Beacon demo configures a BlueNRG-1,2 device in advertising mode (non-connectable mode) with specific manufacturing data.[m
+[31m-//It transmits advertisement packets at regular intervals which contain the following manufacturing data:[m
+[31m-//@table[m
+[31m-//------------------------------------------------------------------------------------------------------------------------[m
+[31m-//| Data field              | Description                       | Notes                                                  |[m
+[31m-//------------------------------------------------------------------------------------------------------------------------[m
+[31m-//| Company identifier code | SIG company identifier (1)        | Default is 0x0030 (STMicroelectronics)                 |[m
+[31m-//| ID                      | Beacon ID                         | Fixed value                                            |[m
+[31m-//| Length                  | Length of the remaining payload   | NA                                                     |[m
+[31m-//| Location UUID           | Beacons UUID                      | It is used to distinguish specific beacons from others |[m
+[31m-//| Major number            | Identifier for a group of beacons | It is used to group a related set of beacons           |[m
+[31m-//| Minor number            | Identifier for a single beacon    | It is used to identify a single beacon                 |[m
+[31m-//| Tx Power                | 2's complement of the Tx power    | It is used to establish how far you are from device    |[m
+[31m-//@endtable[m
+[31m-//[m
+[31m-// - (1): SIG company identifiers are available on https://www.bluetooth.org/en-us/specification/assigned-numbers/company-identifiers[m
+[31m-// - NA : Not Applicable;[m
+[31m-//NOTEs:[m
+[31m-//     - OTA Service Manager support requires to build application by enabling only ST_USE_OTA_SERVICE_MANAGER_APPLICATION=1 (preprocessor, linker) options and through files: OTA_btl.[ch] (refer to Release_with_OTA_ServiceManager IAR workspace).[m
+[31m-//[m
+[31m-//**/[m
+[31m-//[m
+[31m-///** @addtogroup BlueNRG1_demonstrations_applications[m
+[31m-// *  BlueNRG-1,2 Beacon demo \see BLE_Beacon_main.c for documentation.[m
+[31m-// *[m
+[31m-// *@{[m
+[31m-// */[m
+[31m-//[m
+[31m-///** @} */[m
+[31m-///** \cond DOXYGEN_SHOULD_SKIP_THIS[m
+[31m-// */[m
+[31m-//[m
+[31m-///* Includes ------------------------------------------------------------------*/[m
+[31m-//#include <stdio.h>[m
+[31m-//#include <string.h>[m
+[31m-//#include "BlueNRG1_it.h"[m
+[31m-//#include "BlueNRG1_conf.h"[m
+[31m-//#include "ble_const.h"[m
+[31m-//#include "bluenrg1_stack.h"[m
+[31m-//#include "sleep.h"[m
+[31m-//#include "SDK_EVAL_Config.h"[m
+[31m-//#include "Beacon_config.h"[m
+[31m-//#include "OTA_btl.h"[m
+[31m-//#include "SEGGER_RTT.h"[m
+[31m-//#include "SEGGER_RTT_conf.h"[m
+[31m-//[m
+[31m-//[m
+[31m-///* Private typedef -----------------------------------------------------------*/[m
+[31m-///* Private define ------------------------------------------------------------*/[m
+[31m-//#define BLE_BEACON_VERSION_STRING "1.1.0"[m
+[31m-//[m
+[31m-///* Set to 1 for enabling Flags AD Type position at the beginning[m
+[31m-//   of the advertising packet */[m
+[31m-//#define ENABLE_FLAGS_AD_TYPE_AT_BEGINNING 1[m
+[31m-//[m
+[31m-///* Private macro -------------------------------------------------------------*/[m
+[31m-///* Private variables ---------------------------------------------------------*/[m
+[31m-///* Private function prototypes -----------------------------------------------*/[m
+[31m-///* Private functions ---------------------------------------------------------*/[m
+[31m-//[m
+[31m-//void Device_Init(void)[m
+[31m-//{[m
+[31m-//  SEGGER_RTT_Init();[m
+[31m-//  SEGGER_RTT_ConfigUpBuffer(0,NULL,NULL,0,SEGGER_RTT_MODE_BLOCK_IF_FIFO_FULL);[m
+[31m-//  uint8_t ret;[m
+[31m-//  uint16_t service_handle;[m
+[31m-//  uint16_t dev_name_char_handle;[m
+[31m-//  uint16_t appearance_char_handle;[m
+[31m-//[m
+[31m-//  /* Set the TX Power to -2 dBm */[m
+[31m-//  ret = aci_hal_set_tx_power_level(1,4);[m
+[31m-//  if(ret != 0) {[m
+[31m-//    SEGGER_RTT_printf (0,"Error in aci_hal_set_tx_power_level() 0x%04xr\n", ret);[m
+[31m-//    while(1);[m
+[31m-//  }[m
+[31m-//[m
+[31m-//  /* Init the GATT */[m
+[31m-//  ret = aci_gatt_init();[m
+[31m-//  if (ret != 0)[m
+[31m-//    SEGGER_RTT_printf (0,"Error in aci_gatt_init() 0x%04xr\n", ret);[m
+[31m-//  else[m
+[31m-//    SEGGER_RTT_printf (0,"aci_gatt_init() --> SUCCESS\r\n");[m
+[31m-//[m
+[31m-//  /* Init the GAP */[m
+[31m-//  ret = aci_gap_init(0x01, 0x00, 0x08, &service_handle,[m
+[31m-//                     &dev_name_char_handle, &appearance_char_handle);[m
+[31m-//  if (ret != 0)[m
+[31m-//    SEGGER_RTT_printf (0,"Error in aci_gap_init() 0x%04x\r\n", ret);[m
+[31m-//  else[m
+[31m-//    SEGGER_RTT_printf (0,"aci_gap_init() --> SUCCESS\r\n");[m
+[31m-//}[m
+[31m-//[m
+[31m-//[m
+[31m-///**[m
+[31m-//* @brief  Start beaconing[m
+[31m-//* @param  None[m
+[31m-//* @retval None[m
+[31m-//*/[m
+[31m-//static void Start_Beaconing(void)[m
+[31m-//{[m
+[31m-//  uint8_t ret = BLE_STATUS_SUCCESS;[m
+[31m-//[m
+[31m-//#if ENABLE_FLAGS_AD_TYPE_AT_BEGINNING[m
+[31m-//  /* Set AD Type Flags at beginning on Advertising packet  */[m
+[31m-//  uint8_t adv_data[] = {[m
+[31m-//      /* Advertising data: Flags AD Type */[m
+[31m-//      0x02,[m
+[31m-//      0x01,[m
+[31m-//      0x06,[m
+[31m-//      /* Advertising data: manufacturer specific data */[m
+[31m-//      26, //len[m
+[31m-//      AD_TYPE_MANUFACTURER_SPECIFIC_DATA,  //manufacturer type[m
+[31m-//      0x30, 0x00, //Company identifier code (Default is 0x0030 - STMicroelectronics: To be customized for specific identifier)[m
+[31m-//      0x02,       // ID[m
+[31m-//      0x15,       //Length of the remaining payload[m
+[31m-//      0xE2, 0x0A, 0x39, 0xF4, 0x73, 0xF5, 0x4B, 0xC4, //Location UUID[m
+[31m-//      0xA1, 0x2F, 0x17, 0xD1, 0xAD, 0x07, 0xA9, 0x61,[m
+[31m-//      0x00, 0x00, // Major number[m
+[31m-//      0x00, 0x00, // Minor number[m
+[31m-//      0xC8        //2's complement of the Tx power (-56dB)};[m
+[31m-//   };[m
+[31m-//#else[m
+[31m-//   uint8_t manuf_data[] = {[m
+[31m-//      26, //len[m
+[31m-//      AD_TYPE_MANUFACTURER_SPECIFIC_DATA, //manufacturer type[m
+[31m-//      0x30, 0x00, //Company identifier code (Default is 0x0030 - STMicroelectronics: To be customized for specific identifier)[m
+[31m-//      0x02,       // ID[m
+[31m-//      0x15,       //Length of the remaining payload[m
+[31m-//      0xE2, 0x0A, 0x39, 0xF4, 0x73, 0xF5, 0x4B, 0xC4, //Location UUID[m
+[31m-//      0xA1, 0x2F, 0x17, 0xD1, 0xAD, 0x07, 0xA9, 0x61,[m
+[31m-//      0x00, 0x00, // Major number[m
+[31m-//      0x00, 0x00, // Minor number[m
+[31m-//      0xC8        //2's complement of the Tx power (-56dB)};[m
+[31m-//   };[m
+[31m-//#endif[m
+[31m-//[m
+[31m-//  /* disable scan response */[m
+[31m-//  ret = hci_le_set_scan_response_data(0,NULL);[m
+[31m-//  if (ret != BLE_STATUS_SUCCESS)[m
+[31m-//  {[m
+[31m-//    SEGGER_RTT_printf (0,"Error in hci_le_set_scan_resp_data() 0x%04x\r\n", ret);[m
+[31m-//    return;[m
+[31m-//  }[m
+[31m-//  else[m
+[31m-//    SEGGER_RTT_printf (0,"hci_le_set_scan_resp_data() --> SUCCESS\r\n");[m
+[31m-//[m
+[31m-//  /* put device in non connectable mode */[m
+[31m-//  ret = aci_gap_set_discoverable(ADV_NONCONN_IND, 160, 160, PUBLIC_ADDR, NO_WHITE_LIST_USE,[m
+[31m-//                                 0, NULL, 0, NULL, 0, 0);[m
+[31m-//  if (ret != BLE_STATUS_SUCCESS)[m
+[31m-//  {[m
+[31m-//    SEGGER_RTT_printf (0,"Error in aci_gap_set_discoverable() 0x%04x\r\n", ret);[m
+[31m-//    return;[m
+[31m-//  }[m
+[31m-//  else[m
+[31m-//    SEGGER_RTT_printf (0,"aci_gap_set_discoverable() --> SUCCESS\r\n");[m
+[31m-//[m
+[31m-//#if ENABLE_FLAGS_AD_TYPE_AT_BEGINNING[m
+[31m-//  /* Set the  ADV data with the Flags AD Type at beginning of the[m
+[31m-//     advertsing packet,  followed by the beacon manufacturer specific data */[m
+[31m-//  ret = hci_le_set_advertising_data (sizeof(adv_data), adv_data);[m
+[31m-//  if (ret != BLE_STATUS_SUCCESS)[m
+[31m-//  {[m
+[31m-//    SEGGER_RTT_printf (0,"Error in hci_le_set_advertising_data() 0x%04x\r\n", ret);[m
+[31m-//    return;[m
+[31m-//  }[m
+[31m-//  else[m
+[31m-//    SEGGER_RTT_printf (0,"hci_le_set_advertising_data() --> SUCCESS\r\n");[m
+[31m-//#else[m
+[31m-//  /* Delete the TX power level information */[m
+[31m-//  ret = aci_gap_delete_ad_type(AD_TYPE_TX_POWER_LEVEL);[m
+[31m-//  if (ret != BLE_STATUS_SUCCESS)[m
+[31m-//  {[m
+[31m-//    SEGGER_RTT_printf (0,"Error in aci_gap_delete_ad_type() 0x%04x\r\n", ret);[m
+[31m-//    return;[m
+[31m-//  }[m
+[31m-//  else[m
+[31m-//    SEGGER_RTT_printf (0,"aci_gap_delete_ad_type() --> SUCCESS\r\n");[m
+[31m-//[m
+[31m-//  /* Update the ADV data with the BEACON manufacturing data */[m
+[31m-//  ret = aci_gap_update_adv_data(27, manuf_data);[m
+[31m-//  if (ret != BLE_STATUS_SUCCESS)[m
+[31m-//  {[m
+[31m-//    SEGGER_RTT_printf (0,"Error in aci_gap_update_adv_data() 0x%04x\r\n", ret);[m
+[31m-//    return;[m
+[31m-//  }[m
+[31m-//  else[m
+[31m-//    SEGGER_RTT_printf (0,"aci_gap_update_adv_data() --> SUCCESS\r\n");[m
+[31m-//#endif[m
+[31m-//}[m
+[31m-//[m
+[31m-//int main(void)[m
+[31m-//{[m
+[31m-//  uint8_t ret;[m
+[31m-//[m
+[31m-//  /* System Init */[m
+[31m-//  SystemInit();[m
+[31m-//[m
+[31m-//  /* Identify BlueNRG-1,2 platform */[m
+[31m-//  SdkEvalIdentification();[m
+[31m-//[m
+[31m-//  /* Init the UART peripheral */[m
+[31m-//  SdkEvalComUartInit(UART_BAUDRATE);[m
+[31m-//[m
+[31m-//  /* BlueNRG-1,2 stack init */[m
+[31m-//  ret = BlueNRG_Stack_Initialization(&BlueNRG_Stack_Init_params);[m
+[31m-//  if (ret != BLE_STATUS_SUCCESS) {[m
+[31m-//    SEGGER_RTT_printf(0,"Error in BlueNRG_Stack_Initialization() 0x%02x\r\n", ret);[m
+[31m-//    while(1);[m
+[31m-//  }[m
+[31m-//[m
+[31m-//  /* Init the BlueNRG-1,2 device */[m
+[31m-//  Device_Init();[m
+[31m-//[m
+[31m-//#if ST_USE_OTA_SERVICE_MANAGER_APPLICATION[m
+[31m-//  /* Initialize the button */[m
+[31m-//  SdkEvalPushButtonInit(USER_BUTTON);[m
+[31m-//#endif /* ST_USE_OTA_SERVICE_MANAGER_APPLICATION */[m
+[31m-//[m
+[31m-//  /* Start Beacon Non Connectable Mode*/[m
+[31m-//  Start_Beaconing();[m
+[31m-//[m
+[31m-//  SEGGER_RTT_printf(0,"BlueNRG-1,2 BLE Beacon Application (version: %s)\r\n", BLE_BEACON_VERSION_STRING);[m
+[31m-//[m
+[31m-//  while(1)[m
+[31m-//  {q[m
+[31m-//    /* BlueNRG-1,2 stack tick */[m
+[31m-//    BTLE_StackTick();[m
+[31m-//[m
+[31m-//    /* Enable Power Save according the Advertising Interval */[m
+[31m-//    BlueNRG_Sleep(SLEEPMODE_NOTIMER, 0, 0);[m
+[31m-//[m
+[31m-//#if ST_USE_OTA_SERVICE_MANAGER_APPLICATION[m
+[31m-//    if (SdkEvalPushButtonGetState(USER_BUTTON) == RESET)[m
+[31m-//    {[m
+[31m-//      OTA_Jump_To_Service_Manager_Application();[m
+[31m-//    }[m
+[31m-//#endif /* ST_USE_OTA_SERVICE_MANAGER_APPLICATION */[m
+[31m-//  }[m
+[31m-//}[m
+[31m-//[m
+[31m-///* Hardware Error event.[m
+[31m-//   This event is used to notify the Host that a hardware failure has occurred in the Controller.[m
+[31m-//   Hardware_Code Values:[m
+[31m-//   - 0x01: Radio state error[m
+[31m-//   - 0x02: Timer overrun error[m
+[31m-//   - 0x03: Internal queue overflow error[m
+[31m-//   After this event is recommended to force device reset. */[m
+[31m-//[m
+[31m-//void hci_hardware_error_event(uint8_t Hardware_Code)[m
+[31m-//{[m
+[31m-//   NVIC_SystemReset();[m
+[31m-//}[m
+[31m-//[m
+[31m-//[m
+[31m-///****************** BlueNRG-1,2 Sleep Management Callback ********************************/[m
+[31m-//[m
+[31m-//SleepModes App_SleepMode_Check(SleepModes sleepMode)[m
+[31m-//{[m
+[31m-//  if(SdkEvalComIOTxFifoNotEmpty() || SdkEvalComUARTBusy())[m
+[31m-//    return SLEEPMODE_RUNNING;[m
+[31m-//[m
+[31m-//  return SLEEPMODE_NOTIMER;[m
+[31m-//}[m
+[31m-//[m
+[31m-///***************************************************************************************/[m
+[31m-//[m
+[31m-//#ifdef  USE_FULL_ASSERT[m
+[31m-//[m
+[31m-///**[m
+[31m-//* @brief  Reports the name of the source file and the source line number[m
+[31m-//*         where the assert_param error has occurred.[m
+[31m-//* @param  file: pointer to the source file name[m
+[31m-//* @param  line: assert_param error line source number[m
+[31m-//*/[m
+[31m-//void assert_failed(uint8_t* file, uint32_t line)[m
+[31m-//{[m
+[31m-//  /* User can add his own implementation to report the file name and line number,[m
+[31m-//  ex: SEGGER_RTT_printf("Wrong parameters value: file %s on line %d\r\n", file, line) */[m
+[31m-//[m
+[31m-//  /* Infinite loop */[m
+[31m-//  while (1)[m
+[31m-//  {[m
+[31m-//  }[m
+[31m-//}[m
+[31m-//[m
+[31m-//#endif[m
+[31m-//[m
+[31m-///******************* (C) COPYRIGHT 2015 STMicroelectronics *****END OF FILE****/[m
+[31m-///** \endcond[m
+[31m-// */[m
+[31m-//[m
+[31m-//[m
+[31m-//[m
+[31m-/////******************** (C) COPYRIGHT 2018 STMicroelectronics ********************[m
+[31m-////* File Name          : SensorDemo_main.c[m
+[31m-////* Author             : AMS - RF Application team[m
+[31m-////* Version            : V1.2.0[m
+[31m-////* Date               : 03-December-2018[m
+[31m-////* Description        : BlueNRG-1-2 Sensor Demo main file[m
+[31m-////********************************************************************************[m
+[31m-////* THE PRESENT FIRMWARE WHICH IS FOR GUIDANCE ONLY AIMS AT PROVIDING CUSTOMERS[m
+[31m-////* WITH CODING INFORMATION REGARDING THEIR PRODUCTS IN ORDER FOR THEM TO SAVE TIME.[m
+[31m-////* AS A RESULT, STMICROELECTRONICS SHALL NOT BE HELD LIABLE FOR ANY DIRECT,[m
+[31m-////* INDIRECT OR CONSEQUENTIAL DAMAGES WITH RESPECT TO ANY CLAIMS ARISING FROM THE[m
+[31m-////* CONTENT OF SUCH FIRMWARE AND/OR THE USE MADE BY CUSTOMERS OF THE CODING[m
+[31m-////* INFORMATION CONTAINED HEREIN IN CONNECTION WITH THEIR PRODUCTS.[m
+[31m-////*******************************************************************************/[m
+[31m-/////** @addtogroup BlueNRG1_demonstrations_applications[m
+[31m-//// * BlueNRG-1,2 SensorDemo \see SensorDemo_main.c for documentation.[m
+[31m-//// *[m
+[31m-//// *@{[m
+[31m-//// */[m
+[31m-////[m
+[31m-/////** @} */[m
+[31m-/////** \cond DOXYGEN_SHOULD_SKIP_THIS[m
+[31m-//// */[m
+[31m-/////* Includes ------------------------------------------------------------------*/[m
+[31m-////#include <stdio.h>[m
+[31m-////#include "BlueNRG1_it.h"[m
+[31m-////#include "BlueNRG1_conf.h"[m
+[31m-////#include "ble_const.h"[m
+[31m-////#include "bluenrg1_stack.h"[m
+[31m-////#include "SDK_EVAL_Config.h"[m
+[31m-////#include "sleep.h"[m
+[31m-////#include "sensor.h"[m
+[31m-////#include "SensorDemo_config.h"[m
+[31m-////#include "OTA_btl.h"[m
+[31m-////#include "gatt_db.h"[m
+[31m-////#include "SEGGER_RTT.h"[m
+[31m-////#include "SEGGER_RTT_conf.h"[m
+[31m-////#include "GPIO.h"[m
+[31m-////#include "adc.h"[m
+[31m-////#include "I2C.h"[m
+[31m-////#include "IAM20680.h"[m
+[31m-////#include "internalFlash.h"[m
+[31m-////#include "sensor.h"[m
+[31m-////[m
+[31m-/////* Private typedef -----------------------------------------------------------*/[m
+[31m-/////* Private define ------------------------------------------------------------*/[m
+[31m-////#ifndef DEBUG[m
+[31m-////#define DEBUG 0[m
+[31m-////#endif[m
+[31m-////[m
+[31m-////#if DEBUG[m
+[31m-////#include <stdio.h>[m
+[31m-//////#define SEGGER_RTT_printf(...) SEGGER_RTT_printf(__VA_ARGS__)[m
+[31m-////#else[m
+[31m-////#define SEGGER_RTT_printf(...)[m
+[31m-////#endif[m
+[31m-////[m
+[31m-////[m
+[31m-/////* Private macro -------------------------------------------------------------*/[m
+[31m-/////* Private variables ---------------------------------------------------------*/[m
+[31m-////[m
+[31m-/////* Set the Application Service Max number of attributes records with init parameters coming from application *.config.h file */[m
+[31m-////uint8_t Services_Max_Attribute_Records[NUMBER_OF_APPLICATION_SERVICES] = {MAX_NUMBER_ATTRIBUTES_RECORDS_SERVICE_1, MAX_NUMBER_ATTRIBUTES_RECORDS_SERVICE_2};[m
+[31m-////[m
+[31m-/////* Private function prototypes -----------------------------------------------*/[m
+[31m-/////* Private functions ---------------------------------------------------------*/[m
+[31m-////[m
+[31m-////int main(void)[m
+[31m-////{[m
+[31m-////  uint8_t ret;[m
+[31m-////  SEGGER_RTT_Init();[m
+[31m-////  SEGGER_RTT_ConfigUpBuffer(0,NULL,NULL,0,SEGGER_RTT_MODE_BLOCK_IF_FIFO_FULL);[m
+[31m-////[m
+[31m-////  /* System Init */[m
+[31m-////  SystemInit();[m
+[31m-////[m
+[31m-////  /* Identify BlueNRG1 platform */[m
+[31m-////  SdkEvalIdentification();[m
+[31m-////[m
+[31m-////  /* Configure I/O communication channel */[m
+[31m-////  SdkEvalComUartInit(UART_BAUDRATE);[m
+[31m-////[m
+[31m-////  /*Initialize the LEDs*/[m
+[31m-////  LED_Init();[m
+[31m-////[m
+[31m-////  I2C_test();[m
+[31m-////[m
+[31m-////  /* BlueNRG-1,2 stack init */[m
+[31m-////  ret = BlueNRG_Stack_Initialization(&BlueNRG_Stack_Init_params);[m
+[31m-////  if (ret != BLE_STATUS_SUCCESS) {[m
+[31m-////	  SEGGER_RTT_SEGGER_RTT_printf(0,"Error in BlueNRG_Stack_Initialization() 0x%02x\r\n", ret);[m
+[31m-////    while(1);[m
+[31m-////  }[m
+[31m-////[m
+[31m-////  SEGGER_RTT_SEGGER_RTT_printf(0,"Initialization Passed!!\r\n");[m
+[31m-////[m
+[31m-////#if ST_USE_OTA_SERVICE_MANAGER_APPLICATION[m
+[31m-////  /* Initialize the button: to be done before Sensor_DeviceInit for avoiding to[m
+[31m-////     overwrite pressure/temperature sensor IO configuration when using BUTTON_2 (IO5) */[m
+[31m-////  SdkEvalPushButtonInit(USER_BUTTON);[m
+[31m-////#endif /* ST_USE_OTA_SERVICE_MANAGER_APPLICATION */[m
+[31m-////[m
+[31m-////  /* Sensor Device Init */[m
+[31m-////  ret = Sensor_DeviceInit();[m
+[31m-////  if (ret != BLE_STATUS_SUCCESS) {[m
+[31m-////    SdkEvalLedOn(LED3);[m
+[31m-////    while(1);[m
+[31m-////  }[m
+[31m-////[m
+[31m-////[m
+[31m-////  while(1)[m
+[31m-////  {[m
+[31m-////    /* BLE Stack Tick */[m
+[31m-////    BTLE_StackTick();[m
+[31m-////[m
+[31m-////    /* Application Tick */[m
+[31m-////    APP_Tick();[m
+[31m-////[m
+[31m-////    /* Power Save management */[m
+[31m-////    BlueNRG_Sleep(SLEEPMODE_NOTIMER, 0, 0);[m
+[31m-////[m
+[31m-////#if ST_OTA_FIRMWARE_UPGRADE_SUPPORT[m
+[31m-////    /* Check if the OTA firmware upgrade session has been completed */[m
+[31m-////    if (OTA_Tick() == 1)[m
+[31m-////    {[m
+[31m-////      /* Jump to the new application */[m
+[31m-////      OTA_Jump_To_New_Application();[m
+[31m-////    }[m
+[31m-////#endif /* ST_OTA_FIRMWARE_UPGRADE_SUPPORT */[m
+[31m-////[m
+[31m-////#if ST_USE_OTA_SERVICE_MANAGER_APPLICATION[m
+[31m-////    if (SdkEvalPushButtonGetState(USER_BUTTON) == RESET)[m
+[31m-////    {[m
+[31m-////      OTA_Jump_To_Service_Manager_Application();[m
+[31m-////    }[m
+[31m-////#endif /* ST_USE_OTA_SERVICE_MANAGER_APPLICATION */[m
+[31m-////  }/* while (1) */[m
+[31m-////}[m
+[31m-////[m
+[31m-/////* Hardware Error event.[m
+[31m-////   This event is used to notify the Host that a hardware failure has occurred in the Controller.[m
+[31m-////   Hardware_Code Values:[m
+[31m-////   - 0x01: Radio state error[m
+[31m-////   - 0x02: Timer overrun error[m
+[31m-////   - 0x03: Internal queue overflow error[m
+[31m-////   After this event is recommended to force device reset. */[m
+[31m-////[m
+[31m-////void hci_hardware_error_event(uint8_t Hardware_Code)[m
+[31m-////{[m
+[31m-////   NVIC_SystemReset();[m
+[31m-////}[m
+[31m-////[m
+[31m-/////**[m
+[31m-////  * This event is generated to report firmware error informations.[m
+[31m-////  * FW_Error_Type possible values:[m
+[31m-////  * Values:[m
+[31m-////  - 0x01: L2CAP recombination failure[m
+[31m-////  - 0x02: GATT unexpected response[m
+[31m-////  - 0x03: GATT unexpected request[m
+[31m-////    After this event with error type (0x01, 0x02, 0x3) it is recommended to disconnect.[m
+[31m-////*/[m
+[31m-////void aci_hal_fw_error_event(uint8_t FW_Error_Type,[m
+[31m-////                            uint8_t Data_Length,[m
+[31m-////                            uint8_t Data[])[m
+[31m-////{[m
+[31m-////  if (FW_Error_Type <= 0x03)[m
+[31m-////  {[m
+[31m-////    uint16_t connHandle;[m
+[31m-////[m
+[31m-////    /* Data field is the connection handle where error has occurred */[m
+[31m-////    connHandle = LE_TO_HOST_16(Data);[m
+[31m-////[m
+[31m-////    aci_gap_terminate(connHandle, BLE_ERROR_TERMINATED_REMOTE_USER);[m
+[31m-////  }[m
+[31m-////}[m
+[31m-////[m
+[31m-/////****************** BlueNRG-1,2 Sleep Management Callback ********************************/[m
+[31m-////[m
+[31m-////SleepModes App_SleepMode_Check(SleepModes sleepMode)[m
+[31m-////{[m
+[31m-////  if(request_free_fall_notify || SdkEvalComIOTxFifoNotEmpty() || SdkEvalComUARTBusy())[m
+[31m-////    return SLEEPMODE_RUNNING;[m
+[31m-////[m
+[31m-////  return SLEEPMODE_NOTIMER;[m
+[31m-////}[m
+[31m-////[m
+[31m-/////***************************************************************************************/[m
+[31m-////[m
+[31m-////#ifdef USE_FULL_ASSERT[m
+[31m-/////*******************************************************************************[m
+[31m-////* Function Name  : assert_failed[m
+[31m-////* Description    : Reports the name of the source file and the source line number[m
+[31m-////*                  where the assert_param error has occurred.[m
+[31m-////* Input          : - file: pointer to the source file name[m
+[31m-////*                  - line: assert_param error line source number[m
+[31m-////* Output         : None[m
+[31m-////* Return         : None[m
+[31m-////*******************************************************************************/[m
+[31m-////void assert_failed(uint8_t* file, uint32_t line)[m
+[31m-////{[m
+[31m-////    /* User can add his own implementation to report the file name and line number,[m
+[31m-////    ex: SEGGER_RTT_printf("Wrong parameters value: file %s on line %d\r\n", file, line) */[m
+[31m-////[m
+[31m-////    /* Infinite loop */[m
+[31m-////    while (1)[m
+[31m-////    {}[m
+[31m-////}[m
+[31m-////#endif[m
+[32m+[m[32m}[m
+[1mdiff --git a/src/sensor.c b/src/sensor.c[m
+[1mindex 0721fe2..3b0b662 100644[m
+[1m--- a/src/sensor.c[m
+[1m+++ b/src/sensor.c[m
+[36m@@ -1,466 +1,466 @@[m
+[31m-/******************** (C) COPYRIGHT 2015 STMicroelectronics ********************[m
+[31m- * File Name          : sensor.c[m
+[31m- * Author             : AMS - VMA RF Application team[m
+[31m- * Version            : V1.0.0[m
+[31m- * Date               : 23-November-2015[m
+[31m- * Description        : Sensor init and sensor state machines[m
+[31m- ********************************************************************************[m
+[31m- * THE PRESENT FIRMWARE WHICH IS FOR GUIDANCE ONLY AIMS AT PROVIDING CUSTOMERS[m
+[31m- * WITH CODING INFORMATION REGARDING THEIR PRODUCTS IN ORDER FOR THEM TO SAVE TIME.[m
+[31m- * AS A RESULT, STMICROELECTRONICS SHALL NOT BE HELD LIABLE FOR ANY DIRECT,[m
+[31m- * INDIRECT OR CONSEQUENTIAL DAMAGES WITH RESPECT TO ANY CLAIMS ARISING FROM THE[m
+[31m- * CONTENT OF SUCH FIRMWARE AND/OR THE USE MADE BY CUSTOMERS OF THE CODING[m
+[31m- * INFORMATION CONTAINED HEREIN IN CONNECTION WITH THEIR PRODUCTS.[m
+[31m- *******************************************************************************/[m
+[31m-/* Includes ------------------------------------------------------------------*/[m
+[31m-#include <stdio.h>[m
+[31m-#include <string.h>[m
+[31m-#include "BlueNRG1_it.h"[m
+[31m-#include "BlueNRG1_conf.h"[m
+[31m-#include "ble_const.h" [m
+[31m-#include "bluenrg1_stack.h"[m
+[31m-#include "gp_timer.h"[m
+[31m-#include "SDK_EVAL_Config.h"[m
+[31m-#include "gatt_db.h"[m
+[31m-#ifndef SENSOR_EMULATION[m
+[31m-#include "LPS25HB.h"[m
+[31m-#include "lsm6ds3.h"[m
+[31m-#include "LSM6DS3_hal.h"[m
+[31m-#endif[m
+[31m-#include "OTA_btl.h"   [m
+[31m-/* Private typedef -----------------------------------------------------------*/[m
+[31m-/* Private define ------------------------------------------------------------*/[m
+[31m-#ifndef DEBUG[m
+[31m-#define DEBUG 0[m
+[31m-#endif[m
+[31m-[m
+[31m-#if DEBUG[m
+[31m-#include <stdio.h>[m
+[31m-#define PRINTF(...) printf(__VA_ARGS__)[m
+[31m-#else[m
+[31m-#define PRINTF(...)[m
+[31m-#endif[m
+[31m-[m
+[31m-#define UPDATE_CONN_PARAM 0 [m
+[31m-#define  ADV_INTERVAL_MIN_MS  500[m
+[31m-#define  ADV_INTERVAL_MAX_MS  600[m
+[31m-[m
+[31m-#define BLE_SENSOR_VERSION_STRING "1.1.0" [m
+[31m-[m
+[31m-/* Private macro -------------------------------------------------------------*/[m
+[31m-/* Private variables ---------------------------------------------------------*/[m
+[31m-volatile uint8_t set_connectable = 1;[m
+[31m-uint16_t connection_handle = 0;[m
+[31m-uint8_t connInfo[20];[m
+[31m-[m
+[31m-BOOL sensor_board = FALSE; // It is True if sensor boad has been detected[m
+[31m-[m
+[31m-int connected = FALSE;[m
+[31m-#if UPDATE_CONN_PARAM[m
+[31m-#define UPDATE_TIMER 2 //TBR[m
+[31m-int l2cap_request_sent = FALSE;[m
+[31m-static uint8_t l2cap_req_timer_expired = FALSE; [m
+[31m-#endif[m
+[31m-[m
+[31m-#define SENSOR_TIMER 1[m
+[31m-static uint16_t acceleration_update_rate = 200;[m
+[31m-static uint8_t sensorTimer_expired = FALSE;[m
+[31m-[m
+[31m-#ifndef SENSOR_EMULATION[m
+[31m-PRESSURE_DrvTypeDef* xLPS25HBDrv = &LPS25HBDrv;  [m
+[31m-IMU_6AXES_DrvTypeDef *Imu6AxesDrv = NULL;[m
+[31m-LSM6DS3_DrvExtTypeDef *Imu6AxesDrvExt = NULL;[m
+[31m-static AxesRaw_t acceleration_data; [m
+[31m-#endif [m
+[31m-[m
+[31m-volatile uint8_t request_free_fall_notify = FALSE; [m
+[31m-  [m
+[31m-/* Private function prototypes -----------------------------------------------*/[m
+[31m-/* Private functions ---------------------------------------------------------*/[m
+[31m-[m
+[31m-#ifndef SENSOR_EMULATION[m
+[31m-[m
+[31m-static IMU_6AXES_InitTypeDef Acc_InitStructure; [m
+[31m-/*******************************************************************************[m
+[31m- * Function Name  : Init_Accelerometer.[m
+[31m- * Description    : Init LIS331DLH accelerometer.[m
+[31m- * Input          : None.[m
+[31m- * Output         : None.[m
+[31m- * Return         : None.[m
+[31m- *******************************************************************************/[m
+[31m-void Init_Accelerometer(void)[m
+[31m-{[m
+[31m-  /* LSM6DS3 library setting */[m
+[31m-  uint8_t tmp1 = 0x00;[m
+[31m-  [m
+[31m-  Imu6AxesDrv = &LSM6DS3Drv;[m
+[31m-  Imu6AxesDrvExt = &LSM6DS3Drv_ext_internal;[m
+[31m-  Acc_InitStructure.G_FullScale      = 125.0f;[m
+[31m-  Acc_InitStructure.G_OutputDataRate = 13.0f;[m
+[31m-  Acc_InitStructure.G_X_Axis         = 0; //1;[m
+[31m-  Acc_InitStructure.G_Y_Axis         = 0;//1;[m
+[31m-  Acc_InitStructure.G_Z_Axis         = 0; //1;[m
+[31m-  Acc_InitStructure.X_FullScale      = 2.0f;[m
+[31m-  Acc_InitStructure.X_OutputDataRate = 13.0f;[m
+[31m-  Acc_InitStructure.X_X_Axis         = 1;[m
+[31m-  Acc_InitStructure.X_Y_Axis         = 1;[m
+[31m-  Acc_InitStructure.X_Z_Axis         = 1;  [m
+[31m-  [m
+[31m-  /* LSM6DS3 initiliazation */[m
+[31m-  Imu6AxesDrv->Init(&Acc_InitStructure);[m
+[31m-    [m
+[31m-  /* Disable all mems IRQs in order to enable free fall detection */ //TBR[m
+[31m-  LSM6DS3_IO_Write(&tmp1, LSM6DS3_XG_MEMS_ADDRESS, LSM6DS3_XG_INT1_CTRL, 1);[m
+[31m-  [m
+[31m-  /* Clear first previous data */[m
+[31m-  Imu6AxesDrv->Get_X_Axes((int32_t *)&acceleration_data);[m
+[31m-  [m
+[31m-  /* Enable Free fall detection */[m
+[31m-  Imu6AxesDrvExt->Enable_Free_Fall_Detection(); [m
+[31m-}[m
+[31m-[m
+[31m-static PRESSURE_InitTypeDef Pressure_InitStructure;[m
+[31m-[m
+[31m-/*******************************************************************************[m
+[31m- * Function Name  : Init_Pressure_Temperature_Sensor.[m
+[31m- * Description    : Init LPS25HB pressure and temperature sensor.[m
+[31m- * Input          : None.[m
+[31m- * Output         : None.[m
+[31m- * Return         : None.[m
+[31m- *******************************************************************************/[m
+[31m-void Init_Pressure_Temperature_Sensor(void)[m
+[31m-{  [m
+[31m-  /* LPS25HB initialization */[m
+[31m-[m
+[31m-  Pressure_InitStructure.OutputDataRate = LPS25HB_ODR_1Hz;[m
+[31m-  Pressure_InitStructure.BlockDataUpdate = LPS25HB_BDU_READ; //LPS25HB_BDU_READ LPS25HB_BDU_CONT[m
+[31m-  Pressure_InitStructure.DiffEnable = LPS25HB_DIFF_ENABLE;  // LPS25HB_DIFF_ENABLE[m
+[31m-  Pressure_InitStructure.SPIMode = LPS25HB_SPI_SIM_3W;  // LPS25HB_SPI_SIM_3W[m
+[31m-  Pressure_InitStructure.PressureResolution = LPS25HB_P_RES_AVG_32;[m
+[31m-  Pressure_InitStructure.TemperatureResolution = LPS25HB_T_RES_AVG_16;  [m
+[31m-  xLPS25HBDrv->Init(&Pressure_InitStructure);[m
+[31m-}[m
+[31m-[m
+[31m-/*******************************************************************************[m
+[31m- * Function Name  : Init_Humidity_Sensor.[m
+[31m- * Description    : Init HTS221 temperature sensor.[m
+[31m- * Input          : None.[m
+[31m- * Output         : None.[m
+[31m- * Return         : 0 if success, 1 if error.[m
+[31m- *******************************************************************************/[m
+[31m-int Init_Humidity_Sensor(void)[m
+[31m-{[m
+[31m-  /* No humidity sensor available on BlueNRG-1 Application Board*/[m
+[31m-  return 0;[m
+[31m-}[m
+[31m-#endif[m
+[31m-[m
+[31m-/*******************************************************************************[m
+[31m- * Function Name  : Sensor_DeviceInit.[m
+[31m- * Description    : Init the device sensors.[m
+[31m- * Input          : None.[m
+[31m- * Return         : Status.[m
+[31m- *******************************************************************************/[m
+[31m-uint8_t Sensor_DeviceInit()[m
+[31m-{[m
+[31m-  uint8_t bdaddr[] = {0x12, 0x34, 0x00, 0xE1, 0x80, 0x02};[m
+[31m-  uint8_t ret;[m
+[31m-  uint16_t service_handle, dev_name_char_handle, appearance_char_handle;[m
+[31m-  uint8_t device_name[] = {'B', 'l', 'u', 'e', 'N', 'R', 'G'};[m
+[31m-[m
+[31m-  /* Set the device public address */[m
+[31m-  ret = aci_hal_write_config_data(CONFIG_DATA_PUBADDR_OFFSET, CONFIG_DATA_PUBADDR_LEN,[m
+[31m-                                  bdaddr);  [m
+[31m-  if(ret != BLE_STATUS_SUCCESS) {[m
+[31m-    PRINTF("aci_hal_write_config_data() failed: 0x%02x\r\n", ret);[m
+[31m-    return ret;[m
+[31m-  }[m
+[31m-  [m
+[31m-  /* Set the TX power -2 dBm */[m
+[31m-  aci_hal_set_tx_power_level(1, 4);[m
+[31m-  [m
+[31m-  /* GATT Init */[m
+[31m-  ret = aci_gatt_init();[m
+[31m-  if (ret != BLE_STATUS_SUCCESS) {[m
+[31m-    PRINTF("aci_gatt_init() failed: 0x%02x\r\n", ret);[m
+[31m-    return ret;[m
+[31m-  }[m
+[31m-  [m
+[31m-  /* GAP Init */[m
+[31m-  ret = aci_gap_init(GAP_PERIPHERAL_ROLE, 0, 0x07, &service_handle, &dev_name_char_handle, &appearance_char_handle);[m
+[31m-  if (ret != BLE_STATUS_SUCCESS) {[m
+[31m-    PRINTF("aci_gap_init() failed: 0x%02x\r\n", ret);[m
+[31m-    return ret;[m
+[31m-  }[m
+[31m- [m
+[31m-  /* Update device name */[m
+[31m-  ret = aci_gatt_update_char_value_ext(0, service_handle, dev_name_char_handle, 0,sizeof(device_name), 0, sizeof(device_name), device_name);[m
+[31m-  if(ret != BLE_STATUS_SUCCESS) {[m
+[31m-    PRINTF("aci_gatt_update_char_value_ext() failed: 0x%02x\r\n", ret);[m
+[31m-    return ret;[m
+[31m-  }[m
+[31m-  [m
+[31m-  ret = aci_gap_set_authentication_requirement(BONDING,[m
+[31m-                                               MITM_PROTECTION_REQUIRED,[m
+[31m-                                               SC_IS_NOT_SUPPORTED,[m
+[31m-                                               KEYPRESS_IS_NOT_SUPPORTED,[m
+[31m-                                               7, [m
+[31m-                                               16,[m
+[31m-                                               USE_FIXED_PIN_FOR_PAIRING,[m
+[31m-                                               123456,[m
+[31m-                                               0x00);[m
+[31m-  if(ret != BLE_STATUS_SUCCESS) {[m
+[31m-    PRINTF("aci_gap_set_authentication_requirement()failed: 0x%02x\r\n", ret);[m
+[31m-    return ret;[m
+[31m-  } [m
+[31m-  [m
+[31m-  PRINTF("BLE Stack Initialized with SUCCESS\n");[m
+[31m-[m
+[31m-#ifndef SENSOR_EMULATION /* User Real sensors */[m
+[31m-  Init_Accelerometer();[m
+[31m-  Init_Pressure_Temperature_Sensor();[m
+[31m-#endif   [m
+[31m-[m
+[31m-[m
+[31m-  /* Add ACC service and Characteristics */[m
+[31m-  ret = Add_Acc_Service();[m
+[31m-  if(ret == BLE_STATUS_SUCCESS) {[m
+[31m-    PRINTF("Acceleration service added successfully.\n");[m
+[31m-  } else {[m
+[31m-    PRINTF("Error while adding Acceleration service: 0x%02x\r\n", ret);[m
+[31m-    return ret;[m
+[31m-  }[m
+[31m-[m
+[31m-  /* Add Environmental Sensor Service */[m
+[31m-  ret = Add_Environmental_Sensor_Service();[m
+[31m-  if(ret == BLE_STATUS_SUCCESS) {[m
+[31m-    PRINTF("Environmental service added successfully.\n");[m
+[31m-  } else {[m
+[31m-    PRINTF("Error while adding Environmental service: 0x%04x\r\n", ret);[m
+[31m-    return ret;[m
+[31m-  }[m
+[31m-[m
+[31m-#if ST_OTA_FIRMWARE_UPGRADE_SUPPORT     [m
+[31m-  ret = OTA_Add_Btl_Service();[m
+[31m-  if(ret == BLE_STATUS_SUCCESS)[m
+[31m-    PRINTF("OTA service added successfully.\n");[m
+[31m-  else[m
+[31m-    PRINTF("Error while adding OTA service.\n");[m
+[31m-#endif /* ST_OTA_FIRMWARE_UPGRADE_SUPPORT */ [m
+[31m-  [m
+[31m-  /* Start the Sensor Timer */[m
+[31m-  ret = HAL_VTimerStart_ms(SENSOR_TIMER, acceleration_update_rate);[m
+[31m-  if (ret != BLE_STATUS_SUCCESS) {[m
+[31m-    PRINTF("HAL_VTimerStart_ms() failed; 0x%02x\r\n", ret);[m
+[31m-    return ret;[m
+[31m-  } else {[m
+[31m-    sensorTimer_expired = FALSE;[m
+[31m-  }[m
+[31m-[m
+[31m-  return BLE_STATUS_SUCCESS;[m
+[31m-}[m
+[31m-[m
+[31m-/*******************************************************************************[m
+[31m- * Function Name  : Set_DeviceConnectable.[m
+[31m- * Description    : Puts the device in connectable mode.[m
+[31m- * Input          : None.[m
+[31m- * Output         : None.[m
+[31m- * Return         : None.[m
+[31m- *******************************************************************************/[m
+[31m-void Set_DeviceConnectable(void)[m
+[31m-{  [m
+[31m-  uint8_t ret;[m
+[31m-  uint8_t local_name[] = {AD_TYPE_COMPLETE_LOCAL_NAME,'B','l','u','e','N','R','G'}; [m
+[31m-[m
+[31m-#if ST_OTA_FIRMWARE_UPGRADE_SUPPORT[m
+[31m-  hci_le_set_scan_response_data(18,BTLServiceUUID4Scan); [m
+[31m-#else[m
+[31m-  hci_le_set_scan_response_data(0,NULL);[m
+[31m-#endif /* ST_OTA_FIRMWARE_UPGRADE_SUPPORT */ [m
+[31m-  PRINTF("Set General Discoverable Mode.\n");[m
+[31m-  [m
+[31m-  ret = aci_gap_set_discoverable(ADV_IND,[m
+[31m-                                (ADV_INTERVAL_MIN_MS*1000)/625,(ADV_INTERVAL_MAX_MS*1000)/625,[m
+[31m-                                 STATIC_RANDOM_ADDR, NO_WHITE_LIST_USE,[m
+[31m-                                 sizeof(local_name), local_name, 0, NULL, 0, 0); [m
+[31m-  if(ret != BLE_STATUS_SUCCESS)[m
+[31m-  {[m
+[31m-    PRINTF("aci_gap_set_discoverable() failed: 0x%02x\r\n",ret);[m
+[31m-    SdkEvalLedOn(LED3);  [m
+[31m-  }[m
+[31m-  else[m
+[31m-    PRINTF("aci_gap_set_discoverable() --> SUCCESS\r\n");[m
+[31m-}[m
+[31m-[m
+[31m-/*******************************************************************************[m
+[31m- * Function Name  : APP_Tick.[m
+[31m- * Description    : Sensor Demo state machine.[m
+[31m- * Input          : None.[m
+[31m- * Output         : None.[m
+[31m- * Return         : None.[m
+[31m- *******************************************************************************/[m
+[31m-void APP_Tick(void)[m
+[31m-{[m
+[31m-  /* Make the device discoverable */[m
+[31m-  if(set_connectable) {[m
+[31m-    Set_DeviceConnectable();[m
+[31m-    set_connectable = FALSE;[m
+[31m-  }[m
+[31m-[m
+[31m-#if UPDATE_CONN_PARAM      [m
+[31m-  /* Connection parameter update request */[m
+[31m-  if(connected && !l2cap_request_sent && l2cap_req_timer_expired){[m
+[31m-    aci_l2cap_connection_parameter_update_req(connection_handle, 9, 20, 0, 600); //24, 24[m
+[31m-    l2cap_request_sent = TRUE;[m
+[31m-  }[m
+[31m-#endif[m
+[31m-    [m
+[31m-  /*  Update sensor value */[m
+[31m-  if (sensorTimer_expired) {[m
+[31m-    sensorTimer_expired = FALSE;[m
+[31m-    if (HAL_VTimerStart_ms(SENSOR_TIMER, acceleration_update_rate) != BLE_STATUS_SUCCESS)[m
+[31m-      sensorTimer_expired = TRUE;[m
+[31m-    if(connected) {[m
+[31m-      AxesRaw_t acc_data;[m
+[31m-      [m
+[31m-      /* Activity Led */[m
+[31m-      SdkEvalLedToggle(LED1);  [m
+[31m-[m
+[31m-      /* Get Acceleration data */[m
+[31m-      if (GetAccAxesRaw(&acc_data) == IMU_6AXES_OK) {[m
+[31m-        Acc_Update(&acc_data);[m
+[31m-      }[m
+[31m-        [m
+[31m-      /* Get free fall status */[m
+[31m-      GetFreeFallStatus();[m
+[31m-    }[m
+[31m-  }[m
+[31m-[m
+[31m-  /* Free fall notification */[m
+[31m-  if(request_free_fall_notify == TRUE) {[m
+[31m-    request_free_fall_notify = FALSE;[m
+[31m-    Free_Fall_Notify();[m
+[31m-  }[m
+[31m-}[m
+[31m-[m
+[31m-/* ***************** BlueNRG-1 Stack Callbacks ********************************/[m
+[31m-[m
+[31m-/*******************************************************************************[m
+[31m- * Function Name  : hci_le_connection_complete_event.[m
+[31m- * Description    : This event indicates that a new connection has been created.[m
+[31m- * Input          : See file bluenrg1_events.h[m
+[31m- * Output         : See file bluenrg1_events.h[m
+[31m- * Return         : See file bluenrg1_events.h[m
+[31m- *******************************************************************************/[m
+[31m-void hci_le_connection_complete_event(uint8_t Status,[m
+[31m-                                      uint16_t Connection_Handle,[m
+[31m-                                      uint8_t Role,[m
+[31m-                                      uint8_t Peer_Address_Type,[m
+[31m-                                      uint8_t Peer_Address[6],[m
+[31m-                                      uint16_t Conn_Interval,[m
+[31m-                                      uint16_t Conn_Latency,[m
+[31m-                                      uint16_t Supervision_Timeout,[m
+[31m-                                      uint8_t Master_Clock_Accuracy)[m
+[31m-{[m
+[31m-  [m
+[31m-  connected = TRUE;[m
+[31m-  connection_handle = Connection_Handle;[m
+[31m-  [m
+[31m-#if UPDATE_CONN_PARAM    [m
+[31m-  l2cap_request_sent = FALSE;[m
+[31m-  HAL_VTimerStart_ms(UPDATE_TIMER, CLOCK_SECOND*2);[m
+[31m-  {[m
+[31m-    l2cap_req_timer_expired = FALSE;[m
+[31m-  }[m
+[31m-#endif[m
+[31m-    [m
+[31m-}/* end hci_le_connection_complete_event() */[m
+[31m-[m
+[31m-/*******************************************************************************[m
+[31m- * Function Name  : hci_disconnection_complete_event.[m
+[31m- * Description    : This event occurs when a connection is terminated.[m
+[31m- * Input          : See file bluenrg1_events.h[m
+[31m- * Output         : See file bluenrg1_events.h[m
+[31m- * Return         : See file bluenrg1_events.h[m
+[31m- *******************************************************************************/[m
+[31m-void hci_disconnection_complete_event(uint8_t Status,[m
+[31m-                                      uint16_t Connection_Handle,[m
+[31m-                                      uint8_t Reason)[m
+[31m-{[m
+[31m-  connected = FALSE;[m
+[31m-  /* Make the device connectable again. */[m
+[31m-  set_connectable = TRUE;[m
+[31m-  connection_handle =0;[m
+[31m-  [m
+[31m-  SdkEvalLedOn(LED1);//activity led   [m
+[31m-#if ST_OTA_FIRMWARE_UPGRADE_SUPPORT[m
+[31m-  OTA_terminate_connection();[m
+[31m-#endif [m
+[31m-}/* end hci_disconnection_complete_event() */[m
+[31m-[m
+[31m-[m
+[31m-/*******************************************************************************[m
+[31m- * Function Name  : aci_gatt_read_permit_req_event.[m
+[31m- * Description    : This event is given when a read request is received[m
+[31m- *                  by the server from the client.[m
+[31m- * Input          : See file bluenrg1_events.h[m
+[31m- * Output         : See file bluenrg1_events.h[m
+[31m- * Return         : See file bluenrg1_events.h[m
+[31m- *******************************************************************************/[m
+[31m-void aci_gatt_read_permit_req_event(uint16_t Connection_Handle,[m
+[31m-                                    uint16_t Attribute_Handle,[m
+[31m-                                    uint16_t Offset)[m
+[31m-{[m
+[31m-  Read_Request_CB(Attribute_Handle);    [m
+[31m-}[m
+[31m-[m
+[31m-/*******************************************************************************[m
+[31m- * Function Name  : HAL_VTimerTimeoutCallback.[m
+[31m- * Description    : This function will be called on the expiry of [m
+[31m- *                  a one-shot virtual timer.[m
+[31m- * Input          : See file bluenrg1_stack.h[m
+[31m- * Output         : See file bluenrg1_stack.h[m
+[31m- * Return         : See file bluenrg1_stack.h[m
+[31m- *******************************************************************************/[m
+[31m-void HAL_VTimerTimeoutCallback(uint8_t timerNum)[m
+[31m-{[m
+[31m-  if (timerNum == SENSOR_TIMER) {[m
+[31m-    sensorTimer_expired = TRUE;[m
+[31m-  }[m
+[31m-#if UPDATE_CONN_PARAM[m
+[31m-  else if (timerNum == UPDATE_TIMER) {[m
+[31m-    l2cap_req_timer_expired = TRUE;[m
+[31m-  }[m
+[31m-#endif[m
+[31m-}[m
+[31m-[m
+[31m-/*******************************************************************************[m
+[31m- * Function Name  : aci_gatt_attribute_modified_event.[m
+[31m- * Description    : This event occurs when an attribute is modified.[m
+[31m- * Input          : See file bluenrg1_events.h[m
+[31m- * Output         : See file bluenrg1_events.h[m
+[31m- * Return         : See file bluenrg1_events.h[m
+[31m- *******************************************************************************/[m
+[31m-void aci_gatt_attribute_modified_event(uint16_t Connection_Handle,[m
+[31m-                                       uint16_t Attr_Handle,[m
+[31m-                                       uint16_t Offset,[m
+[31m-                                       uint16_t Attr_Data_Length,[m
+[31m-                                       uint8_t Attr_Data[])[m
+[31m-{[m
+[31m-#if ST_OTA_FIRMWARE_UPGRADE_SUPPORT[m
+[31m-  OTA_Write_Request_CB(Connection_Handle, Attr_Handle, Attr_Data_Length, Attr_Data);[m
+[31m-#endif /* ST_OTA_FIRMWARE_UPGRADE_SUPPORT */ [m
+[31m-}[m
+[31m-[m
+[31m-[m
+[31m-void aci_hal_end_of_radio_activity_event(uint8_t Last_State,[m
+[31m-                                         uint8_t Next_State,[m
+[31m-                                         uint32_t Next_State_SysTime)[m
+[31m-{[m
+[31m-#if ST_OTA_FIRMWARE_UPGRADE_SUPPORT[m
+[31m-  if (Next_State == 0x02) /* 0x02: Connection event slave */[m
+[31m-  {[m
+[31m-    OTA_Radio_Activity(Next_State_SysTime);  [m
+[31m-  }[m
+[31m-#endif [m
+[31m-}[m
+[32m+[m[32m///******************** (C) COPYRIGHT 2015 STMicroelectronics ********************[m
+[32m+[m[32m// * File Name          : sensor.c[m
+[32m+[m[32m// * Author             : AMS - VMA RF Application team[m
+[32m+[m[32m// * Version            : V1.0.0[m
+[32m+[m[32m// * Date               : 23-November-2015[m
+[32m+[m[32m// * Description        : Sensor init and sensor state machines[m
+[32m+[m[32m// ********************************************************************************[m
+[32m+[m[32m// * THE PRESENT FIRMWARE WHICH IS FOR GUIDANCE ONLY AIMS AT PROVIDING CUSTOMERS[m
+[32m+[m[32m// * WITH CODING INFORMATION REGARDING THEIR PRODUCTS IN ORDER FOR THEM TO SAVE TIME.[m
+[32m+[m[32m// * AS A RESULT, STMICROELECTRONICS SHALL NOT BE HELD LIABLE FOR ANY DIRECT,[m
+[32m+[m[32m// * INDIRECT OR CONSEQUENTIAL DAMAGES WITH RESPECT TO ANY CLAIMS ARISING FROM THE[m
+[32m+[m[32m// * CONTENT OF SUCH FIRMWARE AND/OR THE USE MADE BY CUSTOMERS OF THE CODING[m
+[32m+[m[32m// * INFORMATION CONTAINED HEREIN IN CONNECTION WITH THEIR PRODUCTS.[m
+[32m+[m[32m// *******************************************************************************/[m
+[32m+[m[32m///* Includes ------------------------------------------------------------------*/[m
+[32m+[m[32m//#include <stdio.h>[m
+[32m+[m[32m//#include <string.h>[m
+[32m+[m[32m//#include "BlueNRG1_it.h"[m
+[32m+[m[32m//#include "BlueNRG1_conf.h"[m
+[32m+[m[32m//#include "ble_const.h"[m
+[32m+[m[32m//#include "bluenrg1_stack.h"[m
+[32m+[m[32m//#include "gp_timer.h"[m
+[32m+[m[32m//#include "SDK_EVAL_Config.h"[m
+[32m+[m[32m//#include "gatt_db.h"[m
+[32m+[m[32m//#ifndef SENSOR_EMULATION[m
+[32m+[m[32m//#include "LPS25HB.h"[m
+[32m+[m[32m//#include "lsm6ds3.h"[m
+[32m+[m[32m//#include "LSM6DS3_hal.h"[m
+[32m+[m[32m//#endif[m
+[32m+[m[32m//#include "OTA_btl.h"[m
+[32m+[m[32m///* Private typedef -----------------------------------------------------------*/[m
+[32m+[m[32m///* Private define ------------------------------------------------------------*/[m
+[32m+[m[32m//#ifndef DEBUG[m
+[32m+[m[32m//#define DEBUG 0[m
+[32m+[m[32m//#endif[m
+[32m+[m[32m//[m
+[32m+[m[32m//#if DEBUG[m
+[32m+[m[32m//#include <stdio.h>[m
+[32m+[m[32m//#define PRINTF(...) printf(__VA_ARGS__)[m
+[32m+[m[32m//#else[m
+[32m+[m[32m//#define PRINTF(...)[m
+[32m+[m[32m//#endif[m
+[32m+[m[32m//[m
+[32m+[m[32m//#define UPDATE_CONN_PARAM 0[m
+[32m+[m[32m//#define  ADV_INTERVAL_MIN_MS  500[m
+[32m+[m[32m//#define  ADV_INTERVAL_MAX_MS  600[m
+[32m+[m[32m//[m
+[32m+[m[32m//#define BLE_SENSOR_VERSION_STRING "1.1.0"[m
+[32m+[m[32m//[m
+[32m+[m[32m///* Private macro -------------------------------------------------------------*/[m
+[32m+[m[32m///* Private variables ---------------------------------------------------------*/[m
+[32m+[m[32m//volatile uint8_t set_connectable = 1;[m
+[32m+[m[32m//uint16_t connection_handle = 0;[m
+[32m+[m[32m//uint8_t connInfo[20];[m
+[32m+[m[32m//[m
+[32m+[m[32m//BOOL sensor_board = FALSE; // It is True if sensor boad has been detected[m
+[32m+[m[32m//[m
+[32m+[m[32m//int connected = FALSE;[m
+[32m+[m[32m//#if UPDATE_CONN_PARAM[m
+[32m+[m[32m//#define UPDATE_TIMER 2 //TBR[m
+[32m+[m[32m//int l2cap_request_sent = FALSE;[m
+[32m+[m[32m//static uint8_t l2cap_req_timer_expired = FALSE;[m
+[32m+[m[32m//#endif[m
+[32m+[m[32m//[m
+[32m+[m[32m//#define SENSOR_TIMER 1[m
+[32m+[m[32m//static uint16_t acceleration_update_rate = 200;[m
+[32m+[m[32m//static uint8_t sensorTimer_expired = FALSE;[m
+[32m+[m[32m//[m
+[32m+[m[32m//#ifndef SENSOR_EMULATION[m
+[32m+[m[32m//PRESSURE_DrvTypeDef* xLPS25HBDrv = &LPS25HBDrv;[m
+[32m+[m[32m//IMU_6AXES_DrvTypeDef *Imu6AxesDrv = NULL;[m
+[32m+[m[32m//LSM6DS3_DrvExtTypeDef *Imu6AxesDrvExt = NULL;[m
+[32m+[m[32m//static AxesRaw_t acceleration_data;[m
+[32m+[m[32m//#endif[m
+[32m+[m[32m//[m
+[32m+[m[32m//volatile uint8_t request_free_fall_notify = FALSE;[m
+[32m+[m[32m//[m
+[32m+[m[32m///* Private function prototypes -----------------------------------------------*/[m
+[32m+[m[32m///* Private functions ---------------------------------------------------------*/[m
+[32m+[m[32m//[m
+[32m+[m[32m//#ifndef SENSOR_EMULATION[m
+[32m+[m[32m//[m
+[32m+[m[32m//static IMU_6AXES_InitTypeDef Acc_InitStructure;[m
+[32m+[m[32m///*******************************************************************************[m
+[32m+[m[32m// * Function Name  : Init_Accelerometer.[m
+[32m+[m[32m// * Description    : Init LIS331DLH accelerometer.[m
+[32m+[m[32m// * Input          : None.[m
+[32m+[m[32m// * Output         : None.[m
+[32m+[m[32m// * Return         : None.[m
+[32m+[m[32m// *******************************************************************************/[m
+[32m+[m[32m//void Init_Accelerometer(void)[m
+[32m+[m[32m//{[m
+[32m+[m[32m//  /* LSM6DS3 library setting */[m
+[32m+[m[32m//  uint8_t tmp1 = 0x00;[m
+[32m+[m[32m//[m
+[32m+[m[32m//  Imu6AxesDrv = &LSM6DS3Drv;[m
+[32m+[m[32m//  Imu6AxesDrvExt = &LSM6DS3Drv_ext_internal;[m
+[32m+[m[32m//  Acc_InitStructure.G_FullScale      = 125.0f;[m
+[32m+[m[32m//  Acc_InitStructure.G_OutputDataRate = 13.0f;[m
+[32m+[m[32m//  Acc_InitStructure.G_X_Axis         = 0; //1;[m
+[32m+[m[32m//  Acc_InitStructure.G_Y_Axis         = 0;//1;[m
+[32m+[m[32m//  Acc_InitStructure.G_Z_Axis         = 0; //1;[m
+[32m+[m[32m//  Acc_InitStructure.X_FullScale      = 2.0f;[m
+[32m+[m[32m//  Acc_InitStructure.X_OutputDataRate = 13.0f;[m
+[32m+[m[32m//  Acc_InitStructure.X_X_Axis         = 1;[m
+[32m+[m[32m//  Acc_InitStructure.X_Y_Axis         = 1;[m
+[32m+[m[32m//  Acc_InitStructure.X_Z_Axis         = 1;[m
+[32m+[m[32m//[m
+[32m+[m[32m//  /* LSM6DS3 initiliazation */[m
+[32m+[m[32m//  Imu6AxesDrv->Init(&Acc_InitStructure);[m
+[32m+[m[32m//[m
+[32m+[m[32m//  /* Disable all mems IRQs in order to enable free fall detection */ //TBR[m
+[32m+[m[32m//  LSM6DS3_IO_Write(&tmp1, LSM6DS3_XG_MEMS_ADDRESS, LSM6DS3_XG_INT1_CTRL, 1);[m
+[32m+[m[32m//[m
+[32m+[m[32m//  /* Clear first previous data */[m
+[32m+[m[32m//  Imu6AxesDrv->Get_X_Axes((int32_t *)&acceleration_data);[m
+[32m+[m[32m//[m
+[32m+[m[32m//  /* Enable Free fall detection */[m
+[32m+[m[32m//  Imu6AxesDrvExt->Enable_Free_Fall_Detection();[m
+[32m+[m[32m//}[m
+[32m+[m[32m//[m
+[32m+[m[32m//static PRESSURE_InitTypeDef Pressure_InitStructure;[m
+[32m+[m[32m//[m
+[32m+[m[32m///*******************************************************************************[m
+[32m+[m[32m// * Function Name  : Init_Pressure_Temperature_Sensor.[m
+[32m+[m[32m// * Description    : Init LPS25HB pressure and temperature sensor.[m
+[32m+[m[32m// * Input          : None.[m
+[32m+[m[32m// * Output         : None.[m
+[32m+[m[32m// * Return         : None.[m
+[32m+[m[32m// *******************************************************************************/[m
+[32m+[m[32m//void Init_Pressure_Temperature_Sensor(void)[m
+[32m+[m[32m//{[m
+[32m+[m[32m//  /* LPS25HB initialization */[m
+[32m+[m[32m//[m
+[32m+[m[32m//  Pressure_InitStructure.OutputDataRate = LPS25HB_ODR_1Hz;[m
+[32m+[m[32m//  Pressure_InitStructure.BlockDataUpdate = LPS25HB_BDU_READ; //LPS25HB_BDU_READ LPS25HB_BDU_CONT[m
+[32m+[m[32m//  Pressure_InitStructure.DiffEnable = LPS25HB_DIFF_ENABLE;  // LPS25HB_DIFF_ENABLE[m
+[32m+[m[32m//  Pressure_InitStructure.SPIMode = LPS25HB_SPI_SIM_3W;  // LPS25HB_SPI_SIM_3W[m
+[32m+[m[32m//  Pressure_InitStructure.PressureResolution = LPS25HB_P_RES_AVG_32;[m
+[32m+[m[32m//  Pressure_InitStructure.TemperatureResolution = LPS25HB_T_RES_AVG_16;[m
+[32m+[m[32m//  xLPS25HBDrv->Init(&Pressure_InitStructure);[m
+[32m+[m[32m//}[m
+[32m+[m[32m//[m
+[32m+[m[32m///*******************************************************************************[m
+[32m+[m[32m// * Function Name  : Init_Humidity_Sensor.[m
+[32m+[m[32m// * Description    : Init HTS221 temperature sensor.[m
+[32m+[m[32m// * Input          : None.[m
+[32m+[m[32m// * Output         : None.[m
+[32m+[m[32m// * Return         : 0 if success, 1 if error.[m
+[32m+[m[32m// *******************************************************************************/[m
+[32m+[m[32m//int Init_Humidity_Sensor(void)[m
+[32m+[m[32m//{[m
+[32m+[m[32m//  /* No humidity sensor available on BlueNRG-1 Application Board*/[m
+[32m+[m[32m//  return 0;[m
+[32m+[m[32m//}[m
+[32m+[m[32m//#endif[m
+[32m+[m[32m//[m
+[32m+[m[32m///*******************************************************************************[m
+[32m+[m[32m// * Function Name  : Sensor_DeviceInit.[m
+[32m+[m[32m// * Description    : Init the device sensors.[m
+[32m+[m[32m// * Input          : None.[m
+[32m+[m[32m// * Return         : Status.[m
+[32m+[m[32m// *******************************************************************************/[m
+[32m+[m[32m//uint8_t Sensor_DeviceInit()[m
+[32m+[m[32m//{[m
+[32m+[m[32m//  uint8_t bdaddr[] = {0x12, 0x34, 0x00, 0xE1, 0x80, 0x02};[m
+[32m+[m[32m//  uint8_t ret;[m
+[32m+[m[32m//  uint16_t service_handle, dev_name_char_handle, appearance_char_handle;[m
+[32m+[m[32m//  uint8_t device_name[] = {'B', 'l', 'u', 'e', 'N', 'R', 'G'};[m
+[32m+[m[32m//[m
+[32m+[m[32m//  /* Set the device public address */[m
+[32m+[m[32m//  ret = aci_hal_write_config_data(CONFIG_DATA_PUBADDR_OFFSET, CONFIG_DATA_PUBADDR_LEN,[m
+[32m+[m[32m//                                  bdaddr);[m
+[32m+[m[32m//  if(ret != BLE_STATUS_SUCCESS) {[m
+[32m+[m[32m//    PRINTF("aci_hal_write_config_data() failed: 0x%02x\r\n", ret);[m
+[32m+[m[32m//    return ret;[m
+[32m+[m[32m//  }[m
+[32m+[m[32m//[m
+[32m+[m[32m//  /* Set the TX power -2 dBm */[m
+[32m+[m[32m//  aci_hal_set_tx_power_level(1, 4);[m
+[32m+[m[32m//[m
+[32m+[m[32m//  /* GATT Init */[m
+[32m+[m[32m//  ret = aci_gatt_init();[m
+[32m+[m[32m//  if (ret != BLE_STATUS_SUCCESS) {[m
+[32m+[m[32m//    PRINTF("aci_gatt_init() failed: 0x%02x\r\n", ret);[m
+[32m+[m[32m//    return ret;[m
+[32m+[m[32m//  }[m
+[32m+[m[32m//[m
+[32m+[m[32m//  /* GAP Init */[m
+[32m+[m[32m//  ret = aci_gap_init(GAP_PERIPHERAL_ROLE, 0, 0x07, &service_handle, &dev_name_char_handle, &appearance_char_handle);[m
+[32m+[m[32m//  if (ret != BLE_STATUS_SUCCESS) {[m
+[32m+[m[32m//    PRINTF("aci_gap_init() failed: 0x%02x\r\n", ret);[m
+[32m+[m[32m//    return ret;[m
+[32m+[m[32m//  }[m
+[32m+[m[32m//[m
+[32m+[m[32m//  /* Update device name */[m
+[32m+[m[32m//  ret = aci_gatt_update_char_value_ext(0, service_handle, dev_name_char_handle, 0,sizeof(device_name), 0, sizeof(device_name), device_name);[m
+[32m+[m[32m//  if(ret != BLE_STATUS_SUCCESS) {[m
+[32m+[m[32m//    PRINTF("aci_gatt_update_char_value_ext() failed: 0x%02x\r\n", ret);[m
+[32m+[m[32m//    return ret;[m
+[32m+[m[32m//  }[m
+[32m+[m[32m//[m
+[32m+[m[32m//  ret = aci_gap_set_authentication_requirement(BONDING,[m
+[32m+[m[32m//                                               MITM_PROTECTION_REQUIRED,[m
+[32m+[m[32m//                                               SC_IS_NOT_SUPPORTED,[m
+[32m+[m[32m//                                               KEYPRESS_IS_NOT_SUPPORTED,[m
+[32m+[m[32m//                                               7,[m
+[32m+[m[32m//                                               16,[m
+[32m+[m[32m//                                               USE_FIXED_PIN_FOR_PAIRING,[m
+[32m+[m[32m//                                               123456,[m
+[32m+[m[32m//                                               0x00);[m
+[32m+[m[32m//  if(ret != BLE_STATUS_SUCCESS) {[m
+[32m+[m[32m//    PRINTF("aci_gap_set_authentication_requirement()failed: 0x%02x\r\n", ret);[m
+[32m+[m[32m//    return ret;[m
+[32m+[m[32m//  }[m
+[32m+[m[32m//[m
+[32m+[m[32m//  PRINTF("BLE Stack Initialized with SUCCESS\n");[m
+[32m+[m[32m//[m
+[32m+[m[32m//#ifndef SENSOR_EMULATION /* User Real sensors */[m
+[32m+[m[32m//  Init_Accelerometer();[m
+[32m+[m[32m//  Init_Pressure_Temperature_Sensor();[m
+[32m+[m[32m//#endif[m
+[32m+[m[32m//[m
+[32m+[m[32m//[m
+[32m+[m[32m//  /* Add ACC service and Characteristics */[m
+[32m+[m[32m//  ret = Add_Acc_Service();[m
+[32m+[m[32m//  if(ret == BLE_STATUS_SUCCESS) {[m
+[32m+[m[32m//    PRINTF("Acceleration service added successfully.\n");[m
+[32m+[m[32m//  } else {[m
+[32m+[m[32m//    PRINTF("Error while adding Acceleration service: 0x%02x\r\n", ret);[m
+[32m+[m[32m//    return ret;[m
+[32m+[m[32m//  }[m
+[32m+[m[32m//[m
+[32m+[m[32m//  /* Add Environmental Sensor Service */[m
+[32m+[m[32m//  ret = Add_Environmental_Sensor_Service();[m
+[32m+[m[32m//  if(ret == BLE_STATUS_SUCCESS) {[m
+[32m+[m[32m//    PRINTF("Environmental service added successfully.\n");[m
+[32m+[m[32m//  } else {[m
+[32m+[m[32m//    PRINTF("Error while adding Environmental service: 0x%04x\r\n", ret);[m
+[32m+[m[32m//    return ret;[m
+[32m+[m[32m//  }[m
+[32m+[m[32m//[m
+[32m+[m[32m//#if ST_OTA_FIRMWARE_UPGRADE_SUPPORT[m
+[32m+[m[32m//  ret = OTA_Add_Btl_Service();[m
+[32m+[m[32m//  if(ret == BLE_STATUS_SUCCESS)[m
+[32m+[m[32m//    PRINTF("OTA service added successfully.\n");[m
+[32m+[m[32m//  else[m
+[32m+[m[32m//    PRINTF("Error while adding OTA service.\n");[m
+[32m+[m[32m//#endif /* ST_OTA_FIRMWARE_UPGRADE_SUPPORT */[m
+[32m+[m[32m//[m
+[32m+[m[32m//  /* Start the Sensor Timer */[m
+[32m+[m[32m//  ret = HAL_VTimerStart_ms(SENSOR_TIMER, acceleration_update_rate);[m
+[32m+[m[32m//  if (ret != BLE_STATUS_SUCCESS) {[m
+[32m+[m[32m//    PRINTF("HAL_VTimerStart_ms() failed; 0x%02x\r\n", ret);[m
+[32m+[m[32m//    return ret;[m
+[32m+[m[32m//  } else {[m
+[32m+[m[32m//    sensorTimer_expired = FALSE;[m
+[32m+[m[32m//  }[m
+[32m+[m[32m//[m
+[32m+[m[32m//  return BLE_STATUS_SUCCESS;[m
+[32m+[m[32m//}[m
+[32m+[m[32m//[m
+[32m+[m[32m///*******************************************************************************[m
+[32m+[m[32m// * Function Name  : Set_DeviceConnectable.[m
+[32m+[m[32m// * Description    : Puts the device in connectable mode.[m
+[32m+[m[32m// * Input          : None.[m
+[32m+[m[32m// * Output         : None.[m
+[32m+[m[32m// * Return         : None.[m
+[32m+[m[32m// *******************************************************************************/[m
+[32m+[m[32m//void Set_DeviceConnectable(void)[m
+[32m+[m[32m//{[m
+[32m+[m[32m//  uint8_t ret;[m
+[32m+[m[32m//  uint8_t local_name[] = {AD_TYPE_COMPLETE_LOCAL_NAME,'B','l','u','e','N','R','G'};[m
+[32m+[m[32m//[m
+[32m+[m[32m//#if ST_OTA_FIRMWARE_UPGRADE_SUPPORT[m
+[32m+[m[32m//  hci_le_set_scan_response_data(18,BTLServiceUUID4Scan);[m
+[32m+[m[32m//#else[m
+[32m+[m[32m//  hci_le_set_scan_response_data(0,NULL);[m
+[32m+[m[32m//#endif /* ST_OTA_FIRMWARE_UPGRADE_SUPPORT */[m
+[32m+[m[32m//  PRINTF("Set General Discoverable Mode.\n");[m
+[32m+[m[32m//[m
+[32m+[m[32m//  ret = aci_gap_set_discoverable(ADV_IND,[m
+[32m+[m[32m//                                (ADV_INTERVAL_MIN_MS*1000)/625,(ADV_INTERVAL_MAX_MS*1000)/625,[m
+[32m+[m[32m//                                 STATIC_RANDOM_ADDR, NO_WHITE_LIST_USE,[m
+[32m+[m[32m//                                 sizeof(local_name), local_name, 0, NULL, 0, 0);[m
+[32m+[m[32m//  if(ret != BLE_STATUS_SUCCESS)[m
+[32m+[m[32m//  {[m
+[32m+[m[32m//    PRINTF("aci_gap_set_discoverable() failed: 0x%02x\r\n",ret);[m
+[32m+[m[32m//    SdkEvalLedOn(LED3);[m
+[32m+[m[32m//  }[m
+[32m+[m[32m//  else[m
+[32m+[m[32m//    PRINTF("aci_gap_set_discoverable() --> SUCCESS\r\n");[m
+[32m+[m[32m//}[m
+[32m+[m[32m//[m
+[32m+[m[32m///*******************************************************************************[m
+[32m+[m[32m// * Function Name  : APP_Tick.[m
+[32m+[m[32m// * Description    : Sensor Demo state machine.[m
+[32m+[m[32m// * Input          : None.[m
+[32m+[m[32m// * Output         : None.[m
+[32m+[m[32m// * Return         : None.[m
+[32m+[m[32m// *******************************************************************************/[m
+[32m+[m[32m//void APP_Tick(void)[m
+[32m+[m[32m//{[m
+[32m+[m[32m//  /* Make the device discoverable */[m
+[32m+[m[32m//  if(set_connectable) {[m
+[32m+[m[32m//    Set_DeviceConnectable();[m
+[32m+[m[32m//    set_connectable = FALSE;[m
+[32m+[m[32m//  }[m
+[32m+[m[32m//[m
+[32m+[m[32m//#if UPDATE_CONN_PARAM[m
+[32m+[m[32m//  /* Connection parameter update request */[m
+[32m+[m[32m//  if(connected && !l2cap_request_sent && l2cap_req_timer_expired){[m
+[32m+[m[32m//    aci_l2cap_connection_parameter_update_req(connection_handle, 9, 20, 0, 600); //24, 24[m
+[32m+[m[32m//    l2cap_request_sent = TRUE;[m
+[32m+[m[32m//  }[m
+[32m+[m[32m//#endif[m
+[32m+[m[32m//[m
+[32m+[m[32m//  /*  Update sensor value */[m
+[32m+[m[32m//  if (sensorTimer_expired) {[m
+[32m+[m[32m//    sensorTimer_expired = FALSE;[m
+[32m+[m[32m//    if (HAL_VTimerStart_ms(SENSOR_TIMER, acceleration_update_rate) != BLE_STATUS_SUCCESS)[m
+[32m+[m[32m//      sensorTimer_expired = TRUE;[m
+[32m+[m[32m//    if(connected) {[m
+[32m+[m[32m//      AxesRaw_t acc_data;[m
+[32m+[m[32m//[m
+[32m+[m[32m//      /* Activity Led */[m
+[32m+[m[32m//      SdkEvalLedToggle(LED1);[m
+[32m+[m[32m//[m
+[32m+[m[32m//      /* Get Acceleration data */[m
+[32m+[m[32m//      if (GetAccAxesRaw(&acc_data) == IMU_6AXES_OK) {[m
+[32m+[m[32m//        Acc_Update(&acc_data);[m
+[32m+[m[32m//      }[m
+[32m+[m[32m//[m
+[32m+[m[32m//      /* Get free fall status */[m
+[32m+[m[32m//      GetFreeFallStatus();[m
+[32m+[m[32m//    }[m
+[32m+[m[32m//  }[m
+[32m+[m[32m//[m
+[32m+[m[32m//  /* Free fall notification */[m
+[32m+[m[32m//  if(request_free_fall_notify == TRUE) {[m
+[32m+[m[32m//    request_free_fall_notify = FALSE;[m
+[32m+[m[32m//    Free_Fall_Notify();[m
+[32m+[m[32m//  }[m
+[32m+[m[32m//}[m
+[32m+[m[32m//[m
+[32m+[m[32m///* ***************** BlueNRG-1 Stack Callbacks ********************************/[m
+[32m+[m[32m//[m
+[32m+[m[32m///*******************************************************************************[m
+[32m+[m[32m// * Function Name  : hci_le_connection_complete_event.[m
+[32m+[m[32m// * Description    : This event indicates that a new connection has been created.[m
+[32m+[m[32m// * Input          : See file bluenrg1_events.h[m
+[32m+[m[32m// * Output         : See file bluenrg1_events.h[m
+[32m+[m[32m// * Return         : See file bluenrg1_events.h[m
+[32m+[m[32m// *******************************************************************************/[m
+[32m+[m[32m//void hci_le_connection_complete_event(uint8_t Status,[m
+[32m+[m[32m//                                      uint16_t Connection_Handle,[m
+[32m+[m[32m//                                      uint8_t Role,[m
+[32m+[m[32m//                                      uint8_t Peer_Address_Type,[m
+[32m+[m[32m//                                      uint8_t Peer_Address[6],[m
+[32m+[m[32m//                                      uint16_t Conn_Interval,[m
+[32m+[m[32m//                                      uint16_t Conn_Latency,[m
+[32m+[m[32m//                                      uint16_t Supervision_Timeout,[m
+[32m+[m[32m//                                      uint8_t Master_Clock_Accuracy)[m
+[32m+[m[32m//{[m
+[32m+[m[32m//[m
+[32m+[m[32m//  connected = TRUE;[m
+[32m+[m[32m//  connection_handle = Connection_Handle;[m
+[32m+[m[32m//[m
+[32m+[m[32m//#if UPDATE_CONN_PARAM[m
+[32m+[m[32m//  l2cap_request_sent = FALSE;[m
+[32m+[m[32m//  HAL_VTimerStart_ms(UPDATE_TIMER, CLOCK_SECOND*2);[m
+[32m+[m[32m//  {[m
+[32m+[m[32m//    l2cap_req_timer_expired = FALSE;[m
+[32m+[m[32m//  }[m
+[32m+[m[32m//#endif[m
+[32m+[m[32m//[m
+[32m+[m[32m//}/* end hci_le_connection_complete_event() */[m
+[32m+[m[32m//[m
+[32m+[m[32m///*******************************************************************************[m
+[32m+[m[32m// * Function Name  : hci_disconnection_complete_event.[m
+[32m+[m[32m// * Description    : This event occurs when a connection is terminated.[m
+[32m+[m[32m// * Input          : See file bluenrg1_events.h[m
+[32m+[m[32m// * Output         : See file bluenrg1_events.h[m
+[32m+[m[32m// * Return         : See file bluenrg1_events.h[m
+[32m+[m[32m// *******************************************************************************/[m
+[32m+[m[32m//void hci_disconnection_complete_event(uint8_t Status,[m
+[32m+[m[32m//                                      uint16_t Connection_Handle,[m
+[32m+[m[32m//                                      uint8_t Reason)[m
+[32m+[m[32m//{[m
+[32m+[m[32m//  connected = FALSE;[m
+[32m+[m[32m//  /* Make the device connectable again. */[m
+[32m+[m[32m//  set_connectable = TRUE;[m
+[32m+[m[32m//  connection_handle =0;[m
+[32m+[m[32m//[m
+[32m+[m[32m//  SdkEvalLedOn(LED1);//activity led[m
+[32m+[m[32m//#if ST_OTA_FIRMWARE_UPGRADE_SUPPORT[m
+[32m+[m[32m//  OTA_terminate_connection();[m
+[32m+[m[32m//#endif[m
+[32m+[m[32m//}/* end hci_disconnection_complete_event() */[m
+[32m+[m[32m//[m
+[32m+[m[32m//[m
+[32m+[m[32m///*******************************************************************************[m
+[32m+[m[32m// * Function Name  : aci_gatt_read_permit_req_event.[m
+[32m+[m[32m// * Description    : This event is given when a read request is received[m
+[32m+[m[32m// *                  by the server from the client.[m
+[32m+[m[32m// * Input          : See file bluenrg1_events.h[m
+[32m+[m[32m// * Output         : See file bluenrg1_events.h[m
+[32m+[m[32m// * Return         : See file bluenrg1_events.h[m
+[32m+[m[32m// *******************************************************************************/[m
+[32m+[m[32m//void aci_gatt_read_permit_req_event(uint16_t Connection_Handle,[m
+[32m+[m[32m//                                    uint16_t Attribute_Handle,[m
+[32m+[m[32m//                                    uint16_t Offset)[m
+[32m+[m[32m//{[m
+[32m+[m[32m//  Read_Request_CB(Attribute_Handle);[m
+[32m+[m[32m//}[m
+[32m+[m[32m//[m
+[32m+[m[32m///*******************************************************************************[m
+[32m+[m[32m// * Function Name  : HAL_VTimerTimeoutCallback.[m
+[32m+[m[32m// * Description    : This function will be called on the expiry of[m
+[32m+[m[32m// *                  a one-shot virtual timer.[m
+[32m+[m[32m// * Input          : See file bluenrg1_stack.h[m
+[32m+[m[32m// * Output         : See file bluenrg1_stack.h[m
+[32m+[m[32m// * Return         : See file bluenrg1_stack.h[m
+[32m+[m[32m// *******************************************************************************/[m
+[32m+[m[32m//void HAL_VTimerTimeoutCallback(uint8_t timerNum)[m
+[32m+[m[32m//{[m
+[32m+[m[32m//  if (timerNum == SENSOR_TIMER) {[m
+[32m+[m[32m//    sensorTimer_expired = TRUE;[m
+[32m+[m[32m//  }[m
+[32m+[m[32m//#if UPDATE_CONN_PARAM[m
+[32m+[m[32m//  else if (timerNum == UPDATE_TIMER) {[m
+[32m+[m[32m//    l2cap_req_timer_expired = TRUE;[m
+[32m+[m[32m//  }[m
+[32m+[m[32m//#endif[m
+[32m+[m[32m//}[m
+[32m+[m[32m//[m
+[32m+[m[32m///*******************************************************************************[m
+[32m+[m[32m// * Function Name  : aci_gatt_attribute_modified_event.[m
+[32m+[m[32m// * Description    : This event occurs when an attribute is modified.[m
+[32m+[m[32m// * Input          : See file bluenrg1_events.h[m
+[32m+[m[32m// * Output         : See file bluenrg1_events.h[m
+[32m+[m[32m// * Return         : See file bluenrg1_events.h[m
+[32m+[m[32m// *******************************************************************************/[m
+[32m+[m[32m//void aci_gatt_attribute_modified_event(uint16_t Connection_Handle,[m
+[32m+[m[32m//                                       uint16_t Attr_Handle,[m
+[32m+[m[32m//                                       uint16_t Offset,[m
+[32m+[m[32m//                                       uint16_t Attr_Data_Length,[m
+[32m+[m[32m//                                       uint8_t Attr_Data[])[m
+[32m+[m[32m//{[m
+[32m+[m[32m//#if ST_OTA_FIRMWARE_UPGRADE_SUPPORT[m
+[32m+[m[32m//  OTA_Write_Request_CB(Connection_Handle, Attr_Handle, Attr_Data_Length, Attr_Data);[m
+[32m+[m[32m//#endif /* ST_OTA_FIRMWARE_UPGRADE_SUPPORT */[m
+[32m+[m[32m//}[m
+[32m+[m[32m//[m
+[32m+[m[32m//[m
+[32m+[m[32m//void aci_hal_end_of_radio_activity_event(uint8_t Last_State,[m
+[32m+[m[32m//                                         uint8_t Next_State,[m
+[32m+[m[32m//                                         uint32_t Next_State_SysTime)[m
+[32m+[m[32m//{[m
+[32m+[m[32m//#if ST_OTA_FIRMWARE_UPGRADE_SUPPORT[m
+[32m+[m[32m//  if (Next_State == 0x02) /* 0x02: Connection event slave */[m
+[32m+[m[32m//  {[m
+[32m+[m[32m//    OTA_Radio_Activity(Next_State_SysTime);[m
+[32m+[m[32m//  }[m
+[32m+[m[32m//#endif[m
+[32m+[m[32m//}[m

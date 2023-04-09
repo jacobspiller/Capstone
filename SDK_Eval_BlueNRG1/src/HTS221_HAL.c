@@ -24,6 +24,8 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "HTS221_HAL.h"
+#include "BlueNRG1_spi.h"
+
 
 /* Private Functions Declaration */
 HTS221_Error_et HAL_ReadRegLowLvl(uint8_t reg_addr, uint8_t num_regs, uint8_t* buffer);
