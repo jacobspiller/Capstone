@@ -60,7 +60,7 @@
 #endif
 
 /* OTA characteristics maximum lenght */
-#define OTA_MAX_ATT_SIZE (0) 
+#define OTA_MAX_ATT_SIZE (0)
    
 #endif
 
@@ -104,9 +104,9 @@
 
 /* Array size for the attribute value */
 #ifdef SENSOR_EMULATION
-#define ATT_VALUE_ARRAY_SIZE    (43 + 106 + 28 + OTA_ATT_VALUE_ARRAY_SIZE) //(GATT + GAP) = 43 (Device Name: BlueNRG) + Acceleration (Acceleration (27) + Free Fall (21) characteristics) +  Environmental Sensor (Temperature (28) , Pressure (29), Humidity (28) characteristics)  Services
+#define ATT_VALUE_ARRAY_SIZE    1000//(43 + 106 + 28 + OTA_ATT_VALUE_ARRAY_SIZE) //(GATT + GAP) = 43 (Device Name: BlueNRG) + Acceleration (Acceleration (27) + Free Fall (21) characteristics) +  Environmental Sensor (Temperature (28) , Pressure (29), Humidity (28) characteristics)  Services
 #else
-#define ATT_VALUE_ARRAY_SIZE    (43 + 106  + OTA_ATT_VALUE_ARRAY_SIZE) //(GATT + GAP) = 43 (Device Name: BlueNRG) + Acceleration (Acceleration (27) + Free Fall (21) characteristics) +  Environmental Sensor (Temperature (28), Pressure (29)  characteristics)  Services
+#define ATT_VALUE_ARRAY_SIZE    1000//(43 + 106  + OTA_ATT_VALUE_ARRAY_SIZE) //(GATT + GAP) = 43 (Device Name: BlueNRG) + Acceleration (Acceleration (27) + Free Fall (21) characteristics) +  Environmental Sensor (Temperature (28), Pressure (29)  characteristics)  Services
 #endif 
 
 /* Flash security database size */

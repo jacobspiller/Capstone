@@ -1,9 +1,3 @@
-/*
- * internalFlash.c
- *
- *  Created on: Jun 13, 2022
- *      Author: Mona
- */
 
 #include "internalFlash.h"
 extern int SEGGER_RTT_printf(unsigned BufferIndex, const char * sFormat, ...);

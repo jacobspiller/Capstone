@@ -1,9 +1,3 @@
-/*
- * GPIO.h
- *
- *  Created on: Jun 27, 2022
- *      Author: Mona
- */
 
 #ifndef USER_INC_GPIO_H_
 #define USER_INC_GPIO_H_

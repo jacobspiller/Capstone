@@ -1,9 +1,3 @@
-/*
- * adc.h
- *
- *  Created on: Jun 13, 2022
- *      Author: Mona
- */
 
 #ifndef USER_INC_ADC_H_
 #define USER_INC_ADC_H_

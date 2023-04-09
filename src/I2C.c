@@ -13,7 +13,7 @@
 * INFORMATION CONTAINED HEREIN IN CONNECTION WITH THEIR PRODUCTS.
 *******************************************************************************/
 
-/*Edited by Mona for Posture Monitor*/
+/*Edited for Capstone*/
 
 #include "I2C.h"
 #include "GPIO.h"

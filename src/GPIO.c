@@ -1,9 +1,3 @@
-/*
- * GPIO.c
- *
- *  Created on: Jun 27, 2022
- *      Author: Mona
- */
 
 #include "GPIO.h"
 #include "adc.h"
