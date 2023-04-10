@@ -8,6 +8,8 @@
 #include "app_state.h"
 #include "SDK_EVAL_Config.h"
 #include "serial_port.h"
+#include "SEGGER_RTT.h"
+#include "SEGGER_RTT_conf.h"
 
 uint16_t SerialPortServHandle, TXCharHandle, RXCharHandle;
 
@@ -50,11 +52,11 @@ uint8_t Add_SerialPort_Service(void)
                 16, 1, &RXCharHandle);
   if (ret != BLE_STATUS_SUCCESS) goto fail;
 
-  printf("Serial Port Service added.\nTX Char Handle %04X, RX Char Handle %04X\n", TXCharHandle, RXCharHandle);
+  SEGGER_RTT_printf(0,"Serial Port Service added.\nTX Char Handle %04X, RX Char Handle %04X\n", TXCharHandle, RXCharHandle);
   return BLE_STATUS_SUCCESS; 
 
 fail:
-  printf("Error while adding Serial Port  service.\n");
+  SEGGER_RTT_printf(0,"Error while adding Serial Port  service.\n");
   return BLE_STATUS_ERROR ;
 }
 
@@ -70,7 +72,7 @@ void Attribute_Modified_CB(uint16_t handle, uint16_t data_length, uint8_t *att_d
   if(handle == RXCharHandle + 1)
   {
     for(int i = 0; i < data_length; i++)
-      printf("%c", att_data[i]);
+      SEGGER_RTT_printf(0,"%c", att_data[i]);
   }
   else if(handle == TXCharHandle + 2)
   {        
