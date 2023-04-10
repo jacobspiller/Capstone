@@ -247,7 +247,7 @@ void Make_Connection(void)
 
   uint8_t manuf_data[MANUF_DATA_SIZE] = { 
     2,                      /* Length of AD type Transmission Power */
-    0x0A, 0x00,             /* Transmission Power = 0 dBm */ 
+    0x0A, 0x00,             /* Transmission Power = 0 dBm */
     9,                      /* Length of AD type Complete Local Name */
     0x09,                   /* AD type Complete Local Name */ 
     LOCAL_NAME,             /* Local Name */            
