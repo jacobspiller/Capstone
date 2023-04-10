@@ -15,10 +15,14 @@
 
 #define POWER_LED 		GPIO_Pin_0
 #define BLUETOOTH_LED 	GPIO_Pin_1
+#define PWM1_PIN		GPIO_Pin_2
+#define PWM2_PIN		GPIO_Pin_3
+#define PWM3_PIN		GPIO_Pin_4
 
-void LED_Configuration(void);
 //void SdkDelayMs(volatile uint32_t lTimeMs);
-void ToggleLED(void);
 void LED_Init(void);
+void GPIO_Configuration(void);
+void MFT_Configuration(uint16_t joint1, uint16_t joint2, uint16_t joint3);
+void joint_set(uint16_t joint1, uint16_t joint2, uint16_t joint3);
 
 #endif /* USER_INC_GPIO_H_ */

@@ -72,7 +72,7 @@ void Attribute_Modified_CB(uint16_t handle, uint16_t data_length, uint8_t *att_d
   if(handle == RXCharHandle + 1)
   {
     for(int i = 0; i < data_length; i++)
-      SEGGER_RTT_printf(0,"1234\n%c\n", att_data[i]);
+      SEGGER_RTT_printf(0,"%d\n", att_data[i]);
   }
   else if(handle == TXCharHandle + 2)
   {        

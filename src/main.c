@@ -29,9 +29,13 @@
 #include "SDK_EVAL_Config.h"
 #include "SerialPort_config.h"
 #include "OTA_btl.h"
+#include "bluenrg_x_device.h"
+#include "BlueNRG1_conf.h"
+#include "SDK_EVAL_Config.h"
 #include "GPIO.h"
 #include "SEGGER_RTT.h"
 #include "SEGGER_RTT_conf.h"
+#include "BlueNRG1_mft.h"
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
@@ -57,6 +61,7 @@ int main(void)
   LED_Init();
   SEGGER_RTT_printf (0,"1\n");
 
+   SEGGER_RTT_printf (0,"starting bluetooth\n");
   ret = BlueNRG_Stack_Initialization(&BlueNRG_Stack_Init_params);
   if (ret != BLE_STATUS_SUCCESS) {
 	  SEGGER_RTT_printf(0,"Error in BlueNRG_Stack_Initialization() 0x%02x\r\n", ret);
@@ -78,6 +83,8 @@ int main(void)
 
        /* Application tick */
        APP_Tick();
+
+       joint_set(260,0,0);
    }
 
 
