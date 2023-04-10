@@ -141,8 +141,8 @@ void MFT_Configuration(void)
   /* MFT1 configuration */
   timer_init.MFT_Clock1 = MFT_PRESCALED_CLK;
   timer_init.MFT_Clock2 = MFT_NO_CLK;
-  timer_init.MFT_CRA = 300 - 1;       /* 1.5 ms positive duration */
-  timer_init.MFT_CRB = 400 - 1;       /* 2 ms negative duration */
+  timer_init.MFT_CRA = 199;//300 - 1;       /* 1.5 ms high duration */
+  timer_init.MFT_CRB = 4000 - 1;       /* 2 ms low duration */
   MFT_Init(MFT1, &timer_init);
 
   /* MFT2 configuration */
