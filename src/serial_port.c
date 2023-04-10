@@ -28,6 +28,7 @@
 #include "OTA_btl.h"
 #include "SEGGER_RTT.h"
 #include "SEGGER_RTT_conf.h"
+#include "GPIO.h"
 
 /* External variables --------------------------------------------------------*/
 /* Private typedef -----------------------------------------------------------*/
@@ -292,7 +293,7 @@ void Make_Connection(void)
   
   /* Update Advertising data with manuf_data */
   aci_gap_update_adv_data(MANUF_DATA_SIZE, manuf_data);
-  
+
 #endif
 }
 
@@ -404,6 +405,9 @@ void hci_le_connection_complete_event(uint8_t Status,
   connection_handle = Connection_Handle;
   
   APP_FLAG_SET(CONNECTED);
+  SEGGER_RTT_printf(0,"CONNECTION MADE!!\r\n");
+  GPIO_WriteBit(BLUETOOTH_LED, LED_ON);
+
   
 #if REQUEST_CONN_PARAM_UPDATE
   APP_FLAG_CLEAR(L2CAP_PARAM_UPD_SENT);
@@ -427,7 +431,7 @@ void hci_disconnection_complete_event(uint8_t Status,
   APP_FLAG_SET(SET_CONNECTABLE);
   APP_FLAG_CLEAR(NOTIFICATIONS_ENABLED);
   APP_FLAG_CLEAR(TX_BUFFER_FULL);
-
+  GPIO_WriteBit(BLUETOOTH_LED, LED_OFF);
   APP_FLAG_CLEAR(START_READ_TX_CHAR_HANDLE);
   APP_FLAG_CLEAR(END_READ_TX_CHAR_HANDLE);
   APP_FLAG_CLEAR(START_READ_RX_CHAR_HANDLE); 
