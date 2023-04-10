@@ -7,11 +7,6 @@
 #include "BlueNRG1_conf.h"
 #include "SDK_EVAL_Config.h"
 
-#define CS_IMU				GPIO_Pin_5 = 1 //Set the CS for the IMU to high
-#define INT1_IMU			GPIO_Pin_4 = 1
-
-#define whoAmIDat 0x6C
-
 void I2C_test(void);
 
 void I2C_ConfigurationMaster(void);

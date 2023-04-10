@@ -1,8 +1,8 @@
 /*
  * ________________________________________________________________________________________________________
- * Copyright (c) 2016-2016 InvenSense Inc. All rights reserved.
+ * Copyright (c) 2017 InvenSense Inc. All rights reserved.
  *
- * This software, related documentation and any modifications thereto (collectively ìSoftwareî) is subject
+ * This software, related documentation and any modifications thereto (collectively ‚ÄúSoftware‚Äù) is subject
  * to InvenSense and its licensors' intellectual property rights under U.S. and international copyright
  * and other intellectual property rights laws.
  *
@@ -20,36 +20,40 @@
  * OF THE SOFTWARE.
  * ________________________________________________________________________________________________________
  */
-#ifndef _EXAMPLE_SELFTEST_H_
-#define _EXAMPLE_SELFTEST_H_
+
+/** @defgroup DriverIam20680Ext Iam20680 driver extended functions
+ *  @brief    Extended functions for Iam20680 devices
+ *  @ingroup  DriverIam20680
+ *  @{
+ */
+
+#ifndef _INV_IAM20680_H_
+#define _INV_IAM20680_H_
 
 #include <stdint.h>
-#include "Invn/EmbUtils/InvBool.h"
+#include <assert.h>
+#include <string.h>
 
-/*!
- * \brief Set up the Invensense device
- * \param[in] read_reg Function pointer for reading register
- * \param[in] write_reg Function pointer for writing register
- * \param[in] isSPI 1: using SPI interface; 0: using I2C interface
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+/** @brief Hook for low-level high res system sleep() function to be implemented by upper layer
+ *  ~100us resolution is sufficient
+ *  @param[in] us number of us the calling thread should sleep
  */
-int SetupInvDevice(int (*read_reg)(void * context, uint8_t reg, uint8_t * buf, uint32_t len),
-				   int (*write_reg)(void * context, uint8_t reg, const uint8_t * buf, uint32_t len),
-				   inv_bool_t isSPI);
+ 
+extern void inv_iam20680_sleep_us(int us);
 
-/*!
- * \brief Run Self Test on Invensense device
+/** @brief Hook for low-level high res system sleep() function to be implemented by upper layer
+ *  @param[in] ms number of ms the calling thread should sleep
  */
-void RunSelfTest(void);
+extern void inv_iam20680_sleep_ms(int ms);
 
-/*!
- * \brief Collect LN and LP bias on Invensense device
- *  @return     0 in case of success, negative value on error. See enum inv_status
- */
-int RunFactoryCalib(void);
+#ifdef __cplusplus
+}
+#endif
 
-/*!
- * \brief Writes offset to offset registers based on accel/gyro power mode.
-  */
-void ApplyOffset(int isAccelLpMode,int isGyroLpmode );
+#endif /* _INV_IAM20680_H_ */
 
-#endif /* !_EXAMPLE_SELFTEST_H_ */
+/** @} */

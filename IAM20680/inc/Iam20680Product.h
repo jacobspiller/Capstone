@@ -1,8 +1,8 @@
 /*
  * ________________________________________________________________________________________________________
- * Copyright (c) 2015-2015 InvenSense Inc. All rights reserved.
+ * Copyright (c) 2017 InvenSense Inc. All rights reserved.
  *
- * This software, related documentation and any modifications thereto (collectively “Software”) is subject
+ * This software, related documentation and any modifications thereto (collectively �Software�) is subject
  * to InvenSense and its licensors' intellectual property rights under U.S. and international copyright
  * and other intellectual property rights laws.
  *
@@ -21,31 +21,20 @@
  * ________________________________________________________________________________________________________
  */
 
-/** @defgroup ErrorHelper Error Helper
- *	@brief    Helper functions realted to error code
- *  @ingroup  EmbUtils
- *	@{
- */
-
-#ifndef _INV_ERROR_HELPER_H_
-#define _INV_ERROR_HELPER_H_
-
-#include "InvExport.h"
-#include "InvError.h"
+#ifndef _INV_IAM20680_PRODUCT_H_
+#define _INV_IAM20680_PRODUCT_H_
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/** @brief Returns string describing error number
- *  @sa enum inv_error
- */
-const char INV_EXPORT * inv_error_str(int error);
+
+#define IAM20680        0 /* Set to 1 if sensor connected is IAM-20680, else 0 */
+#define IAM20680_HP     1 /* Set to 1 if sensor connected is IAM-20680HP, else 0 */
+#define IAM20680_HT     0 /* Set to 1 if sensor connected is IAM-20680HT, else 0 */
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* _INV_ERROR_HELPER_H_ */
-
-/** @} */
+#endif  /* #ifndef _INV_IAM20680_PRODUCT_H_ */

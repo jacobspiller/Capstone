@@ -23,7 +23,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "SDK_EVAL_SPI.h"
-
+#include "BlueNRG1_spi.h"
 
 /** @addtogroup SDK_EVAL_BlueNRG1         SDK EVAL BlueNRG1
  * @{

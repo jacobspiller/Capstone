@@ -2,7 +2,7 @@
  * ________________________________________________________________________________________________________
  * Copyright (c) 2017 InvenSense Inc. All rights reserved.
  *
- * This software, related documentation and any modifications thereto (collectively ìSoftwareî) is subject
+ * This software, related documentation and any modifications thereto (collectively ‚ÄúSoftware‚Äù) is subject
  * to InvenSense and its licensors' intellectual property rights under U.S. and international copyright
  * and other intellectual property rights laws.
  *
@@ -20,24 +20,28 @@
  * OF THE SOFTWARE.
  * ________________________________________________________________________________________________________
  */
-#ifndef _MAIN_H_
-#define _MAIN_H_
 
-/* Function Prototype Declaration */
-static int idd_io_hal_read_reg(void * context, uint8_t reg, uint8_t * rbuffer, uint32_t rlen);
+/** @brief    Custom definition for boolean type to avoid compiler disrepenrencies
+ *	@{
+ */
 
-static int idd_io_hal_write_reg(void * context, uint8_t reg, const uint8_t * wbuffer, uint32_t wlen);
+#ifndef _INV_BOOL_H_
+#define _INV_BOOL_H_
 
-static void interface_initialize(void);
+typedef int inv_bool_t;
 
-static void inv_blinkerLedTask_handler(void * arg);
+#ifndef __cplusplus
 
-static void check_rc(int rc, const char * msg_context);
+#ifndef true
+	#define true    1
+#endif
 
-static void msg_printer(int level, const char * str, va_list ap);
+#ifndef false
+	#define false   0
+#endif
 
-void inv_iam20680_sleep_us(int us);
+#endif /* __cplusplus */
 
-void inv_iam20680_sleep_ms(int ms);
+#endif /* _INV_BOOL_H_ */
 
-#endif /* !_MAIN_H_ */
+/** @} */

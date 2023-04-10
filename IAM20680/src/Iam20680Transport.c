@@ -1,8 +1,8 @@
 /*
  * ________________________________________________________________________________________________________
- * Copyright (c) 2016-2016 InvenSense Inc. All rights reserved.
+ * Copyright (c) 2017 InvenSense Inc. All rights reserved.
  *
- * This software, related documentation and any modifications thereto (collectively “Software”) is subject
+ * This software, related documentation and any modifications thereto (collectively â€œSoftwareâ€) is subject
  * to InvenSense and its licensors' intellectual property rights under U.S. and international copyright
  * and other intellectual property rights laws.
  *
@@ -20,24 +20,40 @@
  * OF THE SOFTWARE.
  * ________________________________________________________________________________________________________
  */
-#ifndef _EXAMPLE_CONFIG_H_
-#define _EXAMPLE_CONFIG_H_
 
-/******************************************************************************/
-/* Begin Example Configuration - User Configurable                            */
-/******************************************************************************/
-#define ENABLE_ACCEL  			1
-#define ENABLE_GYRO   			1
+#include "Iam20680Defs.h"
+#include "Iam20680ExtFunc.h"
+#include "Iam20680Transport.h"
+#include "Iam20680Driver_HL.h"
 
-#define LOW_NOISE_MODE			1
-#define LOW_POWER_MODE			0
+/* the following functions are used for accessing registers */
 
-#define ODR_US           		20000	/* Default odr set to 20ms (50Hz) */
-#define FSR_ACC_G        		4      	/* +/- 4g */
-#define FSR_GYR_DPS      		2000   	/* +/- 2000dps */
+int inv_iam20680_read_reg(struct inv_iam20680 * s, uint8_t reg, uint32_t length, uint8_t *data)
+{
+	assert(s);
 
-/******************************************************************************/
-/* End Example Configuration - User Configurable                              */
-/******************************************************************************/
+	struct inv_iam20680_serif * serif = &(s->serif);
 
-#endif /* !_EXAMPLE_CONFIG_H_ */
+	if(length > serif->max_read)
+		return INV_ERROR_SIZE;
+
+	if(serif->read_reg(serif->context, reg, data, length) != 0)
+		return INV_ERROR_TRANSPORT;
+
+	return INV_ERROR_SUCCESS;
+}
+
+int inv_iam20680_write_reg(struct inv_iam20680 * s, uint8_t reg, uint32_t length, const uint8_t *data)
+{
+	assert(s);
+
+	struct inv_iam20680_serif * serif = &(s->serif);
+
+	if(length > serif->max_write)
+		return INV_ERROR_SIZE;
+
+	if(serif->write_reg(serif->context, reg, data, length) != 0)
+		return INV_ERROR_TRANSPORT;
+
+	return INV_ERROR_SUCCESS;
+}

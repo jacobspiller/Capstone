@@ -220,17 +220,12 @@ NOTEs:
 #include <string.h>
 #include "BlueNRG1_it.h"
 #include "BlueNRG1_conf.h"
-#include "ble_const.h"
-#include "bluenrg1_stack.h"
 #include "sleep.h"
 #include "SDK_EVAL_Config.h"
-#include "Beacon_config.h"
-#include "OTA_btl.h"
 #include "SEGGER_RTT.h"
 #include "SEGGER_RTT_conf.h"
-
-#include "main-raw-ag.h"
-
+#include "GPIO.h"
+#include "IAM20680_use.h"
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
@@ -245,136 +240,7 @@ NOTEs:
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
 
-void Device_Init(void)
-{
-  SEGGER_RTT_Init();
-  SEGGER_RTT_ConfigUpBuffer(0,NULL,NULL,0,SEGGER_RTT_MODE_BLOCK_IF_FIFO_FULL);
-  uint8_t ret;
-  uint16_t service_handle;
-  uint16_t dev_name_char_handle;
-  uint16_t appearance_char_handle;
 
-  /* Set the TX Power to -2 dBm */
-  ret = aci_hal_set_tx_power_level(1,4);
-  if(ret != 0) {
-    SEGGER_RTT_printf (0,"Error in aci_hal_set_tx_power_level() 0x%04xr\n", ret);
-    while(1);
-  }
-
-  /* Init the GATT */
-  ret = aci_gatt_init();
-  if (ret != 0)
-    SEGGER_RTT_printf (0,"Error in aci_gatt_init() 0x%04xr\n", ret);
-  else
-    SEGGER_RTT_printf (0,"aci_gatt_init() --> SUCCESS\r\n");
-
-  /* Init the GAP */
-  ret = aci_gap_init(0x01, 0x00, 0x08, &service_handle,
-                     &dev_name_char_handle, &appearance_char_handle);
-  if (ret != 0)
-    SEGGER_RTT_printf (0,"Error in aci_gap_init() 0x%04x\r\n", ret);
-  else
-    SEGGER_RTT_printf (0,"aci_gap_init() --> SUCCESS\r\n");
-}
-
-
-/**
-* @brief  Start beaconing
-* @param  None
-* @retval None
-*/
-static void Start_Beaconing(void)
-{
-  uint8_t ret = BLE_STATUS_SUCCESS;
-
-#if ENABLE_FLAGS_AD_TYPE_AT_BEGINNING
-  /* Set AD Type Flags at beginning on Advertising packet  */
-  uint8_t adv_data[] = {
-      /* Advertising data: Flags AD Type */
-      0x02,
-      0x01,
-      0x06,
-      /* Advertising data: manufacturer specific data */
-      26, //len
-      AD_TYPE_MANUFACTURER_SPECIFIC_DATA,  //manufacturer type
-      0x30, 0x00, //Company identifier code (Default is 0x0030 - STMicroelectronics: To be customized for specific identifier)
-      0x02,       // ID
-      0x15,       //Length of the remaining payload
-      0xE2, 0x0A, 0x39, 0xF4, 0x73, 0xF5, 0x4B, 0xC4, //Location UUID
-      0xA1, 0x2F, 0x17, 0xD1, 0xAD, 0x07, 0xA9, 0x61,
-      0x00, 0x00, // Major number
-      0x00, 0x00, // Minor number
-      0xC8        //2's complement of the Tx power (-56dB)};
-   };
-#else
-   uint8_t manuf_data[] = {
-      26, //len
-      AD_TYPE_MANUFACTURER_SPECIFIC_DATA, //manufacturer type
-      0x30, 0x00, //Company identifier code (Default is 0x0030 - STMicroelectronics: To be customized for specific identifier)
-      0x02,       // ID
-      0x15,       //Length of the remaining payload
-      0xE2, 0x0A, 0x39, 0xF4, 0x73, 0xF5, 0x4B, 0xC4, //Location UUID
-      0xA1, 0x2F, 0x17, 0xD1, 0xAD, 0x07, 0xA9, 0x61,
-      0x00, 0x00, // Major number
-      0x00, 0x00, // Minor number
-      0xC8        //2's complement of the Tx power (-56dB)};
-   };
-#endif
-
-  /* disable scan response */
-  ret = hci_le_set_scan_response_data(0,NULL);
-  if (ret != BLE_STATUS_SUCCESS)
-  {
-    SEGGER_RTT_printf (0,"Error in hci_le_set_scan_resp_data() 0x%04x\r\n", ret);
-    return;
-  }
-  else
-    SEGGER_RTT_printf (0,"hci_le_set_scan_resp_data() --> SUCCESS\r\n");
-
-  /* put device in non connectable mode */
-  ret = aci_gap_set_discoverable(ADV_NONCONN_IND, 160, 160, PUBLIC_ADDR, NO_WHITE_LIST_USE,
-                                 0, NULL, 0, NULL, 0, 0);
-  if (ret != BLE_STATUS_SUCCESS)
-  {
-    SEGGER_RTT_printf (0,"Error in aci_gap_set_discoverable() 0x%04x\r\n", ret);
-    return;
-  }
-  else
-    SEGGER_RTT_printf (0,"aci_gap_set_discoverable() --> SUCCESS\r\n");
-
-#if ENABLE_FLAGS_AD_TYPE_AT_BEGINNING
-  /* Set the  ADV data with the Flags AD Type at beginning of the
-     advertsing packet,  followed by the beacon manufacturer specific data */
-  ret = hci_le_set_advertising_data (sizeof(adv_data), adv_data);
-  if (ret != BLE_STATUS_SUCCESS)
-  {
-    SEGGER_RTT_printf (0,"Error in hci_le_set_advertising_data() 0x%04x\r\n", ret);
-    return;
-  }
-  else
-    SEGGER_RTT_printf (0,"hci_le_set_advertising_data() --> SUCCESS\r\n");
-#else
-  /* Delete the TX power level information */
-  ret = aci_gap_delete_ad_type(AD_TYPE_TX_POWER_LEVEL);
-  if (ret != BLE_STATUS_SUCCESS)
-  {
-    SEGGER_RTT_printf (0,"Error in aci_gap_delete_ad_type() 0x%04x\r\n", ret);
-    return;
-  }
-  else
-    SEGGER_RTT_printf (0,"aci_gap_delete_ad_type() --> SUCCESS\r\n");
-
-  /* Update the ADV data with the BEACON manufacturing data */
-  ret = aci_gap_update_adv_data(27, manuf_data);
-  if (ret != BLE_STATUS_SUCCESS)
-  {
-    SEGGER_RTT_printf (0,"Error in aci_gap_update_adv_data() 0x%04x\r\n", ret);
-    return;
-  }
-  else
-    SEGGER_RTT_printf (0,"aci_gap_update_adv_data() --> SUCCESS\r\n");
-#endif
-}
 
 int main(void)
 {
@@ -390,51 +256,32 @@ int main(void)
 //  SdkEvalComUartInit(UART_BAUDRATE);
 
   /* BlueNRG-1,2 stack init */
-  ret = BlueNRG_Stack_Initialization(&BlueNRG_Stack_Init_params);
-  if (ret != BLE_STATUS_SUCCESS) {
-    SEGGER_RTT_printf(0,"Error in BlueNRG_Stack_Initialization() 0x%02x\r\n", ret);
-    while(1);
-  }
+//  ret = BlueNRG_Stack_Initialization(&BlueNRG_Stack_Init_params);
+//  if (ret != BLE_STATUS_SUCCESS) {
+//    SEGGER_RTT_printf(0,"Error in BlueNRG_Stack_Initialization() 0x%02x\r\n", ret);
+//    while(1);
+//  }
 
   /* Init the BlueNRG-1,2 device */
-  Device_Init();
+//  Device_Init();
 
-#if ST_USE_OTA_SERVICE_MANAGER_APPLICATION
-  /* Initialize the button */
-  SdkEvalPushButtonInit(USER_BUTTON);
-#endif /* ST_USE_OTA_SERVICE_MANAGER_APPLICATION */
+   LED_Init();
 
-  /* Start Beacon Non Connectable Mode*/
-  Start_Beaconing();
+	/*Initialize IMU*/
+   IAM20680_Init();
 
-  SEGGER_RTT_printf(0,"BlueNRG-1,2 BLE Beacon Application (version: %s)\r\n", BLE_BEACON_VERSION_STRING);
 
-  while(1)
-  {
-    /* BlueNRG-1,2 stack tick */
-    BTLE_StackTick();
-
-    /* Enable Power Save according the Advertising Interval */
-    BlueNRG_Sleep(SLEEPMODE_NOTIMER, 0, 0);
-
-#if ST_USE_OTA_SERVICE_MANAGER_APPLICATION
-    if (SdkEvalPushButtonGetState(USER_BUTTON) == RESET)
-    {
-      OTA_Jump_To_Service_Manager_Application();
-    }
-#endif /* ST_USE_OTA_SERVICE_MANAGER_APPLICATION */
-
-    main_IMU();
-    SEGGER_RTT_printf(0, "%d.%3d    %d.%3d    %d.%3d    %d.%3d    %d.%3d   %d.%3d   \r\n",
-    				  PRINT_INT(a_x), PRINT_FLOAT(a_x), //this does not nicely print the float values, spaces print instead of 0s (cleaned data manually for test)
-    				  	  PRINT_INT(a_y), PRINT_FLOAT(a_y),
-    						  PRINT_INT(a_z), PRINT_FLOAT(a_z),
-    						  	  PRINT_INT(g_x), PRINT_FLOAT(g_x),
-    							  	  PRINT_INT(g_y), PRINT_FLOAT(g_y),
-    								  	  PRINT_INT(g_z), PRINT_FLOAT(g_z));
+//    main_IMU();
+//    SEGGER_RTT_printf(0, "%d.%3d    %d.%3d    %d.%3d    %d.%3d    %d.%3d   %d.%3d   \r\n",
+//    				  PRINT_INT(a_x), PRINT_FLOAT(a_x), //this does not nicely print the float values, spaces print instead of 0s (cleaned data manually for test)
+//    				  	  PRINT_INT(a_y), PRINT_FLOAT(a_y),
+//    						  PRINT_INT(a_z), PRINT_FLOAT(a_z),
+//    						  	  PRINT_INT(g_x), PRINT_FLOAT(g_x),
+//    							  	  PRINT_INT(g_y), PRINT_FLOAT(g_y),
+//    								  	  PRINT_INT(g_z), PRINT_FLOAT(g_z));
 
   }
-}
+
 
 /* Hardware Error event.
    This event is used to notify the Host that a hardware failure has occurred in the Controller.
@@ -444,256 +291,3 @@ int main(void)
    - 0x03: Internal queue overflow error
    After this event is recommended to force device reset. */
 
-void hci_hardware_error_event(uint8_t Hardware_Code)
-{
-   NVIC_SystemReset();
-}
-
-
-/****************** BlueNRG-1,2 Sleep Management Callback ********************************/
-
-SleepModes App_SleepMode_Check(SleepModes sleepMode)
-{
-  if(SdkEvalComIOTxFifoNotEmpty() || SdkEvalComUARTBusy())
-    return SLEEPMODE_RUNNING;
-
-  return SLEEPMODE_NOTIMER;
-}
-
-/***************************************************************************************/
-
-#ifdef  USE_FULL_ASSERT
-
-/**
-* @brief  Reports the name of the source file and the source line number
-*         where the assert_param error has occurred.
-* @param  file: pointer to the source file name
-* @param  line: assert_param error line source number
-*/
-void assert_failed(uint8_t* file, uint32_t line)
-{
-  /* User can add his own implementation to report the file name and line number,
-  ex: SEGGER_RTT_printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
-
-  /* Infinite loop */
-  while (1)
-  {
-  }
-}
-
-#endif
-
-/******************* (C) COPYRIGHT 2015 STMicroelectronics *****END OF FILE****/
-/** \endcond
- */
-
-
-
-///******************** (C) COPYRIGHT 2018 STMicroelectronics ********************
-//* File Name          : SensorDemo_main.c
-//* Author             : AMS - RF Application team
-//* Version            : V1.2.0
-//* Date               : 03-December-2018
-//* Description        : BlueNRG-1-2 Sensor Demo main file
-//********************************************************************************
-//* THE PRESENT FIRMWARE WHICH IS FOR GUIDANCE ONLY AIMS AT PROVIDING CUSTOMERS
-//* WITH CODING INFORMATION REGARDING THEIR PRODUCTS IN ORDER FOR THEM TO SAVE TIME.
-//* AS A RESULT, STMICROELECTRONICS SHALL NOT BE HELD LIABLE FOR ANY DIRECT,
-//* INDIRECT OR CONSEQUENTIAL DAMAGES WITH RESPECT TO ANY CLAIMS ARISING FROM THE
-//* CONTENT OF SUCH FIRMWARE AND/OR THE USE MADE BY CUSTOMERS OF THE CODING
-//* INFORMATION CONTAINED HEREIN IN CONNECTION WITH THEIR PRODUCTS.
-//*******************************************************************************/
-///** @addtogroup BlueNRG1_demonstrations_applications
-// * BlueNRG-1,2 SensorDemo \see SensorDemo_main.c for documentation.
-// *
-// *@{
-// */
-//
-///** @} */
-///** \cond DOXYGEN_SHOULD_SKIP_THIS
-// */
-///* Includes ------------------------------------------------------------------*/
-//#include <stdio.h>
-//#include "BlueNRG1_it.h"
-//#include "BlueNRG1_conf.h"
-//#include "ble_const.h"
-//#include "bluenrg1_stack.h"
-//#include "SDK_EVAL_Config.h"
-//#include "sleep.h"
-//#include "sensor.h"
-//#include "SensorDemo_config.h"
-//#include "OTA_btl.h"
-//#include "gatt_db.h"
-//#include "SEGGER_RTT.h"
-//#include "SEGGER_RTT_conf.h"
-//#include "GPIO.h"
-//#include "adc.h"
-//#include "I2C.h"
-//#include "IAM20680.h"
-//#include "internalFlash.h"
-//#include "sensor.h"
-//
-///* Private typedef -----------------------------------------------------------*/
-///* Private define ------------------------------------------------------------*/
-//#ifndef DEBUG
-//#define DEBUG 0
-//#endif
-//
-//#if DEBUG
-//#include <stdio.h>
-////#define SEGGER_RTT_printf(...) SEGGER_RTT_printf(__VA_ARGS__)
-//#else
-//#define SEGGER_RTT_printf(...)
-//#endif
-//
-//
-///* Private macro -------------------------------------------------------------*/
-///* Private variables ---------------------------------------------------------*/
-//
-///* Set the Application Service Max number of attributes records with init parameters coming from application *.config.h file */
-//uint8_t Services_Max_Attribute_Records[NUMBER_OF_APPLICATION_SERVICES] = {MAX_NUMBER_ATTRIBUTES_RECORDS_SERVICE_1, MAX_NUMBER_ATTRIBUTES_RECORDS_SERVICE_2};
-//
-///* Private function prototypes -----------------------------------------------*/
-///* Private functions ---------------------------------------------------------*/
-//
-//int main(void)
-//{
-//  uint8_t ret;
-//  SEGGER_RTT_Init();
-//  SEGGER_RTT_ConfigUpBuffer(0,NULL,NULL,0,SEGGER_RTT_MODE_BLOCK_IF_FIFO_FULL);
-//
-//  /* System Init */
-//  SystemInit();
-//
-//  /* Identify BlueNRG1 platform */
-//  SdkEvalIdentification();
-//
-//  /* Configure I/O communication channel */
-//  SdkEvalComUartInit(UART_BAUDRATE);
-//
-//  /*Initialize the LEDs*/
-//  LED_Init();
-//
-//  I2C_test();
-//
-//  /* BlueNRG-1,2 stack init */
-//  ret = BlueNRG_Stack_Initialization(&BlueNRG_Stack_Init_params);
-//  if (ret != BLE_STATUS_SUCCESS) {
-//	  SEGGER_RTT_SEGGER_RTT_printf(0,"Error in BlueNRG_Stack_Initialization() 0x%02x\r\n", ret);
-//    while(1);
-//  }
-//
-//  SEGGER_RTT_SEGGER_RTT_printf(0,"Initialization Passed!!\r\n");
-//
-//#if ST_USE_OTA_SERVICE_MANAGER_APPLICATION
-//  /* Initialize the button: to be done before Sensor_DeviceInit for avoiding to
-//     overwrite pressure/temperature sensor IO configuration when using BUTTON_2 (IO5) */
-//  SdkEvalPushButtonInit(USER_BUTTON);
-//#endif /* ST_USE_OTA_SERVICE_MANAGER_APPLICATION */
-//
-//  /* Sensor Device Init */
-//  ret = Sensor_DeviceInit();
-//  if (ret != BLE_STATUS_SUCCESS) {
-//    SdkEvalLedOn(LED3);
-//    while(1);
-//  }
-//
-//
-//  while(1)
-//  {
-//    /* BLE Stack Tick */
-//    BTLE_StackTick();
-//
-//    /* Application Tick */
-//    APP_Tick();
-//
-//    /* Power Save management */
-//    BlueNRG_Sleep(SLEEPMODE_NOTIMER, 0, 0);
-//
-//#if ST_OTA_FIRMWARE_UPGRADE_SUPPORT
-//    /* Check if the OTA firmware upgrade session has been completed */
-//    if (OTA_Tick() == 1)
-//    {
-//      /* Jump to the new application */
-//      OTA_Jump_To_New_Application();
-//    }
-//#endif /* ST_OTA_FIRMWARE_UPGRADE_SUPPORT */
-//
-//#if ST_USE_OTA_SERVICE_MANAGER_APPLICATION
-//    if (SdkEvalPushButtonGetState(USER_BUTTON) == RESET)
-//    {
-//      OTA_Jump_To_Service_Manager_Application();
-//    }
-//#endif /* ST_USE_OTA_SERVICE_MANAGER_APPLICATION */
-//  }/* while (1) */
-//}
-//
-///* Hardware Error event.
-//   This event is used to notify the Host that a hardware failure has occurred in the Controller.
-//   Hardware_Code Values:
-//   - 0x01: Radio state error
-//   - 0x02: Timer overrun error
-//   - 0x03: Internal queue overflow error
-//   After this event is recommended to force device reset. */
-//
-//void hci_hardware_error_event(uint8_t Hardware_Code)
-//{
-//   NVIC_SystemReset();
-//}
-//
-///**
-//  * This event is generated to report firmware error informations.
-//  * FW_Error_Type possible values:
-//  * Values:
-//  - 0x01: L2CAP recombination failure
-//  - 0x02: GATT unexpected response
-//  - 0x03: GATT unexpected request
-//    After this event with error type (0x01, 0x02, 0x3) it is recommended to disconnect.
-//*/
-//void aci_hal_fw_error_event(uint8_t FW_Error_Type,
-//                            uint8_t Data_Length,
-//                            uint8_t Data[])
-//{
-//  if (FW_Error_Type <= 0x03)
-//  {
-//    uint16_t connHandle;
-//
-//    /* Data field is the connection handle where error has occurred */
-//    connHandle = LE_TO_HOST_16(Data);
-//
-//    aci_gap_terminate(connHandle, BLE_ERROR_TERMINATED_REMOTE_USER);
-//  }
-//}
-//
-///****************** BlueNRG-1,2 Sleep Management Callback ********************************/
-//
-//SleepModes App_SleepMode_Check(SleepModes sleepMode)
-//{
-//  if(request_free_fall_notify || SdkEvalComIOTxFifoNotEmpty() || SdkEvalComUARTBusy())
-//    return SLEEPMODE_RUNNING;
-//
-//  return SLEEPMODE_NOTIMER;
-//}
-//
-///***************************************************************************************/
-//
-//#ifdef USE_FULL_ASSERT
-///*******************************************************************************
-//* Function Name  : assert_failed
-//* Description    : Reports the name of the source file and the source line number
-//*                  where the assert_param error has occurred.
-//* Input          : - file: pointer to the source file name
-//*                  - line: assert_param error line source number
-//* Output         : None
-//* Return         : None
-//*******************************************************************************/
-//void assert_failed(uint8_t* file, uint32_t line)
-//{
-//    /* User can add his own implementation to report the file name and line number,
-//    ex: SEGGER_RTT_printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
-//
-//    /* Infinite loop */
-//    while (1)
-//    {}
-//}
-//#endif

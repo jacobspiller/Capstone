@@ -24,6 +24,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "HTS221_HAL.h"
+#include "BlueNRG1_spi.h"
 
 /* Private Functions Declaration */
 HTS221_Error_et HAL_ReadRegLowLvl(uint8_t reg_addr, uint8_t num_regs, uint8_t* buffer);
@@ -38,48 +39,48 @@ void HTTS221_HAL_SPI_Init(void)
 {
   GPIO_InitType GPIO_InitStructure;
   SPI_InitType SPI_InitStructure;
-  
+
   /* Enable SPI and GPIO clocks */
-  SysCtrl_PeripheralClockCmd(CLOCK_PERIPH_GPIO | CLOCK_PERIPH_SPI, ENABLE);   
-  
+  SysCtrl_PeripheralClockCmd(CLOCK_PERIPH_GPIO | CLOCK_PERIPH_SPI, ENABLE);
+
   /* Configure SPI pins */
   GPIO_StructInit(&GPIO_InitStructure);
   GPIO_InitStructure.GPIO_Pin = SPI_MOSI_HTS221_PIN;
   GPIO_InitStructure.GPIO_Mode = Serial0_Mode;
   GPIO_Init(&GPIO_InitStructure);
-  
+
   GPIO_InitStructure.GPIO_Pin = SPI_MISO_HTS221_PIN;
   GPIO_InitStructure.GPIO_Mode = Serial0_Mode;
   GPIO_Init(&GPIO_InitStructure);
-  
+
   GPIO_InitStructure.GPIO_Pin = SPI_CLOCK_HTS221_PIN;
   GPIO_InitStructure.GPIO_Mode = Serial0_Mode;
   GPIO_Init(&GPIO_InitStructure);
-  
+
   GPIO_InitStructure.GPIO_Pin = SPI_CS_HTS221_PIN;
   GPIO_InitStructure.GPIO_Mode = GPIO_Output;
   GPIO_Init(&GPIO_InitStructure);
   GPIO_SetBits(SPI_CS_HTS221_PIN);
-  
+
   /* Configure SPI in master mode */
   SPI_StructInit(&SPI_InitStructure);
   SPI_InitStructure.SPI_Mode = SPI_Mode_Master;
   SPI_InitStructure.SPI_BaudRate = SPI_HTS221_BAUDRATE;
   SPI_Init(&SPI_InitStructure);
-  
-  /* Set communication mode */ 
+
+  /* Set communication mode */
   SPI_FrameFormatConfig(SPI_FrmFrmt_Microwire);
 }
 
 HTS221_Error_et HAL_ReadReg(uint8_t reg_addr, uint8_t num_regs, uint8_t* buffer)
-{  
+{
   uint8_t cnt = 0;
-  
+
   /* If num_regs is 0 exit */
   if(num_regs == 0) {
     return HTS221_ERROR;
   }
-  
+
   /* If num_regs is greater than 4, read 4 registers at time */
   while(num_regs > 4) {
     if(HAL_ReadRegLowLvl(reg_addr, 4, &buffer[cnt]) == HTS221_ERROR) {
@@ -98,14 +99,14 @@ HTS221_Error_et HAL_ReadReg(uint8_t reg_addr, uint8_t num_regs, uint8_t* buffer)
 
 
 HTS221_Error_et HAL_WriteReg(uint8_t reg_addr, uint8_t num_regs, uint8_t* buffer)
-{  
+{
   uint8_t cnt = 0;
-  
+
   /* If num_regs is 0 exit */
   if(num_regs == 0) {
     return HTS221_ERROR;
   }
-  
+
   /* If num_regs is greater than 3, write 3 registers at time */
   while(num_regs > 3) {
     if(HAL_WriteRegLowLvl(reg_addr, 3, &buffer[cnt]) == HTS221_ERROR) {
@@ -127,18 +128,18 @@ HTS221_Error_et HAL_ReadRegLowLvl(uint8_t reg_addr, uint8_t num_regs, uint8_t* b
 {
   uint8_t i = 0;
   uint32_t data = 0;
-  
+
   /* Maximum number of byte that can be read is 4 */
   if(num_regs>4 || num_regs == 0) {
     return HTS221_ERROR;
   }
-  
+
   /* Configure the command data size */
   SPI_CommandSizeConfig(SPI_DataSize_8b);
-  
+
   /* Configure the data size */
   SPI_DataSizeConfig((num_regs*8)-1);
-  
+
   /* Load the TX FIFO buffer with the data to send */
   if(num_regs==1) {
     SPI_SendData(0x80 | reg_addr);
@@ -146,27 +147,27 @@ HTS221_Error_et HAL_ReadRegLowLvl(uint8_t reg_addr, uint8_t num_regs, uint8_t* b
   else {
     SPI_SendData(0x80 | reg_addr | 0x40);
   }
-  
+
   /* Low the CS pin */
   LOW_SPI_CS_HTS221();
-  
+
   /* Enable the SPI and send the command header */
   SPI_Cmd(ENABLE);
-  
+
   /* Read the data */
 //  while(RESET == READ_BIT(SPI->SR, SPI_FLAG_RNE));
   while(RESET == SPI_GetFlagStatus(SPI_FLAG_RNE));
   data = SPI->DR;
-  
+
   /* Wait for the end of the SPI operation */
   while (SET == SPI_GetFlagStatus(SPI_FLAG_BSY));
-  
+
   /* High the CS pin */
   GPIO_SetBits(SPI_CS_HTS221_PIN);
-  
+
   /* Disable the SPI */
   SPI_Cmd(DISABLE);
-  
+
   /* Copy the buffer */
   for(i = 0; i < num_regs; i++) {
     buffer[i] = (uint8_t)(data>>(8*(num_regs-1-i)));
@@ -179,40 +180,40 @@ HTS221_Error_et HAL_WriteRegLowLvl(uint8_t reg_addr, uint8_t num_regs, uint8_t* 
 {
   uint8_t i = 0;
   uint32_t command = 0;
-  
+
   /* Configure the command data size */
   SPI_CommandSizeConfig(((num_regs+1)*8)-1);
-  
+
   /* Reset the data size */
   SPI_DataSizeConfig(0);
-  
+
   /* Set the command frame */
   command |= (((uint32_t)reg_addr)<<(8*num_regs));
   for(i = 0; i < num_regs; i++) {
     command |= (((uint32_t)buffer[i])<<(8*(num_regs-i-1)));
   }
-  
+
   /* Load the TX FIFO buffer with the data to send */
   SPI_SendData(command);
-  
+
   /* Low the CS pin */
   LOW_SPI_CS_HTS221();
-  
+
   /* Enable the SPI and send the command header */
   SPI_Cmd(ENABLE);
-  
+
   /* Wait for the end of the SPI operation */
   while (SET == SPI_GetFlagStatus(SPI_FLAG_BSY));
-  
+
   /* Dummy read operation */
   command = SPI->DR;
-  
+
   /* High the CS pin */
   GPIO_SetBits(SPI_CS_HTS221_PIN);
-  
+
   /* Disable the SPI */
   SPI_Cmd(DISABLE);
-  
+
   return HTS221_OK;
 }
 

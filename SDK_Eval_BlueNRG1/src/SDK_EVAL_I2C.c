@@ -23,6 +23,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "SDK_EVAL_I2C.h"
+#include "BlueNRG1_i2c.h"
 
 
 /** @addtogroup SDK_EVAL_BlueNRG1         SDK EVAL BlueNRG1

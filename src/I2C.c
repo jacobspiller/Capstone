@@ -23,6 +23,7 @@
 #include <stdio.h>
 #include "BlueNRG1_conf.h"
 #include "SDK_EVAL_Config.h"
+#include "BlueNRG1_i2c.h"
 
 /* Private typedef -----------------------------------------------------------*/
 typedef enum {
@@ -137,7 +138,7 @@ I2C_AppOpStatus I2C_Read_Reg(uint8_t dev_address, uint8_t send_val, uint8_t* get
 {
   I2C_TransactionType t;
 
-  /* Write I2C device address address */
+  /* Write I2C device address */
   t.Operation = I2C_Operation_Write;
   t.Address = dev_address;
   t.StartByte = I2C_StartByte_Disable;
