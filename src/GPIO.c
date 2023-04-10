@@ -6,7 +6,7 @@
  */
 
 #include "GPIO.h"
-#include "adc.h"
+//#include "adc.h"
 #include "clock.h"
 #include "SEGGER_RTT.h"
 
@@ -17,7 +17,7 @@
 
 #define LED_PIN			GPIO_Pin_1
 
-extern void SdkDelayMs(volatile uint32_t lTimeMs);
+//extern void SdkDelayMs(volatile uint32_t lTimeMs);
 
 void LED_Configuration(void){
 	InitGPIO_Output(LED_PIN);

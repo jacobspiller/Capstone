@@ -10,7 +10,7 @@
 
 #include "bluenrg_x_device.h"
 #include <stdio.h>
-#include "BlueNRG1_conf.h"
+//#include "BlueNRG1_conf.h"
 #include "SDK_EVAL_Config.h"
 
 #define CS_IMU				GPIO_Pin_5 = 1 //Set the CS for the IMU to high, is this the right place to do it?

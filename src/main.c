@@ -24,6 +24,10 @@
 #include "SEGGER_RTT.h"
 #include "SEGGER_RTT_conf.h"
 
+#include "GPIO.h"
+#include "I2C.h"
+#include "IAM20680_use.h"
+
 /** @addtogroup BlueNRG1_StdPeriph_Examples BlueNRG1 Standard Peripheral Examples
   * @{
   */
@@ -42,11 +46,24 @@
 #define PWM0_PIN			GPIO_Pin_2
 #define PWM1_PIN			GPIO_Pin_3
 
+#define PRINT_INT(x)    ((int)(x))
+#define PRINT_FLOAT(x)  (x>0)? ((int) (((x) - PRINT_INT(x)) * 1000)) : (-1*(((int) (((x) - PRINT_INT(x)) * 1000))))
+
+BOOL volatile longTermMode = FALSE;
+volatile uint32_t currentAddress = 0;
+volatile uint32_t lSystickCounter = 0;
+
+volatile BOOL isIMUAccCalibrated = FALSE;
+volatile BOOL isIMUGyroCalibrated = FALSE;
+
+float accReadings[3];
+float gyroReadings[3];
+
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 /* Private function prototypes -----------------------------------------------*/
 void GPIO_Configuration(void);
-void MFT_Configuration(void);
+//void MFT_Configuration(void);
 
 /* Private functions ---------------------------------------------------------*/
 
@@ -58,40 +75,81 @@ void MFT_Configuration(void);
   */
 int main(void)
 {
-  /* System initialization function */
-  SystemInit();
+	/*SEGGER Init*/
+		SEGGER_RTT_Init();
+		SEGGER_RTT_ConfigUpBuffer(0,NULL,NULL,0,SEGGER_RTT_MODE_BLOCK_IF_FIFO_FULL);
 
-  /* Identify BlueNRG1 platform */
-  SdkEvalIdentification();
+	/* System initialization function */
+		SystemInit();
 
-  SdkEvalComUartInit(UART_BAUDRATE);
-//  LED_Init();
+	/* Identify BlueNRG1 platform */
+		SdkEvalIdentification();
+		SdkEvalComUartInit(UART_BAUDRATE);
 
+	/*SysTick Initialization 1ms*/
+		SysTick_Config(SYST_CLOCK/1000 - 1);
+	/*Initialization*/
+		 longTermMode = FALSE;
+	/* Configure I2C as master mode */
+		I2C_ConfigurationMaster();
+	/* GPIO configuration */
+		GPIO_Configuration();
+	/*LED initialization*/
+		LED_Init();
+  	/*Initialize IMU*/
+		IAM20680_Init();
 
-  /* GPIO configuration */
-  GPIO_Configuration();
+//  /* MFT configuration */
+//		MFT_Configuration();
+//
+//  /* Connect PWM output from MFT1 to TnA pin (PWM0) */
+//  MFT_TnXEN(MFT1, MFT_TnA, ENABLE);
+//
+//  /* Connect PWM output from MFT2 to TnA pin (PWM1) */
+//  MFT_TnXEN(MFT2, MFT_TnA, ENABLE);
+//
+//
+//  /** Enable the MFT interrupt */
+//  MFT_EnableIT(MFT1, MFT_IT_TNA | MFT_IT_TNB, ENABLE);
+//  MFT_EnableIT(MFT2, MFT_IT_TNA | MFT_IT_TNB, ENABLE);
+//
+//  /* Start MFT timers */
+//  MFT_Cmd(MFT1, ENABLE);
+//  MFT_Cmd(MFT2, ENABLE);
 
-  /* MFT configuration */
-  MFT_Configuration();
-
-  /* Connect PWM output from MFT1 to TnA pin (PWM0) */
-  MFT_TnXEN(MFT1, MFT_TnA, ENABLE);
-
-  /* Connect PWM output from MFT2 to TnA pin (PWM1) */
-  MFT_TnXEN(MFT2, MFT_TnA, ENABLE);
-
-
-  /** Enable the MFT interrupt */
-  MFT_EnableIT(MFT1, MFT_IT_TNA | MFT_IT_TNB, ENABLE);
-  MFT_EnableIT(MFT2, MFT_IT_TNA | MFT_IT_TNB, ENABLE);
-
-  /* Start MFT timers */
-  MFT_Cmd(MFT1, ENABLE);
-  MFT_Cmd(MFT2, ENABLE);
+  /*IMU*/
+    	/* IAM20680 Init and Calibration*/
+    	  IAM20680_Init();
+    	  if(IAM20680_Calibrate()){
+    		  isIMUGyroCalibrated = TRUE;
+    	  }
+    	  /* Accelerometer Calibration */
+    	  accSlope[0] = 1.0023f;
+    	  accSlope[1] = 1.00652f;
+    	  accSlope[2] = 0.98327f;
+    	  accIntercept[0] = -0.00111f;
+    	  accIntercept[1] = -0.00644f;
+    	  accIntercept[2] = -0.04624f;
+    	  isIMUAccCalibrated = TRUE;
+    	  SEGGER_RTT_printf(0,"IMU Calibrated 1=TRUE, 0= FALSE. Return:%04x,%04x \n",isIMUAccCalibrated,isIMUGyroCalibrated);
 
   /* Infinite loop */
-  while(1);
-  SEGGER_RTT_printf (0,"1\n");
+  while(1){
+	  /*Collect raw data from IMU*/
+	  	  if(dataReadyFlag){
+	  		  IAM20680_ReadGyroscope(gyroReadings);
+	  		  IAM20680_ReadAccelerometer(accReadings);
+
+	  		  /*Raw Data*/
+	  		  SEGGER_RTT_printf(0, "%d.%3d    %d.%3d    %d.%3d    %d.%3d    %d.%3d   %d.%3d   \r\n",
+	  				  PRINT_INT(accReadings[0]), PRINT_FLOAT(accReadings[0]),
+	  				  	  PRINT_INT(accReadings[1]), PRINT_FLOAT(accReadings[1]),
+	  						  PRINT_INT(accReadings[2]), PRINT_FLOAT(accReadings[2]),
+	  						  	  PRINT_INT(gyroReadings[0]), PRINT_FLOAT(gyroReadings[0]),
+	  							  	  PRINT_INT(gyroReadings[1]), PRINT_FLOAT(gyroReadings[1]),
+	  								  	  PRINT_INT(gyroReadings[2]), PRINT_FLOAT(gyroReadings[2]));
+	  	  }
+  }
 }
 
 
@@ -101,8 +159,7 @@ int main(void)
   * @param  None
   * @retval None
   */
-void GPIO_Configuration(void)
-{
+void GPIO_Configuration(void){
   GPIO_InitType GPIO_InitStructure;
 
   SysCtrl_PeripheralClockCmd(CLOCK_PERIPH_GPIO, ENABLE);
@@ -116,52 +173,52 @@ void GPIO_Configuration(void)
 
 }
 
-/**
-  * @brief  MFT_Configuration.
-  * @param  None
-  * @retval None
-  */
-void MFT_Configuration(void)
-{
-  NVIC_InitType NVIC_InitStructure;
-  MFT_InitType timer_init;
-
-  SysCtrl_PeripheralClockCmd(CLOCK_PERIPH_MTFX1 | CLOCK_PERIPH_MTFX2, ENABLE);
-
-  MFT_StructInit(&timer_init);
-
-  timer_init.MFT_Mode = MFT_MODE_1;
-
-#if (HS_SPEED_XTAL == HS_SPEED_XTAL_32MHZ)
-	timer_init.MFT_Prescaler = 160-1;      /* 5 us clock */
-#elif (HS_SPEED_XTAL == HS_SPEED_XTAL_16MHZ)
-	timer_init.MFT_Prescaler = 80-1;       /* 5 us clock */
-#endif
-
-  /* MFT1 configuration */
-  timer_init.MFT_Clock1 = MFT_PRESCALED_CLK;
-  timer_init.MFT_Clock2 = MFT_NO_CLK;
-  timer_init.MFT_CRA = 199;//300 - 1;       /* 1.5 ms high duration */
-  timer_init.MFT_CRB = 4000 - 1;       /* 2 ms low duration */
-  MFT_Init(MFT1, &timer_init);
-
-  /* MFT2 configuration */
-  timer_init.MFT_Clock1 = MFT_PRESCALED_CLK;
-  timer_init.MFT_Clock2 = MFT_NO_CLK;
-  timer_init.MFT_CRA = 5000 - 1;        /* 25 ms positive duration */
-  timer_init.MFT_CRB = 1000 - 1;       /* 50 ms negative duration */
-  MFT_Init(MFT2, &timer_init);
-
-  /* Enable MFT2 Interrupt 1 */
-  NVIC_InitStructure.NVIC_IRQChannel = MFT1A_IRQn;
-  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = LOW_PRIORITY;
-  NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-  NVIC_Init(&NVIC_InitStructure);
-
-  /* Enable MFT2 Interrupt 2 */
-  NVIC_InitStructure.NVIC_IRQChannel = MFT2A_IRQn;
-  NVIC_Init(&NVIC_InitStructure);
-}
+///**
+//  * @brief  MFT_Configuration.
+//  * @param  None
+//  * @retval None
+//  */
+//void MFT_Configuration(void)
+//{
+//  NVIC_InitType NVIC_InitStructure;
+//  MFT_InitType timer_init;
+//
+//  SysCtrl_PeripheralClockCmd(CLOCK_PERIPH_MTFX1 | CLOCK_PERIPH_MTFX2, ENABLE);
+//
+//  MFT_StructInit(&timer_init);
+//
+//  timer_init.MFT_Mode = MFT_MODE_1;
+//
+//#if (HS_SPEED_XTAL == HS_SPEED_XTAL_32MHZ)
+//	timer_init.MFT_Prescaler = 160-1;      /* 5 us clock */
+//#elif (HS_SPEED_XTAL == HS_SPEED_XTAL_16MHZ)
+//	timer_init.MFT_Prescaler = 80-1;       /* 5 us clock */
+//#endif
+//
+//  /* MFT1 configuration */
+//  timer_init.MFT_Clock1 = MFT_PRESCALED_CLK;
+//  timer_init.MFT_Clock2 = MFT_NO_CLK;
+//  timer_init.MFT_CRA = 199;//300 - 1;       /* 1.5 ms high duration */
+//  timer_init.MFT_CRB = 4000 - 1;       /* 2 ms low duration */
+//  MFT_Init(MFT1, &timer_init);
+//
+//  /* MFT2 configuration */
+//  timer_init.MFT_Clock1 = MFT_PRESCALED_CLK;
+//  timer_init.MFT_Clock2 = MFT_NO_CLK;
+//  timer_init.MFT_CRA = 5000 - 1;        /* 25 ms positive duration */
+//  timer_init.MFT_CRB = 1000 - 1;       /* 50 ms negative duration */
+//  MFT_Init(MFT2, &timer_init);
+//
+//  /* Enable MFT2 Interrupt 1 */
+//  NVIC_InitStructure.NVIC_IRQChannel = MFT1A_IRQn;
+//  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = LOW_PRIORITY;
+//  NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+//  NVIC_Init(&NVIC_InitStructure);
+//
+//  /* Enable MFT2 Interrupt 2 */
+//  NVIC_InitStructure.NVIC_IRQChannel = MFT2A_IRQn;
+//  NVIC_Init(&NVIC_InitStructure);
+//}
 
 #ifdef  USE_FULL_ASSERT
 
