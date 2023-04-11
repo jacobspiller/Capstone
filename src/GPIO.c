@@ -61,7 +61,7 @@ void MFT_Configuration(uint16_t joint1, uint16_t joint2, uint16_t joint3)
   NVIC_InitType NVIC_InitStructure;
   MFT_InitType timer_init;
 
-  SysCtrl_PeripheralClockCmd(CLOCK_PERIPH_MTFX1, ENABLE);
+  SysCtrl_PeripheralClockCmd(CLOCK_PERIPH_MTFX1 | CLOCK_PERIPH_MTFX2, ENABLE);
 
   MFT_StructInit(&timer_init);
 
@@ -76,14 +76,25 @@ void MFT_Configuration(uint16_t joint1, uint16_t joint2, uint16_t joint3)
   /* MFT1 configuration */
   timer_init.MFT_Clock1 = MFT_PRESCALED_CLK;
   timer_init.MFT_Clock2 = MFT_NO_CLK;
-  timer_init.MFT_CRA = joint1*(400/360) - 1;  	   /* 1.5 ms high duration */
-  timer_init.MFT_CRB = 4000 - 1;       /* 20 ms low duration (50hz)*/
+  timer_init.MFT_CRA = (joint1*(4000))/3600+100 - 1;  	   /* 1.5 ms high duration */
+  timer_init.MFT_CRB = (4000 ) - 1;       /* 20 ms period  (50hz)*/
   MFT_Init(MFT1, &timer_init);
+
+  /* MFT2 configuration */
+  timer_init.MFT_Clock1 = MFT_PRESCALED_CLK;
+  timer_init.MFT_Clock2 = MFT_NO_CLK;
+  timer_init.MFT_CRA = joint2*(400/360) - 1;        /* 25 ms positive duration */
+  timer_init.MFT_CRB = (4000 - joint2*(400/360)) - 1;      /* 50 ms negative duration */
+  MFT_Init(MFT2, &timer_init);
 
   /* Enable MFT1 Interrupt 1 */
   NVIC_InitStructure.NVIC_IRQChannel = MFT1A_IRQn;
   NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = LOW_PRIORITY;
   NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+  NVIC_Init(&NVIC_InitStructure);
+
+  /* Enable MFT2 Interrupt 2 */
+  NVIC_InitStructure.NVIC_IRQChannel = MFT2A_IRQn;
   NVIC_Init(&NVIC_InitStructure);
 }
 
@@ -95,17 +106,23 @@ void joint_set(uint16_t joint1_angle, uint16_t joint2_angle, uint16_t joint3_ang
 	   MFT_Configuration(joint1_angle, joint2_angle, joint3_angle);
 
 	   /* Connect PWM output from MFT1 to TnA pin (PWM0) */
-	   MFT_TnXEN(MFT1, MFT_TnB, ENABLE);
+	   MFT_TnXEN(MFT1, MFT_TnA, ENABLE);
+
+	   /* Connect PWM output from MFT2 to TnA pin (PWM1) */
+	   MFT_TnXEN(MFT2, MFT_TnA, ENABLE);
+
 
 	   /** Enable the MFT interrupt */
-	   MFT_EnableIT(MFT1, MFT_IT_TNB, ENABLE);
+	   MFT_EnableIT(MFT1, MFT_IT_TNA | MFT_IT_TNB, ENABLE);
+	   MFT_EnableIT(MFT2, MFT_IT_TNA | MFT_IT_TNB, ENABLE);
 
 	   /* Start MFT timers */
 	   MFT_Cmd(MFT1, ENABLE);
+	   MFT_Cmd(MFT2, ENABLE);
 
 
-	   MFT_EnableIT(MFT1, MFT_IT_TNB, DISABLE);
-	   MFT_Cmd(MFT1, DISABLE);
+//	   MFT_EnableIT(MFT1, MFT_IT_TNB, DISABLE);
+//	   MFT_Cmd(MFT1, DISABLE);
 }
 
 #ifdef  USE_FULL_ASSERT
