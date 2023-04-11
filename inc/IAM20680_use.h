@@ -15,10 +15,11 @@
 #include <stdlib.h>
 
 #include "IAM20680_use.h"
-#include "Iam20680Driver_HL.h"
+//#include "Iam20680Driver_HL.h"
 #include "Iam20680Product.h"
 #include "Iam20680Defs.h"
 #include "BlueNRG1_conf.h"
+#include "InvBool.h"
 
 int idd_io_hal_read_reg(void * context, uint8_t reg, uint8_t * rbuffer, uint32_t rlen);
 
@@ -78,7 +79,7 @@ volatile float accIntercept[3];
 volatile int16_t gyroOffset[3];
 extern volatile BOOL isIMUGyroCalibrated;
 
-//extern void SdkDelayMs(volatile uint32_t lTimeMs);
+extern void SdkDelayMs(volatile uint32_t lTimeMs);
 
 /* Low-level functions */
 int32_t platform_write(void *handle, uint8_t Reg, const uint8_t *bufp, uint16_t len);
@@ -93,7 +94,6 @@ int ConfigureInvDevice(inv_dev_config_t* device_config);
 
 ///* Data acquisition */
 int32_t IAM20680_acceleration_raw_get(struct inv_iam20680 * s , int16_t *val);
-
 int32_t IAM20680_angular_rate_raw_get(struct inv_iam20680 * s , int16_t *val);
 
 void IAM20680_ReadAccelerometer(float *pBuffer);

@@ -27,7 +27,7 @@ uint8_t	I2C_Address = IAM20680_ID;
 //volatile static uint8_t errorCounter = 0;
 static inv_iam20680_t IMUDriver;
 
-//static void IAM20680_CalibrateGyroscope(void);
+static void IAM20680_CalibrateGyroscope(void);
 
 //extern void Error_Handler(void);
 
@@ -55,7 +55,7 @@ int32_t platform_read(void *handle, uint8_t Reg, uint8_t *bufp, uint16_t len){
 int SetupInvDevice(int (*read_reg)(void * context, uint8_t reg, uint8_t * buf, uint32_t len),
 				   int (*write_reg)(void * context, uint8_t reg, const uint8_t * buf, uint32_t len),
 				   inv_bool_t isSPI){
-	int rc = 0;
+		int rc = 0;
 		uint8_t who_am_i;
 
 		/* Initialize iam20680 serif structure */
@@ -87,7 +87,7 @@ int SetupInvDevice(int (*read_reg)(void * context, uint8_t reg, uint8_t * buf, u
 //		if((rc != INV_ERROR_SUCCESS) || (who_am_i != EXPECTED_WHOAMI)) {
 //			if(!isSPI) {
 //				/* Check i2c bus stuck and clear the bus */
-//				twi_clear_bus();
+//				I2C_ConfigurationMaster();
 //			}
 //
 //			/* Retry who_am_i check */
@@ -99,6 +99,7 @@ int SetupInvDevice(int (*read_reg)(void * context, uint8_t reg, uint8_t * buf, u
 //			return rc;
 //
 //		if(who_am_i != EXPECTED_WHOAMI) {
+//			SEGGER_RTT_printf(0,"Bad WhoAMI\n", 0);
 //			//INV_MSG(INV_MSG_LEVEL_ERROR, "Bad WHOAMI value. Got 0x%02x. Expected 0x%02x.", who_am_i, EXPECTED_WHOAMI);
 //		}
 
@@ -118,11 +119,11 @@ int ConfigureInvDevice(inv_dev_config_t* device_config)
 		/* Enable Accel and Gyro axes */
 		if(device_config->enable_accel) {
 			rc |= inv_iam20680_enable_accel(&IMUDriver);
-			if (!(device_config->set_low_noise_mode) && !(device_config->enable_gyro)) {
-				rc |= inv_iam20680_wr_lp_mode_cfg_set_lp_accel_odr(&IMUDriver, (double)1000000.0/device_config->odr_us);
-				rc |= inv_iam20680_wr_accel_config2_a_dlpf_cfg(&IMUDriver, IAM20680_ACCEL_CONFIG2_A_DLPF_CFG_420);
-				rc |= inv_iam20680_set_accel_low_power_mode(&IMUDriver);
-			}
+//			if (!(device_config->set_low_noise_mode) && !(device_config->enable_gyro)) {
+//				rc |= inv_iam20680_wr_lp_mode_cfg_set_lp_accel_odr(&IMUDriver, (double)1000000.0/device_config->odr_us);
+//				rc |= inv_iam20680_wr_accel_config2_a_dlpf_cfg(&IMUDriver, IAM20680_ACCEL_CONFIG2_A_DLPF_CFG_420);
+//				rc |= inv_iam20680_set_accel_low_power_mode(&IMUDriver);
+//			}
 		}
 
 		if(device_config->enable_gyro) {
@@ -131,45 +132,6 @@ int ConfigureInvDevice(inv_dev_config_t* device_config)
 		return rc;
 }
 
-int idd_io_hal_read_reg(void * context, uint8_t reg, uint8_t * rbuffer, uint32_t rlen) {
-	(void)context;
-
-#if (SERIF_TYPE_SPI == 1)
-	return spi_master_read_register(NULL, reg, rbuffer, rlen);
-#elif (SERIF_TYPE_I2C == 1)
-	//return i2c_master_read_register(I2C_Address, reg, rlen, rbuffer);
-	return platform_read(context, reg, rbuffer, rlen);
-#endif
-}
-
-int idd_io_hal_write_reg(void * context, uint8_t reg, const uint8_t * wbuffer, uint32_t wlen) {
-	(void)context;
-
-#if (SERIF_TYPE_SPI == 1)
-	return spi_master_write_register(NULL, reg, wbuffer, wlen);
-#elif (SERIF_TYPE_I2C == 1)
-	return platform_write(context, reg, wbuffer, wlen);
-#endif
-}
-
-void interface_initialize(void) {
-
-#if (SERIF_TYPE_SPI == 1)
-
-	spi_master_initialize();
-
-#elif (SERIF_TYPE_I2C == 1)
-	/*
-	 * Default IAM20680 (Slave) Address = 0x68 (pin AD0 is logic low)
-	 * Change Slave Address to 0x69 (pin AD0 is logic high)
-	 */
-//#if ((TDK_BOARD_INBUILT_SENSOR == 1) && (TDK_BOARD_REVISION == 1))
-//	I2C_Address = IAM_I2C_ADDR_AD0_HIGH;
-//#endif
-	I2C_ConfigurationMaster();
-#endif
-}
-//
 //void IAM20680_Init(void){
 //	/* Initialize low-level driver */
 	//IMUDriver.read_reg = platform_read;
@@ -208,7 +170,7 @@ void interface_initialize(void) {
 ////	errorCounter = inv_iam20680_device_reset(&IMUDriver);
 //
 //	/***GYROSCOPE***/
-////	errorCounter = inv_iam20680_wr_gyro_config_fs_sel(&IMUDriver, IAM20680_GYRO_CONFIG_FS_SEL_250dps);
+////errorCounter = inv_iam20680_wr_gyro_config_fs_sel(&IMUDriver, IAM20680_GYRO_CONFIG_FS_SEL_2000dps);
 //
 //	/***ACCELEROMETER***/
 ////	errorCounter = inv_iam20680_wr_accel_config_accel_fs_sel(&IMUDriver, IAM20680_ACCEL_CONFIG_FS_SEL_2g );
@@ -305,86 +267,119 @@ void IAM20680_ReadGyroscope(float *pBuffer){
 
 
 /* Device calibration */
-//BOOL IAM20680_Calibrate(void){
-//	uint8_t errorCounter = 0;
-//
-//	/* Blink for "REST_SECONDS" seconds to indicate user to leave the device on a flat surface for calibration */
-//	uint8_t i = 0;
-//	while(i != REST_SECONDS){
-//		GPIO_WriteBit(GPIO_Pin_1, LED_ON);
-//		SdkDelayMs(1000);
-//		i++;
-//	}
-//	i = 0;
-//
-//	/*  Indicate that the device calibration will start */
-//	GPIO_WriteBit(GPIO_Pin_1, LED_ON);
-//	SdkDelayMs(250);
-//
-//	/* Activate data-ready interrupts on Pin INT1 */
-//	//LSM6DSO32_dataReadyINT(ENABLE);
-//
-//	/* Wait for data-ready signal to stabilize */
-//	SdkDelayMs(10);
-//
-//	/* Calibrate gyroscope */
-//	IAM20680_CalibrateGyroscope();
-//
-//	/* Deactivate data-ready interrupts on pin INT1 */
-//	//LSM6DSO32_dataReadyINT(DISABLE);
-//
-//	/* Wait for data-ready signal to stabilize */
-//	SdkDelayMs(10);
-//
-//	/* Turn off LED */
-//	GPIO_WriteBit(GPIO_Pin_1, LED_OFF);
-//
-//	/* Check if the device was successfully calibrated */
-//	if(errorCounter != 0){
-//		return FALSE;
-//	} else{
-//		return TRUE;
-//	}
-//}
+BOOL IAM20680_Calibrate(void){
+	uint8_t errorCounter = 0;
 
-//static void IAM20680_CalibrateGyroscope(void){
-//	/* Calibration variables and buffers */
-//	int16_t calibrationBufferX[BUFFERSIZE];
-//	int16_t calibrationBufferY[BUFFERSIZE];
-//	int16_t calibrationBufferZ[BUFFERSIZE];
-//
-//	/* Clear calibrationAverage buffer */
-//	int calibrationAverage[3];
-//	memset(calibrationAverage,0,sizeof(calibrationAverage));
-//
-//	/* Register offset */
-//	int16_t registerOffset[3];
-//
-//	uint8_t i = 0;
-//
-//	/* Read raw data */
-//	while(i != BUFFERSIZE){
-//		if(dataReadyFlag){
-//			int16_t rawDataBuffer[3];
-//			IAM20680_angular_rate_raw_get(&IMUDriver, rawDataBuffer);
-//			calibrationBufferX[i] = rawDataBuffer[0];
-//			calibrationBufferY[i] = rawDataBuffer[1];
-//			calibrationBufferZ[i] = rawDataBuffer[2];
-//			i++;
-//			dataReadyFlag = FALSE;
-//		}
-//	}
-//	i = 0;
-//
-//	/* Calculate data average */
-//	for(i = 0;i < BUFFERSIZE; i++){
-//		calibrationAverage[0] += calibrationBufferX[i];
-//		calibrationAverage[1] += calibrationBufferY[i];
-//		calibrationAverage[2] += calibrationBufferZ[i];
-//	}
-//
-//	/* Gyroscope offset */
-//	for(i = 0; i < 3; i++){
-//		gyroOffset[i] = (uint16_t)(calibrationAverage[i] / BUFFERSIZE);
-//	}
-//}
+	/* Blink for "REST_SECONDS" seconds to indicate user to leave the device on a flat surface for calibration */
+	uint8_t i = 0;
+	while(i != REST_SECONDS){
+		GPIO_WriteBit(GPIO_Pin_1, LED_ON);
+		SdkDelayMs(1000);
+		i++;
+	}
+	i = 0;
+
+	/*  Indicate that the device calibration will start */
+	GPIO_WriteBit(GPIO_Pin_1, LED_ON);
+	SdkDelayMs(250);
+
+	/* Wait for data-ready signal to stabilize */
+	SdkDelayMs(10);
+
+	/* Calibrate gyroscope */
+	IAM20680_CalibrateGyroscope();
+
+	/* Wait for data-ready signal to stabilize */
+	SdkDelayMs(10);
+
+	/* Turn off LED */
+	GPIO_WriteBit(GPIO_Pin_1, LED_OFF);
+
+	/* Check if the device was successfully calibrated */
+	if(errorCounter != 0){
+		return FALSE;
+	} else{
+		return TRUE;
+	}
+}
+
+static void IAM20680_CalibrateGyroscope(void){
+	/* Calibration variables and buffers */
+	int16_t calibrationBufferX[BUFFERSIZE];
+	int16_t calibrationBufferY[BUFFERSIZE];
+	int16_t calibrationBufferZ[BUFFERSIZE];
+
+	/* Clear calibrationAverage buffer */
+	int calibrationAverage[3];
+	memset(calibrationAverage,0,sizeof(calibrationAverage));
+
+	/* Register offset */
+	int16_t registerOffset[3];
+
+	uint8_t i = 0;
+
+	/* Read raw data */
+	while(i != BUFFERSIZE){
+		if(dataReadyFlag){
+			int16_t rawDataBuffer[3];
+			IAM20680_angular_rate_raw_get(&IMUDriver, rawDataBuffer);
+			calibrationBufferX[i] = rawDataBuffer[0];
+			calibrationBufferY[i] = rawDataBuffer[1];
+			calibrationBufferZ[i] = rawDataBuffer[2];
+			i++;
+			dataReadyFlag = FALSE;
+		}
+	}
+	i = 0;
+
+	/* Calculate data average */
+	for(i = 0;i < BUFFERSIZE; i++){
+		calibrationAverage[0] += calibrationBufferX[i];
+		calibrationAverage[1] += calibrationBufferY[i];
+		calibrationAverage[2] += calibrationBufferZ[i];
+	}
+
+	/* Gyroscope offset */
+	for(i = 0; i < 3; i++){
+		gyroOffset[i] = (uint16_t)(calibrationAverage[i] / BUFFERSIZE);
+	}
+}
+
+int idd_io_hal_read_reg(void * context, uint8_t reg, uint8_t * rbuffer, uint32_t rlen) {
+	(void)context;
+
+//#if (SERIF_TYPE_SPI == 1)
+//	return spi_master_read_register(NULL, reg, rbuffer, rlen);
+//#elif (SERIF_TYPE_I2C == 1)
+	//return i2c_master_read_register(I2C_Address, reg, rlen, rbuffer);
+	return platform_read(context, reg, rbuffer, rlen);
+//#endif
+}
+
+int idd_io_hal_write_reg(void * context, uint8_t reg, const uint8_t * wbuffer, uint32_t wlen) {
+	(void)context;
+
+//#if (SERIF_TYPE_SPI == 1)
+//	return spi_master_write_register(NULL, reg, wbuffer, wlen);
+//#elif (SERIF_TYPE_I2C == 1)
+	return platform_write(context, reg, wbuffer, wlen);
+//#endif
+}
+
+void interface_initialize(void) {
+
+#if (SERIF_TYPE_SPI == 1)
+
+	spi_master_initialize();
+
+#elif (SERIF_TYPE_I2C == 1)
+	/*
+	 * Default IAM20680 (Slave) Address = 0x68 (pin AD0 is logic low)
+	 * Change Slave Address to 0x69 (pin AD0 is logic high)
+	 */
+//#if ((TDK_BOARD_INBUILT_SENSOR == 1) && (TDK_BOARD_REVISION == 1))
+//	I2C_Address = IAM_I2C_ADDR_AD0_HIGH;
+//#endif
+	I2C_ConfigurationMaster();
+#endif
+}

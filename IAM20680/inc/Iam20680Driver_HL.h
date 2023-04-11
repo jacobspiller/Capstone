@@ -35,7 +35,7 @@ extern "C" {
 #endif
 
 #include <stdint.h>
-#include "../inc/Iam20680Transport.h"
+#include "Iam20680Transport.h"
 
 /** @brief Iam20680 driver states definition
  */
