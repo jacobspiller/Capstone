@@ -19,9 +19,9 @@
 #define PWM2_PIN		GPIO_Pin_3
 #define PWM3_PIN		GPIO_Pin_4
 
-//void SdkDelayMs(volatile uint32_t lTimeMs);
+void SdkDelayMs(volatile uint32_t lTimeMs);
 void LED_Init(void);
-void GPIO_Configuration(void);
+void GPIO_Configuration(uint16_t x, uint16_t y);
 void MFT_Configuration(uint16_t joint1, uint16_t joint2, uint16_t joint3);
 void joint_set(uint16_t joint1, uint16_t joint2, uint16_t joint3);
 

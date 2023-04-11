@@ -51,6 +51,8 @@
 int main(void)
 {
 	int ret;
+	uint16_t x = 0;
+	uint16_t y = 0;
   /* System initialization function */
   SystemInit();
 
@@ -62,30 +64,34 @@ int main(void)
   SEGGER_RTT_printf (0,"1\n");
 
    SEGGER_RTT_printf (0,"starting bluetooth\n");
-//  ret = BlueNRG_Stack_Initialization(&BlueNRG_Stack_Init_params);
-//  if (ret != BLE_STATUS_SUCCESS) {
-//	  SEGGER_RTT_printf(0,"Error in BlueNRG_Stack_Initialization() 0x%02x\r\n", ret);
-//  }
+  ret = BlueNRG_Stack_Initialization(&BlueNRG_Stack_Init_params);
+  if (ret != BLE_STATUS_SUCCESS) {
+	  SEGGER_RTT_printf(0,"Error in BlueNRG_Stack_Initialization() 0x%02x\r\n", ret);
+  }
   SEGGER_RTT_printf (0,"%x\n",ret);
 
   SEGGER_RTT_printf(0,"BlueNRG-1,2 BLE Serial Port Master & Slave Application (version: %s)\r\n",BLE_NEW_SERIALPORT_VERSION_STRING);
 
-//    /* Init Serial Port Device */
-//   ret = SerialPort_DeviceInit();
-//   if (ret != BLE_STATUS_SUCCESS) {
-//     SEGGER_RTT_printf(0,"SerialPort_DeviceInit()--> Failed 0x%02x\r\n", ret);
-//     while(1);
-//   }
-//   while(1) {
-//
-//       /* BlueNRG-1,2 stack tick */
-//       BTLE_StackTick();
-//
-//       /* Application tick */
-//       APP_Tick();
+    /* Init Serial Port Device */
+   ret = SerialPort_DeviceInit();
+   if (ret != BLE_STATUS_SUCCESS) {
+     SEGGER_RTT_printf(0,"SerialPort_DeviceInit()--> Failed 0x%02x\r\n", ret);
+     while(1);
+   }
+	/* GPIO configuration */
 
-       joint_set(160,90,0);
-//   }
+   while(1) {
+	   GPIO_Configuration(x,y);
+       /* BlueNRG-1,2 stack tick */
+       BTLE_StackTick();
+
+       /* Application tick */
+       APP_Tick();
+       x = return_xangle();
+       y = return_yangle();
+       SEGGER_RTT_printf(0,"hashhashd%d\n",y);
+       joint_set(x,y,0);
+   }
 
 
 }

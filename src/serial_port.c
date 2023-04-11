@@ -49,6 +49,7 @@
 uint8_t connInfo[20];
 volatile int app_flags = SET_CONNECTABLE;
 volatile uint16_t connection_handle = 0;
+volatile uint8_t data[8];
 
 /** 
   * @brief  Handle of TX,RX  Characteristics.
@@ -290,6 +291,10 @@ void Make_Connection(void)
   {
     SEGGER_RTT_printf(0,"aci_gap_set_discoverable() --> SUCCESS\r\n");
   }
+  for(int i = 0; i < 8; i++){
+//	  SEGGER_RTT_printf(0,"test:%x",data[i]);
+  }
+
   
   /* Update Advertising data with manuf_data */
   aci_gap_update_adv_data(MANUF_DATA_SIZE, manuf_data);
@@ -443,6 +448,17 @@ void hci_disconnection_complete_event(uint8_t Status,
   
 }/* end hci_disconnection_complete_event() */
 
+int return_xangle(void){
+//	SEGGER_RTT_printf(0,"0x%x\n",data[0]);
+	return (data[0]);
+
+}
+int return_yangle(void){
+//	SEGGER_RTT_printf(0,"0x%x\n",data[0]);
+	return (data[2]);
+
+}
+
 
 /*******************************************************************************
  * Function Name  : aci_gatt_attribute_modified_event.
@@ -461,7 +477,12 @@ void aci_gatt_attribute_modified_event(uint16_t Connection_Handle,
   OTA_Write_Request_CB(Connection_Handle, Attr_Handle, Attr_Data_Length, Attr_Data);
 #endif /* ST_OTA_FIRMWARE_UPGRADE_SUPPORT */ 
   
-  Attribute_Modified_CB(Attr_Handle, Attr_Data_Length, Attr_Data);      
+  Attribute_Modified_CB(Attr_Handle, Attr_Data_Length, Attr_Data);
+  for(int i = 0; i < Attr_Data_Length; i++){
+	  data[i] = Attr_Data[i];
+//	  SEGGER_RTT_printf(0,"data:[%d]\n", Attr_Data[i]);
+
+    }
 }
 
 #if CLIENT
