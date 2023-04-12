@@ -53,6 +53,7 @@ int main(void)
 	int ret;
 	uint16_t x = 0;
 	uint16_t y = 0;
+	uint16_t z = 0;
   /* System initialization function */
   SystemInit();
 
@@ -81,7 +82,7 @@ int main(void)
 	/* GPIO configuration */
 
    while(1) {
-	   GPIO_Configuration(x,y);
+	   GPIO_Configuration(x,y,z);
        /* BlueNRG-1,2 stack tick */
        BTLE_StackTick();
 
@@ -89,7 +90,8 @@ int main(void)
        APP_Tick();
        x = return_xangle();
        y = return_yangle();
-       SEGGER_RTT_printf(0,"hashhashd%d\n",y);
+       z = return_zangle();
+       SEGGER_RTT_printf(0,"%d\n",y);
        joint_set(x,y,0);
    }
 

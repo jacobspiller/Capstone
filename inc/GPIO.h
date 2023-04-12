@@ -21,7 +21,8 @@
 
 void SdkDelayMs(volatile uint32_t lTimeMs);
 void LED_Init(void);
-void GPIO_Configuration(uint16_t x, uint16_t y);
+void GPIO_Configuration(uint16_t x, uint16_t y, uint16_t z);
+void set_neutral(void);
 void MFT_Configuration(uint16_t joint1, uint16_t joint2, uint16_t joint3);
 void joint_set(uint16_t joint1, uint16_t joint2, uint16_t joint3);
 

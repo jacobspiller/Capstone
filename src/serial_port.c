@@ -458,6 +458,11 @@ int return_yangle(void){
 	return (data[2]);
 
 }
+int return_zangle(void){
+//	SEGGER_RTT_printf(0,"0x%x\n",data[0]);
+	return (data[4]);
+
+}
 
 
 /*******************************************************************************

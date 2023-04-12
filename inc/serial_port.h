@@ -4,6 +4,7 @@
 
 int return_xangle(void);
 int return_yangle(void);
+int return_zangle(void);
 
 uint8_t SerialPort_DeviceInit(void);
 void APP_Tick(void);
