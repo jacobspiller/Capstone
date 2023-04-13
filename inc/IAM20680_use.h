@@ -42,8 +42,8 @@ typedef struct inv_dev_config {
 #define LOW_POWER_MODE			0
 
 #define ODR_US           		20000	/* Default odr set to 20ms (50Hz) */
-#define FSR_ACC_G        		4      	/* +/- 4g */
-#define FSR_GYR_DPS      		2000   	/* +/- 2000dps */
+#define FSR_ACC_G        		2      	/* +/- 2g */
+#define FSR_GYR_DPS      		250   	/* +/- 250dps */
 
 #define SERIF_TYPE_SPI              0
 #define SERIF_TYPE_I2C              1
