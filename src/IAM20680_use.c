@@ -16,17 +16,20 @@
 #include "Iam20680Product.h"
 #include "Iam20680Defs.h"
 #include "GPIO.h"
+#include "I2C.h"
 
 #include "SEGGER_RTT.h"
 #include "SEGGER_RTT_conf.h"
 
 #define IAM20680_ID		0xA9
+uint8_t	I2C_Address = IAM20680_ID;
 
-volatile static uint8_t errorCounter = 0;
+//volatile static uint8_t errorCounter = 0;
+static inv_iam20680_t IMUDriver;
 
 static void IAM20680_CalibrateGyroscope(void);
 
-extern void Error_Handler(void);
+//extern void Error_Handler(void);
 
 /* Low-level functions
  * The following functions return 0 if the I2C transaction was succesful; otherwise, 0.
@@ -49,63 +52,146 @@ int32_t platform_read(void *handle, uint8_t Reg, uint8_t *bufp, uint16_t len){
 
 /* Initialization */
 
-void IAM20680_Init(void){
-	/* Initialize low-level driver */
-//	IMUDriver.read_reg = platform_read;
-//	IMUDriver.write_reg = platform_write;
+int SetupInvDevice(int (*read_reg)(void * context, uint8_t reg, uint8_t * buf, uint32_t len),
+				   int (*write_reg)(void * context, uint8_t reg, const uint8_t * buf, uint32_t len),
+				   inv_bool_t isSPI){
+		int rc = 0;
+		uint8_t who_am_i;
 
-	/* Errors in communication handler */
-	errorCounter = 0;
+		/* Initialize iam20680 serif structure */
+		struct inv_iam20680_serif iam20680_serif;
 
-	/* Check for the device ID */
-	uint8_t i = 0;
-	uint8_t regData = 0;
-
-	/* Wait for the device to turn on */
-	SdkDelayMs(40);
-
-	errorCounter = inv_iam20680_get_who_am_i(&IMUDriver,&regData);
-
-	if(regData == IAM20680_ID){
-		/* Blink "CORRECT_ID" times to indicate correct communication with the device */
-		while(i != CORRECT_ID){
-			GPIO_WriteBit(GPIO_Pin_1, LED_ON);
-			SdkDelayMs(250);
-			i++;
+		iam20680_serif.context   = 0; /* no need */
+		iam20680_serif.read_reg  = (*read_reg);
+		iam20680_serif.write_reg = (*write_reg);
+		iam20680_serif.is_spi    = isSPI;
+		if(isSPI) {
+			/* Init SPI communication: SPI1 - SCK(PA5) / MISO(PA6) / MOSI(PA7) / CS(PB6) */
+			iam20680_serif.max_read  = 1024*32; /* maximum number of bytes allowed per serial read */
+			iam20680_serif.max_write = 1024*32; /* maximum number of bytes allowed per serial write */
+			//INV_MSG(INV_MSG_LEVEL_INFO, "Opening serial interface through SPI");
+		}else {
+			/* Init I2C communication: I2C1 - SCL(PB8) / SDA(PB9) */
+			iam20680_serif.max_read  = 64; /* maximum number of bytes allowed per serial read */
+			iam20680_serif.max_write = 64; /* maximum number of bytes allowed per serial write */
+			//INV_MSG(INV_MSG_LEVEL_INFO, "Opening serial interface through I2C");
 		}
-		i = 0;
 
-		/* Stop blink to indicate that device will be configured next */
-		GPIO_WriteBit(GPIO_Pin_1, LED_OFF);
-		SdkDelayMs(500);
-	} else{
-		Error_Handler();
-	}
+		/* Reset iam20680 driver states */
+		memset(&IMUDriver, 0, sizeof(IMUDriver));
+		IMUDriver.serif = iam20680_serif;
 
-	/****RESET THE DEVICE***/
-	errorCounter = inv_iam20680_device_reset(&IMUDriver);
+		/* Check WHOAMI */
+//		rc = inv_iam20680_get_who_am_i(&IMUDriver, &who_am_i);
+//		#if (SERIF_TYPE_I2C == 1)
+//		if((rc != INV_ERROR_SUCCESS) || (who_am_i != EXPECTED_WHOAMI)) {
+//			if(!isSPI) {
+//				/* Check i2c bus stuck and clear the bus */
+//				I2C_ConfigurationMaster();
+//			}
+//
+//			/* Retry who_am_i check */
+//			rc = inv_iam20680_get_who_am_i(&IMUDriver, &who_am_i);
+//		}
+//		#endif
+//
+//		if(rc != INV_ERROR_SUCCESS)
+//			return rc;
+//
+//		if(who_am_i != EXPECTED_WHOAMI) {
+//			SEGGER_RTT_printf(0,"Bad WhoAMI\n", 0);
+//			//INV_MSG(INV_MSG_LEVEL_ERROR, "Bad WHOAMI value. Got 0x%02x. Expected 0x%02x.", who_am_i, EXPECTED_WHOAMI);
+//		}
 
-	/***GYROSCOPE***/
-	errorCounter = inv_iam20680_wr_gyro_config_fs_sel(&IMUDriver, IAM20680_GYRO_CONFIG_FS_SEL_250dps);
+		/* Initialize device */
+		rc = inv_iam20680_init(&IMUDriver);
 
-	/***ACCELEROMETER***/
-	errorCounter = inv_iam20680_wr_accel_config_accel_fs_sel(&IMUDriver, IAM20680_ACCEL_CONFIG_FS_SEL_2g );
+		return rc;
+    }
 
-	/* Activate accelerometer data-ready mode */
-	errorCounter = inv_iam20680_enable_accel(&IMUDriver);
-	errorCounter = inv_iam20680_enable_gyro(&IMUDriver);
+int ConfigureInvDevice(inv_dev_config_t* device_config)
+{
+	int rc = 0;
+	/* Set full scale range */
+		rc |= inv_iam20680_set_gyro_fsr(&IMUDriver, device_config->gyr_fsr_dps);
+		rc |= inv_iam20680_set_accel_fsr(&IMUDriver, device_config->acc_fsr_g);
 
-	/* Blink "CONFIG_COMPLETE" times to indicate that the sensor was configured correctly */
-	if(errorCounter == 0){
-		while(i != CONFIG_COMPLETE){
-			GPIO_WriteBit(GPIO_Pin_1, LED_ON);
-			SdkDelayMs(100);
-			i++;
+		/* Enable Accel and Gyro axes */
+		if(device_config->enable_accel) {
+			rc |= inv_iam20680_enable_accel(&IMUDriver);
+//			if (!(device_config->set_low_noise_mode) && !(device_config->enable_gyro)) {
+//				rc |= inv_iam20680_wr_lp_mode_cfg_set_lp_accel_odr(&IMUDriver, (double)1000000.0/device_config->odr_us);
+//				rc |= inv_iam20680_wr_accel_config2_a_dlpf_cfg(&IMUDriver, IAM20680_ACCEL_CONFIG2_A_DLPF_CFG_420);
+//				rc |= inv_iam20680_set_accel_low_power_mode(&IMUDriver);
+//			}
 		}
-	} else{
-		 Error_Handler();
-	}
+
+		if(device_config->enable_gyro) {
+			rc |= inv_iam20680_enable_gyro(&IMUDriver);
+		}
+		return rc;
 }
+
+//void IAM20680_Init(void){
+//	/* Initialize low-level driver */
+	//IMUDriver.read_reg = platform_read;
+	// IMUDriver.write_reg = platform_write;
+//
+//	/* Errors in communication handler */
+//	uint8_t errorCounter = 0;
+//
+//	/* Check for the device ID */
+//	uint8_t i = 0;
+//	uint8_t regData;
+//
+//	/* Wait for the device to turn on */
+//	SdkDelayMs(40);
+//
+//	errorCounter = inv_iam20680_get_who_am_i(&IMUDriver,&regData);
+//
+//	if(regData == IAM20680_ID){
+//		/* Blink "CORRECT_ID" times to indicate correct communication with the device */
+//		while(i != CORRECT_ID){
+////			GPIO_WriteBit(BL, LED_ON);
+//			SdkDelayMs(250);
+////			GPIO_WriteBit(GPIO_Pin_1, LED_OFF);
+//			i++;
+//		}
+//		i = 0;
+//
+//		/* Stop blink to indicate that device will be configured next */
+////		GPIO_WriteBit(GPIO_Pin_1, LED_OFF);
+//		SdkDelayMs(500);
+//	} else{
+//		SEGGER_RTT_printf(0,"error! monas fault\n");
+//	}
+//
+//	/****RESET THE DEVICE***/
+////	errorCounter = inv_iam20680_device_reset(&IMUDriver);
+//
+//	/***GYROSCOPE***/
+////errorCounter = inv_iam20680_wr_gyro_config_fs_sel(&IMUDriver, IAM20680_GYRO_CONFIG_FS_SEL_2000dps);
+//
+//	/***ACCELEROMETER***/
+////	errorCounter = inv_iam20680_wr_accel_config_accel_fs_sel(&IMUDriver, IAM20680_ACCEL_CONFIG_FS_SEL_2g );
+//
+//	/* Activate accelerometer data-ready mode */
+////	errorCounter = inv_iam20680_enable_accel(&IMUDriver);
+////	errorCounter = inv_iam20680_enable_gyro(&IMUDriver);
+//
+//	/* Blink "CONFIG_COMPLETE" times to indicate that the sensor was configured correctly */
+//	if(errorCounter == 0){
+//		while(i != CONFIG_COMPLETE){
+////			GPIO_WriteBit(GPIO_Pin_1, LED_ON);
+//			SdkDelayMs(100);
+//			i++;
+//		}
+//	} else{
+//		SEGGER_RTT_printf(0,"error! monas fault\n");
+////		 Error_Handler();
+//	}
+//
+//}
 
 int32_t IAM20680_acceleration_raw_get(struct inv_iam20680 * s , int16_t *val){
   uint8_t buff[6];
@@ -182,7 +268,7 @@ void IAM20680_ReadGyroscope(float *pBuffer){
 
 /* Device calibration */
 BOOL IAM20680_Calibrate(void){
-	errorCounter = 0;
+	uint8_t errorCounter = 0;
 
 	/* Blink for "REST_SECONDS" seconds to indicate user to leave the device on a flat surface for calibration */
 	uint8_t i = 0;
@@ -197,17 +283,11 @@ BOOL IAM20680_Calibrate(void){
 	GPIO_WriteBit(GPIO_Pin_1, LED_ON);
 	SdkDelayMs(250);
 
-	/* Activate data-ready interrupts on Pin INT1 */
-	//LSM6DSO32_dataReadyINT(ENABLE);
-
 	/* Wait for data-ready signal to stabilize */
 	SdkDelayMs(10);
 
 	/* Calibrate gyroscope */
 	IAM20680_CalibrateGyroscope();
-
-	/* Deactivate data-ready interrupts on pin INT1 */
-	//LSM6DSO32_dataReadyINT(DISABLE);
 
 	/* Wait for data-ready signal to stabilize */
 	SdkDelayMs(10);
@@ -263,4 +343,43 @@ static void IAM20680_CalibrateGyroscope(void){
 	for(i = 0; i < 3; i++){
 		gyroOffset[i] = (uint16_t)(calibrationAverage[i] / BUFFERSIZE);
 	}
+}
+
+int idd_io_hal_read_reg(void * context, uint8_t reg, uint8_t * rbuffer, uint32_t rlen) {
+	(void)context;
+
+//#if (SERIF_TYPE_SPI == 1)
+//	return spi_master_read_register(NULL, reg, rbuffer, rlen);
+//#elif (SERIF_TYPE_I2C == 1)
+	//return i2c_master_read_register(I2C_Address, reg, rlen, rbuffer);
+	return platform_read(context, reg, rbuffer, rlen);
+//#endif
+}
+
+int idd_io_hal_write_reg(void * context, uint8_t reg, const uint8_t * wbuffer, uint32_t wlen) {
+	(void)context;
+
+//#if (SERIF_TYPE_SPI == 1)
+//	return spi_master_write_register(NULL, reg, wbuffer, wlen);
+//#elif (SERIF_TYPE_I2C == 1)
+	return platform_write(context, reg, wbuffer, wlen);
+//#endif
+}
+
+void interface_initialize(void) {
+
+#if (SERIF_TYPE_SPI == 1)
+
+	spi_master_initialize();
+
+#elif (SERIF_TYPE_I2C == 1)
+	/*
+	 * Default IAM20680 (Slave) Address = 0x68 (pin AD0 is logic low)
+	 * Change Slave Address to 0x69 (pin AD0 is logic high)
+	 */
+//#if ((TDK_BOARD_INBUILT_SENSOR == 1) && (TDK_BOARD_REVISION == 1))
+//	I2C_Address = IAM_I2C_ADDR_AD0_HIGH;
+//#endif
+	I2C_ConfigurationMaster();
+#endif
 }
